@@ -9,7 +9,9 @@ export default {
         "light-gray": "#BEBBBB ",
         "deep-teal": "#0A394D",
         "light-grayish-blue": "#E1E8EF",
+        "middele-gray": "#76787A",
         white: "#ffffff",
+        "gray-low": "#949494",
       },
       fontSize: {
         m: "1.29rem",
@@ -29,12 +31,6 @@ export default {
         black: "900",
       },
     },
-    width: {
-      139: "9rem",
-    },
   },
   plugins: [],
-  safelist: [
-    "min-w-[1000px]", // Agrega esta línea
-  ],
 };

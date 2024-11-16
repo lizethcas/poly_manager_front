@@ -1,15 +1,16 @@
-<script setup lang="ts">
-const isOpen = ref(false)
-</script>
-
 <template>
-  <div>
-    <UButton label="Open" @click="isOpen = true" />
-
-    <UModal v-model="isOpen">
-      <div class="p-4">
-        <Placeholder class="h-48" />
-      </div>
-    </UModal>
-  </div>
+    <button @click.stop @click="addBulletPoint"
+        class="flex justify-center items-center gap-2 bg-light-grayish-blue py-2 cursor-pointer w-full transform hover:scale-80 hover:shadow-lg active:scale-100 active:shadow-sm transition-all duration-300">
+        <img src="../../assets/images/add.webp" alt="add a bullet point" class="w-5">
+        <p class="text-fresh-green">Add a bullet Point</p>
+    </button>
 </template>
+
+<script setup>
+const emit = defineEmits(["addSomethingElse"])
+
+const addBulletPoint = () => {
+   emit("addSomethingElse")
+}
+
+</script>

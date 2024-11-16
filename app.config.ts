@@ -1,9 +1,15 @@
 export default defineAppConfig({
-    ui: {
-      button: {
-        default: {
-          color: 'orange'
+  ui: {
+    strategy: 'override',
+    button: {
+      color: {
+        freshGreen: {
+          solid: 'bg-fresh-green'
+        },
+        gray:{
+          solid: 'bg-light-grayish-blue'
         }
       }
     }
-  })
+  }
+})
