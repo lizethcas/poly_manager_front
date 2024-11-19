@@ -2,7 +2,7 @@
     <!-- no esta funcionando -->
     <div @click="isOpen = true"
         class="rounded-lg cursor-pointer w-full border-fresh-green border-2 text-center mt-2 p-3 flex flex-col items-center justify-center">
-        <button class="">
+        <button >
             <img src="../assets/images/add.webp" alt="Agregar nuevo curso">
             <p class="text-fresh-green pt-2">{{ homeData.buttom }}</p>
         </button>
