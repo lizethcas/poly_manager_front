@@ -6,21 +6,14 @@ export function useFormData() {
   const previewImage = ref<string | null>(null);
 
   const formData = ref<Record<string, any>>({
-    // Basic form fields
     lesson_title: '',
     description: '',
-    
-    // File/Image data
     cover: null,
-    
-    // Select options
+    bullet_points: [],
     selectedOptions: {
-      [createCourse.label_select[0]]: createCourse.categorys[0], // category
-      [createCourse.label_select[1]]: createCourse.levels[0], // level
-    },
-    
-    // Bullet points array
-    bulletPoints: [],
+      [createCourse.label_select[0]]: createCourse.categorys[0],
+      [createCourse.label_select[1]]: createCourse.levels[0],
+    }
   });
 
   const handleEmit = () => {
@@ -30,21 +23,16 @@ export function useFormData() {
   };
 
   const handleEmitSave = () => {
-    // Filter out empty bullet points
     const filteredBulletPoints = bulletPoints.value.filter(point => point.trim() !== '');
     
-    // Update formData with all bullet points
-    formData.value.bulletPoints = [
-      ...formData.value.bulletPoints,
-      ...filteredBulletPoints
-    ];
+    formData.value.bullet_points = filteredBulletPoints;
 
-    // Return the complete form data object
     return toRaw(formData.value);
   };
 
   const updateFormField = (fieldName: string, value: any) => {
-    formData.value[fieldName] = value;
+    const cleanFieldName = fieldName.replace(/^_+|_+$/g, '');
+    formData.value[cleanFieldName] = value;
   };
 
   const updateCoverImage = (imageData: string) => {

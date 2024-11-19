@@ -8,7 +8,7 @@
 
         <form @submit.prevent @click.stop>
             <div>
-                <InputFile />
+                <InputFile v-model="formData.cover" @update:modelValue="updateCoverImage" />
 
                 <!-- Iterar sobre los labels para los campos del formulario -->
                 <div v-for="(item, index) in labels" :key="'label-' + index">
@@ -21,7 +21,8 @@
                         <div class="flex gap-4">
                             <div v-for="(categoryOrLevel, index) in combinedOptions" :key="index" class="flex-1">
                                 <SelectAtom :options="categoryOrLevel.options" :title="categoryOrLevel.title"
-                                    v-model="formData.selectedOptions[categoryOrLevel.title]" />
+                                    v-model="formData.selectedOptions[categoryOrLevel.title]"
+                                    @update:modelValue="(value) => updateSelectField(categoryOrLevel.title, value)" />
                             </div>
                         </div>
                     </div>
@@ -55,7 +56,7 @@ import SelectAtom from './molecule/SelectAtom.vue';
 import { useFormData } from '~/hooks/userFormData';
 
 // Hooks para manejar los datos del formulario
-const { bulletPoints, formData, handleEmit, handleEmitSave, updateFormField } = useFormData();
+const { bulletPoints, formData, handleEmit, handleEmitSave, updateFormField, updateCoverImage } = useFormData();
 
 // Propiedades del modal
 const { title, showExtraElements } = defineProps<ModalProps>();
@@ -75,25 +76,37 @@ const closeModal = () => {
 };
 
 // Función para transformar las claves de los labels
-const transformedKey = (key: string) => {
-    return key.toLowerCase().replace(/\s+/g, '_');
+const transformedKey = (key: string): string => {
+    // Remove any colons, extra spaces, and standardize the key name
+    return key
+        .toLowerCase()
+        .trim()
+        .replace(/[:]/g, '')
+        .replace(/\s+/g, '_')
+        .replace(/^_+|_+$/g, '');
 };
 
-// In your submit or save handler:
+// Add updateSelectField function
+const updateSelectField = (field: string, value: string) => {
+    formData.value.selectedOptions[field] = value;
+};
+// Watch for changes in select fields and update formData directly
+watch(
+  () => formData.value.selectedOptions,
+  (newOptions) => {
+    for (const [key, value] of Object.entries(newOptions)) {
+      const cleanKey = transformedKey(key);
+      formData.value[cleanKey] = value;
+    }
+  },
+  { immediate: true, deep: true }
+);
+
+// Update handleSave to include modal closing
 const handleSave = () => {
-  const completeFormData = handleEmitSave();
-  console.log('Complete form data:', completeFormData);
-  // Here you'll have an object with all form data:
-  // {
-  //   lesson_title: "...",
-  //   description: "...",
-  //   cover: "base64-image-data...",
-  //   selectedOptions: {
-  //     category: "General English",
-  //     level: "A1"
-  //   },
-  //   bulletPoints: ["point 1", "point 2", ...]
-  // }
+    const completeFormData = handleEmitSave();
+    console.log('Complete form data:', completeFormData);
+    closeModal(); // Close the modal after saving
 };
 
 </script>

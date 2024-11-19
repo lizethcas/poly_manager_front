@@ -3,3 +3,8 @@ export interface ModalProps {
   showExtraElements?: boolean;
   options?: string[];
 }
+
+
+export interface FormDataModal {
+    [key: string]: string;
+}

@@ -2,33 +2,42 @@
     <div class="flex items-center gap-4 mb-4 w-full">
         <label class="min-w-[120px] text-middele-gray">{{ title }}</label>
         <div class="w-5/12 text-fresh-green">
-            <USelect v-model="selectedOption" :options="options" />
+            <USelect 
+                v-model="selectedOption" 
+                :options="options" 
+                @update:modelValue="handleChange"
+            />
         </div>
     </div>
-
 </template>
 
 <script lang="ts" setup>
-import { ref } from 'vue';
+import { ref, watch } from 'vue';
 import type { ModalProps } from '~/interfaces/modal.interface';
 
-// Recibiendo 'title' y 'options' directamente desde defineProps()
-const { title, options } = defineProps<ModalProps>();
+const props = defineProps<ModalProps & {
+    modelValue?: string
+}>();
 
-// Usamos ref para manejar el valor seleccionado
-const selectedOption = ref(options?.[0] || "");
-console.log(selectedOption);
+const emit = defineEmits<{
+    'update:modelValue': [value: string]
+}>();
 
-/* watch(selectedOption, (newValue) => {
-  console.log("Opción seleccionada:", newValue);
-});
- */
+const selectedOption = ref(props.modelValue || props.options?.[0] || "");
+
+const handleChange = (value: string) => {
+    selectedOption.value = value;
+    emit('update:modelValue', value);
+};
+
 watch(
-    () => options,
+    () => props.options,
     (newOptions) => {
-        selectedOption.value = newOptions?.[0] || ""; // Actualiza con la primera opción
+        if (newOptions?.length) {
+            selectedOption.value = props.modelValue || newOptions[0];
+            emit('update:modelValue', selectedOption.value);
+        }
     },
-    { immediate: true } // Ejecuta la lógica de inmediato
+    { immediate: true }
 );
-
 </script>

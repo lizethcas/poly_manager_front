@@ -27,6 +27,7 @@ export default defineNuxtConfig({
         config.plugins.push(vuetify({ autoImport: true }));
       });
     },
+    '@pinia/nuxt',
   ],
 
   app: {
@@ -55,5 +56,11 @@ export default defineNuxtConfig({
   },
   tailwindcss: {
     cssPath: "~/assets/css/tailwind.css", // Asegúrate de que Tailwind se importe correctamente sin los estilos base
+  },
+  runtimeConfig: {
+    autoImports: [
+      'defineStore',
+      'storeToRefs'
+    ],
   },
 });

@@ -14,7 +14,7 @@ export const createClass = {
 export const labels = [
   {
     id: 1,
-    label_name: "Lesson Title ",
+    label_name: "Course Name ",
     type: "text",
   },
   {
