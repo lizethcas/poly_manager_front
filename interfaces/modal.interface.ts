@@ -4,11 +4,9 @@ export interface ModalProps {
   options?: string[];
 }
 
-
 export interface FormDataModal {
-    [key: string]: string;
+  [key: string]: string;
 }
-
 
 export interface CourseForm {
   course_name: string;
@@ -17,5 +15,5 @@ export interface CourseForm {
   bullet_points: string[];
   category: string;
   level: string;
-  courseId: string;
+  id: string;
 }

@@ -1,21 +1,14 @@
 import type { FormDataModal } from '~/interfaces/modal.interface';
 import { URL_API } from './api';
+import type { CourseForm } from '~/interfaces/modal.interface';
 
-interface CourseData {
-    img_cover: File | null;
-    course_name: string;
-    description: string;
-    category: string;
-    level: string;
-    bullet_points: Array<{ text: string }>;}
-
-class ApiService {
+export class ApiService {
     async createCourse(formData: FormData) {
-        const response = await $fetch(`${URL_API}/api/courses`, {
+        const response = await $fetch(`${URL_API}/courses/`, {
             method: 'POST',
             body: formData
         });
-        return response;
+        console.log(response);
     }
 
     // Obtener todos los cursos
@@ -35,9 +28,9 @@ class ApiService {
     }
 
     // Actualizar un curso
-    async updateCourse(id: number, formData: Partial<CourseData>) {
+    async updateCourse(id: number, formData: Partial<CourseForm>) {
         const formDataToSend = new FormData();
-        if (formData.img_cover) formDataToSend.append('img_cover', formData.img_cover);
+        if (formData.cover) formDataToSend.append('img_cover', formData.cover);
         if (formData.course_name) formDataToSend.append('course_name', formData.course_name);
         if (formData.description) formDataToSend.append('description', formData.description);
         if (formData.category) formDataToSend.append('category', formData.category);
@@ -60,4 +53,4 @@ class ApiService {
     }
 }   
 
-export default new ApiService();
+

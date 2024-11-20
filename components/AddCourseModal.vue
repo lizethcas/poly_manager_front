@@ -2,8 +2,8 @@
     <div class="p-7 max-w-5xl m-auto w-full bg-white rounded-lg">
         <div class="flex justify-between">
             <h2 class="font-bold text-m">{{ title }}</h2>
-            <ImgAtom src="../assets/images/close.webp" alt="close create course" class="w-5 h-5 cursor-pointer"
-                @click="closeModal"/>
+            <img src="../assets/images/close.webp" alt="close create course" class="w-5 h-5 cursor-pointer"
+                @click="closeModal" />
         </div>
 
         <form @submit.prevent @click.stop>
@@ -109,9 +109,13 @@ const handleSave = () => {
         ...formDataToSave,
         bullet_points: toRaw(bulletPoints.value)
     });
-
-
     closeModal();
+
+    courseStore.createCourse({
+        ...formDataToSave,
+        bullet_points: toRaw(bulletPoints.value)
+    });
+
 };
 
 const updateCoverImage = (imageFile: File) => {
