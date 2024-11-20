@@ -2,7 +2,7 @@ export const createCourse = {
   title: "Create Course",
   showExtraElements: true,
   categorys: ["General English", "Business English", "ESP"],
-  levels: ["A0", "A1", "A2", "B1", "B2"],
+  levels: ["A0. True Beginner", "A1. Beginner", "A2. Elementary", "B1. Intermediate", "B2. Upper Intermediate", "C1. Advanced", "C2. Proficient"],
   label_select: ["category:", "level:"],
 };
 
@@ -21,10 +21,5 @@ export const labels = [
     id: 2,
     label_name: "Description",
     type: "text_area",
-  },
-  {
-    id: 3,
-    label_name: "Bullet Points",
-    type: "text", 
-  },
+  }
 ];

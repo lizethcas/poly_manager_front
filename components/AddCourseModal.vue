@@ -2,18 +2,18 @@
     <div class="p-7 max-w-5xl m-auto w-full bg-white rounded-lg">
         <div class="flex justify-between">
             <h2 class="font-bold text-m">{{ title }}</h2>
-            <img src="../assets/images/close.webp" alt="close create course" class="w-5 h-5 cursor-pointer"
-                @click="closeModal">
+            <ImgAtom src="../assets/images/close.webp" alt="close create course" class="w-5 h-5 cursor-pointer"
+                @click="closeModal"/>
         </div>
 
         <form @submit.prevent @click.stop>
             <div>
-                <InputFile v-model="formData.cover" @update:modelValue="updateCoverImage" />
-
+                <InputFile v-model="formData.cover" @file-selected="updateCoverImage" />
                 <!-- Iterar sobre los labels para los campos del formulario -->
                 <div v-for="(item, index) in labels" :key="'label-' + index">
-                    <MoleculeBaseInput :title="item.label_name" :type="item.type"
-                        :modelValue="formData[transformedKey(item.label_name)]"
+                    <MoleculeBaseInput :title="item.label_name" :type="item.type" :modelValue="Array.isArray(formData[transformedKey(item.label_name)])
+                        ? formData[transformedKey(item.label_name)].join(', ')
+                        : formData[transformedKey(item.label_name)]"
                         @update:modelValue="(value) => updateFormField(transformedKey(item.label_name), value)" />
 
                     <!-- Mostrar elementos adicionales si es necesario -->
@@ -21,7 +21,7 @@
                         <div class="flex gap-4">
                             <div v-for="(categoryOrLevel, index) in combinedOptions" :key="index" class="flex-1">
                                 <SelectAtom :options="categoryOrLevel.options" :title="categoryOrLevel.title"
-                                    v-model="formData.selectedOptions[categoryOrLevel.title]"
+                                    v-model="formData[transformedKey(categoryOrLevel.title)]"
                                     @update:modelValue="(value) => updateSelectField(categoryOrLevel.title, value)" />
                             </div>
                         </div>
@@ -45,18 +45,20 @@
             </div>
         </form>
     </div>
+
 </template>
 
 <script lang="ts" setup>
-import { defineProps } from 'vue';
+import { defineProps, onMounted, ref } from 'vue';
 import BulletPoint from './molecule/BulletPoint.vue';
 import { createCourse, labels } from '~/data/cardModal';
 import type { ModalProps } from '~/interfaces/modal.interface';
 import SelectAtom from './molecule/SelectAtom.vue';
 import { useFormData } from '~/hooks/userFormData';
+import { useCourseStore } from '~/stores/courseStore';
 
 // Hooks para manejar los datos del formulario
-const { bulletPoints, formData, handleEmit, handleEmitSave, updateFormField, updateCoverImage } = useFormData();
+const { bulletPoints, formData, handleEmit, handleEmitSave, updateFormField } = useFormData();
 
 // Propiedades del modal
 const { title, showExtraElements } = defineProps<ModalProps>();
@@ -86,27 +88,37 @@ const transformedKey = (key: string): string => {
         .replace(/^_+|_+$/g, '');
 };
 
-// Add updateSelectField function
+// Modify updateSelectField function
 const updateSelectField = (field: string, value: string) => {
-    formData.value.selectedOptions[field] = value;
+    const cleanKey = transformedKey(field) as keyof typeof formData.value;
+    formData.value[cleanKey] = value as any;
 };
-// Watch for changes in select fields and update formData directly
-watch(
-  () => formData.value.selectedOptions,
-  (newOptions) => {
-    for (const [key, value] of Object.entries(newOptions)) {
-      const cleanKey = transformedKey(key);
-      formData.value[cleanKey] = value;
-    }
-  },
-  { immediate: true, deep: true }
-);
 
-// Update handleSave to include modal closing
+// Add store initialization
+const courseStore = useCourseStore();
+
+// Update handleSave function
 const handleSave = () => {
-    const completeFormData = handleEmitSave();
-    console.log('Complete form data:', completeFormData);
-    closeModal(); // Close the modal after saving
+    if (!formData.value.course_name?.trim()) {
+        alert('El nombre del curso es obligatorio');
+        return;
+    }
+
+    const formDataToSave = handleEmitSave();
+    courseStore.saveCourse({
+        ...formDataToSave,
+        bullet_points: toRaw(bulletPoints.value)
+    });
+
+
+    closeModal();
 };
+
+const updateCoverImage = (imageFile: File) => {
+    const imageUrl = URL.createObjectURL(imageFile);
+    formData.value.cover = imageUrl; // Asignamos solo la URL de la imagen
+};
+
+
 
 </script>
