@@ -1,4 +1,4 @@
 export interface ImgAtomProps {
   image: string;
-  alt?: string;
+  alt: string;
 }

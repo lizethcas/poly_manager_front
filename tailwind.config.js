@@ -12,10 +12,16 @@ export default {
         "middele-gray": "#76787A",
         white: "#ffffff",
         "gray-low": "#949494",
+        "green-low": "#13A73C",
+        "green-high": "#C2F6D0",
+        "gray-high": "#76787A",
+        "gray-light": "#BEBBBB",
+
       },
       fontSize: {
         m: "1.29rem",
         xl: "2rem",
+        "2xl": "2.5rem",
       },
       fontWeight: {
         thin: "100",

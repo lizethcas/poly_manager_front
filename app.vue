@@ -2,14 +2,16 @@
   <div>
     <NuxtPage />
   </div>
-  <SomeComponent  />
-  <h1>{{ counter.count }}</h1>
 </template>
 
 <script setup lang="ts">
-import { useCounterStore } from "@/stores/count.store";
+import { useCourseStore } from '@/stores/courseStore';
 
-const counter = useCounterStore();
+const courseStore = useCourseStore();
+
+
+console.log(courseStore.courses);
+
 </script>
 
 <style scoped>
