@@ -3,7 +3,7 @@ import type { TrueOrFalseData } from "../interfaces/trueorfalsetask.interface";
 
 
 
-class ApiTrueOrFalseService {
+export class ApiTrueOrFalseService {
     async createTrueOrFalse(formData: TrueOrFalseData) {
         const response = await axiosInstance.post(`trueorfalse`, {
             body: formData
@@ -38,4 +38,3 @@ class ApiTrueOrFalseService {
     }
 }
 
-export default new ApiTrueOrFalseService();

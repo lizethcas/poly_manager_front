@@ -3,7 +3,7 @@ import type { VideoModelData } from "../interfaces/videomodel.interface";
 
 
 
-class ApiVideoModelService {
+export class ApiVideoModelService {
     async createVideo(formData: VideoModelData) {
         const response = await axiosInstance.post(`videos`, {
             body: formData
@@ -38,4 +38,3 @@ class ApiVideoModelService {
     }
 }
 
-export default new ApiVideoModelService();

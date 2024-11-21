@@ -3,7 +3,7 @@ import type { CategoriesTaskData } from '../interfaces/categoriestask.interfece'
 
 
 
-class ApiCategoriesTaskService {
+export class ApiCategoriesTaskService {
     async createCategoriesTask(formData: CategoriesTaskData) {
         const response = await axiosInstance.post(`categoriestask`, {
             body: formData
@@ -38,4 +38,4 @@ class ApiCategoriesTaskService {
     }
 }
 
-export default new ApiCategoriesTaskService();
+

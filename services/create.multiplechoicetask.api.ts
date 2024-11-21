@@ -4,7 +4,7 @@ import type { MultipleChoiceData } from "../interfaces/multiplechoice.interface"
 
 
 
-class ApiMultipleChoiceService {
+export class ApiMultipleChoiceService {
     async createMultipleChoice(formData: MultipleChoiceData) {
         const response = await axiosInstance.post(`multiplechoice`, {
             body: formData
@@ -39,4 +39,3 @@ class ApiMultipleChoiceService {
     }
 }
 
-export default new ApiMultipleChoiceService();

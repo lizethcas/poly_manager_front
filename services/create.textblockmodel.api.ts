@@ -1,8 +1,7 @@
 import axiosInstance from "./axios.config";
 import type { TextBlockData } from "../interfaces/textblockmodel.interface";
 
-
-class ApiTextBlockService {
+export class ApiTextBlockService {
     async createTextBlock(formData: TextBlockData) {
         const response = await axiosInstance.post(`textblocks`, {
             body: formData
@@ -36,5 +35,3 @@ class ApiTextBlockService {
         return response;
     }
 }
-
-export default new ApiTextBlockService();

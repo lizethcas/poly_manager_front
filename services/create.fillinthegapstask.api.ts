@@ -2,7 +2,7 @@ import axiosInstance from "./axios.config";
 import type { FillInTheGapsData } from '../interfaces/fillinthegaps.interface';
 
 
-class ApiFillInTheGapsService {
+export class ApiFillInTheGapsService {
     async createFillInTheGaps(formData: FillInTheGapsData) {
         const response = await axiosInstance.post(`fillinthegaps`, {
             body: formData
@@ -37,4 +37,3 @@ class ApiFillInTheGapsService {
     }
 }
 
-export default new ApiFillInTheGapsService();
