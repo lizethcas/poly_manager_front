@@ -1,7 +1,7 @@
 import axiosInstance from "./axios.config";
 import type { ClassData } from "~/interfaces/class.interface";
 
-class ApiClassService {
+export class ApiClassService {
   async createClass(formData: ClassData) {
     const response = await axiosInstance.post(`classes`, {
       method: "POST",
@@ -49,4 +49,3 @@ class ApiClassService {
   }
 }
 
-export default new ApiClassService();
