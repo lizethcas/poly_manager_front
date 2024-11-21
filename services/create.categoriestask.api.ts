@@ -1,19 +1,11 @@
-import { URL_API } from './api';
+import axiosInstance from "./axios.config";
+import type { CategoriesTaskData } from '../interfaces/categoriestask.interfece';
 
-interface CategoriesTaskData {
-    layout: number;
-    instructions: string;
-    categories: Array<{
-        name: string,
-        items: Array<string>
-    }>;
-    order: number;
-}
 
-class ApiService {
+
+class ApiCategoriesTaskService {
     async createCategoriesTask(formData: CategoriesTaskData) {
-        const response = await $fetch(`${URL_API}/api/categoriestask`, {
-            method: 'POST',
+        const response = await axiosInstance.post(`categoriestask`, {
             body: formData
         });
         return response;
@@ -21,24 +13,19 @@ class ApiService {
 
     // Obtener todas las tareas de categorías
     async getAllCategoriesTasks() {
-        const response = await $fetch(`${URL_API}/api/categoriestask`, {
-            method: 'GET'
-        });
+        const response = axiosInstance.get(`categoriestask`);
         return response;
     }
 
     // Obtener una tarea por ID
     async getCategoriesTaskById(id: number) {
-        const response = await $fetch(`${URL_API}/api/categoriestask/${id}`, {
-            method: 'GET'
-        });
+        const response = axiosInstance.get(`categoriestask/${id}`);
         return response;
     }
 
     // Actualizar una tarea
     async updateCategoriesTask(id: number, formData: CategoriesTaskData) {
-        const response = await $fetch(`${URL_API}/api/categoriestask/${id}`, {
-            method: 'PUT',
+        const response = axiosInstance.put(`categoriestask/${id}`, {
             body: formData
         });
         return response;
@@ -46,11 +33,9 @@ class ApiService {
 
     // Eliminar una tarea
     async deleteCategoriesTask(id: number) {
-        const response = await $fetch(`${URL_API}/api/categoriestask/${id}`, {
-            method: 'DELETE'
-        });
+        const response = axiosInstance.delete(`categoriestask/${id}`);
         return response;
     }
 }
 
-export default new ApiService();
+export default new ApiCategoriesTaskService();

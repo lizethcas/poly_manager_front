@@ -1,16 +1,9 @@
-import { URL_API } from './api';
+import axiosInstance from "./axios.config";
+import type { OrderingTaskData } from "../interfaces/orderingtask.interface";
 
-interface OrderingTaskData {
-    layout: number;
-    instructions: string;
-    items: Array<{text: string, order: number}>;
-    order: number;
-}
-
-class ApiService {
+class ApiOrderingTaskService {
     async createOrderingTask(formData: OrderingTaskData) {
-        const response = await $fetch(`${URL_API}/api/orderingtask`, {
-            method: 'POST',
+        const response = await axiosInstance.post(`orderingtask`, {
             body: formData
         });
         return response;
@@ -18,24 +11,19 @@ class ApiService {
 
     // Obtener todas las tareas de ordenamiento
     async getAllOrderingTasks() {
-        const response = await $fetch(`${URL_API}/api/orderingtask`, {
-            method: 'GET'
-        });
+        const response = await axiosInstance.get(`orderingtask`);
         return response;
     }
 
     // Obtener una tarea por ID 
     async getOrderingTaskById(id: number) {
-        const response = await $fetch(`${URL_API}/api/orderingtask/${id}`, {
-            method: 'GET'
-        });
+        const response = await axiosInstance.get(`orderingtask/${id}`);
         return response;
     }
 
     // Actualizar una tarea
     async updateOrderingTask(id: number, formData: OrderingTaskData) {
-        const response = await $fetch(`${URL_API}/api/orderingtask/${id}`, {
-            method: 'PUT',
+        const response = await axiosInstance.put(`orderingtask/${id}`, {
             body: formData
         });
         return response;
@@ -43,11 +31,9 @@ class ApiService {
 
     // Eliminar una tarea
     async deleteOrderingTask(id: number) {
-        const response = await $fetch(`${URL_API}/api/orderingtask/${id}`, {
-            method: 'DELETE'
-        });
+        const response = await axiosInstance.delete(`orderingtask/${id}`);
         return response;
     }
 }
 
-export default new ApiService();
+export default new ApiOrderingTaskService();

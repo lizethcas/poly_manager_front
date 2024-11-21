@@ -1,21 +1,11 @@
-import { URL_API } from './api';
+import axiosInstance from "./axios.config";
+import type { TrueOrFalseData } from "../interfaces/trueorfalsetask.interface";
 
-interface TrueOrFalseData {
-    layout: number;
-    instructions: string;
-    questions: {
-        questions: Array<{
-            statement: string;
-            state: 1 | 2 | 3;
-        }>;
-    };
-    order: number;
-}
 
-class ApiService {
+
+class ApiTrueOrFalseService {
     async createTrueOrFalse(formData: TrueOrFalseData) {
-        const response = await $fetch(`${URL_API}/api/trueorfalse`, {
-            method: 'POST',
+        const response = await axiosInstance.post(`trueorfalse`, {
             body: formData
         });
         return response;
@@ -23,24 +13,19 @@ class ApiService {
 
     // Obtener todas las preguntas de verdadero/falso
     async getAllTrueOrFalse() {
-        const response = await $fetch(`${URL_API}/api/trueorfalse`, {
-            method: 'GET'
-        });
+        const response = await axiosInstance.get(`trueorfalse`);
         return response;
     }
 
     // Obtener una pregunta por ID
     async getTrueOrFalseById(id: number) {
-        const response = await $fetch(`${URL_API}/api/trueorfalse/${id}`, {
-            method: 'GET'
-        });
+        const response = await axiosInstance.get(`trueorfalse/${id}`);
         return response;
     }
 
     // Actualizar una pregunta
     async updateTrueOrFalse(id: number, formData: TrueOrFalseData) {
-        const response = await $fetch(`${URL_API}/api/trueorfalse/${id}`, {
-            method: 'PUT',
+        const response = await axiosInstance.put(`trueorfalse/${id}`, {
             body: formData
         });
         return response;
@@ -48,11 +33,9 @@ class ApiService {
 
     // Eliminar una pregunta
     async deleteTrueOrFalse(id: number) {
-        const response = await $fetch(`${URL_API}/api/trueorfalse/${id}`, {
-            method: 'DELETE'
-        });
+        const response = await axiosInstance.delete(`trueorfalse/${id}`);
         return response;
     }
 }
 
-export default new ApiService();
+export default new ApiTrueOrFalseService();

@@ -1,13 +1,6 @@
-import { URL_API } from './api';
+import axiosInstance from "./axios.config";
+import type { LayoutData } from '../interfaces/layout.interface';
 
-interface LayoutData {
-    lesson: number;
-    title: string;
-    instructions: string;
-    img_cover: File | null;
-    audio: File | null;
-    audio_script: string;
-}
 
 interface ApiResponse<T> {
     data: T;
@@ -15,10 +8,9 @@ interface ApiResponse<T> {
     status?: number;
 }
 
-class ApiService {
+class ApiLayoutService {
     async createLayout(formData: FormData): Promise<ApiResponse<LayoutData>> {
-        const response = await $fetch<ApiResponse<LayoutData>>(`${URL_API}/api/layouts`, {
-            method: 'POST',
+        const response = await axiosInstance.post(`layouts`, {
             body: formData
         });
         return response;
@@ -26,24 +18,19 @@ class ApiService {
 
     // Obtener todos los layouts
     async getAllLayouts() {
-        const response = await $fetch(`${URL_API}/api/layouts`, {
-            method: 'GET'
-        });
+        const response = await axiosInstance.get(`layouts`);
         return response;
     }
 
     // Obtener un layout por ID
     async getLayoutById(id: number) {
-        const response = await $fetch(`${URL_API}/api/layouts/${id}`, {
-            method: 'GET'
-        });
+        const response = await axiosInstance.get(`layouts/${id}`);
         return response;
     }
 
     // Actualizar un layout
     async updateLayout(id: number, formData: LayoutData) {
-        const response = await $fetch(`${URL_API}/api/layouts/${id}`, {
-            method: 'PUT',
+        const response = await axiosInstance.put(`layouts/${id}`, {
             body: formData
         });
         return response;
@@ -51,11 +38,9 @@ class ApiService {
 
     // Eliminar un layout
     async deleteLayout(id: number) {
-        const response = await $fetch(`${URL_API}/api/layouts/${id}`, {
-            method: 'DELETE'
-        });
+        const response = await axiosInstance.delete(`layouts/${id}`);
         return response;
     }
 }
 
-export default new ApiService();
+export default new ApiLayoutService();
