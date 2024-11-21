@@ -29,7 +29,7 @@
     </header>
     <main>
         <!-- Navigation tabs -->
-        <nav class="my-4">
+        <nav class="flex justify-start gap-4">
             <ul class="flex gap-4">
                 <li>
                     <NuxtLink :to="`/course/${courseId}`" class="hover:text-blue-500">Lessons</NuxtLink>
@@ -58,14 +58,16 @@ onMounted(() => {
     const currentForm = computed(() => courseStore.currentForm);
 });
 
-const courseId = route.params.courseId;
+const courseId = route.params.courseId as string;
 
 
 const course = computed(() =>
-    toRaw(courseStore.courses.find((course: CourseForm) => course.id === 1))
+    toRaw(courseStore.courses.find((course: CourseForm) => course.id === Number(courseId)))
 );
 if (course.value) {
     courseStore.updateCurrentForm(course.value);
 }
+
+
 
 </script>

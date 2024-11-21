@@ -50,10 +50,10 @@
 
 <script lang="ts" setup>
 import { defineProps, onMounted, ref } from 'vue';
-import BulletPoint from './molecule/BulletPoint.vue';
+import BulletPoint from '../molecule/BulletPoint.vue';
 import { createCourse, labels } from '~/data/cardModal';
 import type { ModalProps } from '~/interfaces/modal.interface';
-import SelectAtom from './molecule/SelectAtom.vue';
+import SelectAtom from '../molecule/SelectAtom.vue';
 import { useFormData } from '~/hooks/userFormData';
 import { useCourseStore } from '~/stores/courseStore';
 import { ApiService } from '~/services/create.course.api';

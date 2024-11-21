@@ -11,5 +11,5 @@
 <script setup lang="ts">
 import { ref } from 'vue'
 const q: Ref<string> = ref('')
-console.log(q.value)
+
 </script>
