@@ -1,30 +1,37 @@
-import type { FormDataModal } from '~/interfaces/modal.interface';
-import { URL_API } from './api';
+import axiosInstance from './axios.config';
 import type { CourseForm } from '~/interfaces/modal.interface';
 
 export class ApiService {
     async createCourse(formData: FormData) {
-        const response = await $fetch(`${URL_API}/courses/`, {
-            method: 'POST',
-            body: formData
-        });
-        console.log(response);
+        try {
+            const response = await axiosInstance.post('courses/', formData);
+            return response.data;
+        } catch (error) {
+            console.error('Error in createCourse:', error);
+            throw error;
+        }
     }
 
     // Obtener todos los cursos
     async getAllCourses() {
-        const response = await $fetch(`${URL_API}/api/courses`, {
-            method: 'GET'
-        });
-        return response;
+        try {
+            const response = await axiosInstance.get('courses/');
+            return response.data;
+        } catch (error) {
+            console.error('Error in getAllCourses:', error);
+            throw error;
+        }
     }
 
     // Obtener un curso por ID
     async getCourseById(id: number) {
-        const response = await $fetch(`${URL_API}/api/courses/${id}`, {
-            method: 'GET'
-        });
-        return response;
+        try {
+            const response = await axiosInstance.get(`/api/courses/${id}`);
+            return response.data;
+        } catch (error) {
+            console.error('Error in getCourseById:', error);
+            throw error;
+        }
     }
 
     // Actualizar un curso
@@ -37,19 +44,24 @@ export class ApiService {
         if (formData.level) formDataToSend.append('level', formData.level);
         if (formData.bullet_points) formDataToSend.append('bullet_points', JSON.stringify(formData.bullet_points));
 
-        const response = await $fetch(`${URL_API}/api/courses/${id}`, {
-            method: 'PUT',
-            body: formDataToSend
-        });
-        return response;
+        try {
+            const response = await axiosInstance.put(`/api/courses/${id}`, formDataToSend);
+            return response.data;
+        } catch (error) {
+            console.error('Error in updateCourse:', error);
+            throw error;
+        }
     }
 
     // Eliminar un curso
     async deleteCourse(id: number) {
-        const response = await $fetch(`${URL_API}/api/courses/${id}`, {
-            method: 'DELETE'
-        });
-        return response;
+        try {
+            const response = await axiosInstance.delete(`/api/courses/${id}`);
+            return response.data;
+        } catch (error) {
+            console.error('Error in deleteCourse:', error);
+            throw error;
+        }
     }
 }   
 

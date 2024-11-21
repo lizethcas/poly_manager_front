@@ -21,6 +21,7 @@ export default defineNuxtConfig({
   modules: [
     "@nuxt/ui",
     "@nuxtjs/tailwindcss",
+    'pinia-plugin-persistedstate/nuxt',
     (_options, nuxt) => {
       nuxt.hooks.hook("vite:extendConfig", (config) => {
         // @ts-expect-error
@@ -29,7 +30,9 @@ export default defineNuxtConfig({
     },
     '@pinia/nuxt',
   ],
-
+  pinia: {
+    storesDirs: ['./stores/**', './custom-folder/stores/**'],
+  },
   app: {
     head: {
       link: [
@@ -63,4 +66,5 @@ export default defineNuxtConfig({
       'storeToRefs'
     ],
   },
+
 });

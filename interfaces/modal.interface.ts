@@ -15,5 +15,6 @@ export interface CourseForm {
   bullet_points: string[];
   category: string;
   level: string;
-  id: string;
+  id: number;
+  image?: File | null;
 }

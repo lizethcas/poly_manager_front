@@ -50,12 +50,22 @@
 
 <script setup lang="ts">
 import { useCourseStore } from '~/stores/courseStore';
-
+import { CourseForm } from '~/interfaces/modal.interface';
 const route = useRoute();
 const courseStore = useCourseStore();
 
+onMounted(() => {
+    const currentForm = computed(() => courseStore.currentForm);
+});
+
 const courseId = route.params.courseId;
+
+
 const course = computed(() =>
-    courseStore.courses.find(c => c.courseId === courseId)
+    toRaw(courseStore.courses.find((course: CourseForm) => course.id === 1))
 );
+if (course.value) {
+    courseStore.updateCurrentForm(course.value);
+}
+
 </script>
