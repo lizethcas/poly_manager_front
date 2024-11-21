@@ -8,7 +8,7 @@ interface ApiResponse<T> {
     status?: number;
 }
 
-class ApiLayoutService {
+export class ApiLayoutService {
     async createLayout(formData: FormData): Promise<ApiResponse<LayoutData>> {
         const response = await axiosInstance.post(`layouts`, {
             body: formData
@@ -43,4 +43,4 @@ class ApiLayoutService {
     }
 }
 
-export default new ApiLayoutService();
+

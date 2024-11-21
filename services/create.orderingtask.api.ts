@@ -1,7 +1,7 @@
 import axiosInstance from "./axios.config";
 import type { OrderingTaskData } from "../interfaces/orderingtask.interface";
 
-class ApiOrderingTaskService {
+export class ApiOrderingTaskService {
     async createOrderingTask(formData: OrderingTaskData) {
         const response = await axiosInstance.post(`orderingtask`, {
             body: formData
@@ -36,4 +36,3 @@ class ApiOrderingTaskService {
     }
 }
 
-export default new ApiOrderingTaskService();
