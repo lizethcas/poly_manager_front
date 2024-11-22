@@ -4,7 +4,7 @@
         <button class="flex flex-col items-center justify-center cursor-pointer w-fit m-auto" @click="emit('handleAdd')"
             aria-label="Agregar nuevo curso">
             <img src="../assets/images/add.webp" alt="Ícono para agregar un nuevo curso" role="img" />
-            <p class="text-fresh-green pt-2">{{ homeData.buttom }}</p>
+            <p class="text-fresh-green pt-2">{{ text }}</p>
         </button>
     </div>
 
@@ -16,15 +16,11 @@
 import homeData from '~/data/home.data';
 const emit = defineEmits(['handleAdd']);
 
+const props = defineProps({
+    text: {
+        type: String,
+        required: true
+    }
+})
 
-/* const isOpen = ref(false)
-
-const openModal = () => {
-    isOpen.value = true;
-};
-
-const closeModal = () => {
-    isOpen.value = false;
-};
- */
 </script>

@@ -29,22 +29,26 @@
     </header>
     <main>
         <!-- Navigation tabs -->
-        <nav class="flex justify-start gap-4">
-            <ul class="flex gap-4">
-                <li>
-                    <NuxtLink :to="`/course/${courseId}`" class="hover:text-blue-500">Lessons</NuxtLink>
-                </li>
-                <li>
-                    <NuxtLink :to="`/course/${courseId}/students`" class="hover:text-blue-500">Students</NuxtLink>
-                </li>
-                <li>
-                    <NuxtLink :to="`/course/${courseId}/clases`" class="hover:text-blue-500">Statistics</NuxtLink>
-                </li>
-            </ul>
-        </nav>
+        <div>
+            <nav class="flex justify-start gap-4">
+                <ul class="flex gap-4">
+                    <li>
+                        <NuxtLink :to="`/course/${courseId}`" class="hover:text-blue-500">Lessons</NuxtLink>
+                    </li>
+                    <li>
+                        <NuxtLink :to="`/course/${courseId}/students`" class="hover:text-blue-500">Students</NuxtLink>
+                    </li>
+                    <li>
+                        <NuxtLink :to="`/course/${courseId}/clases`" class="hover:text-blue-500">Statistics</NuxtLink>
+                    </li>
+                </ul>
+            </nav>
 
-        <!-- Router view for nested routes -->
-        <NuxtPage />
+            <!-- Router view for nested routes -->
+            <NuxtPage />
+        </div>
+        <NuxtLink :to="`/course/class/1/create-class`" class="hover:text-blue-500">class</NuxtLink>
+
     </main>
 </template>
 

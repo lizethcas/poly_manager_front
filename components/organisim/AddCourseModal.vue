@@ -2,7 +2,7 @@
     <div class="p-7 max-w-5xl m-auto w-full bg-white rounded-lg">
         <div class="flex justify-between">
             <h2 class="font-bold text-m">{{ title }}</h2>
-            <img src="../assets/images/close.webp" alt="close create course" class="w-5 h-5 cursor-pointer"
+            <img src="~/assets/images/close.webp" alt="close create course" class="w-5 h-5 cursor-pointer"
                 @click="closeModal" />
         </div>
 
@@ -49,14 +49,21 @@
 </template>
 
 <script lang="ts" setup>
-import { defineProps, onMounted, ref } from 'vue';
+import { defineProps, ref, toRaw } from 'vue';
+import { useRoute } from 'vue-router';
+/* Components */
 import BulletPoint from '../molecule/BulletPoint.vue';
-import { createCourse, labels } from '~/data/cardModal';
-import type { ModalProps } from '~/interfaces/modal.interface';
 import SelectAtom from '../molecule/SelectAtom.vue';
+/* Data */
+import { createCourse, labels } from '~/data/cardModal';
+/* Interfaces */
+import type { ModalProps } from '~/interfaces/modal.interface';
+/* Hooks */
 import { useFormData } from '~/hooks/userFormData';
 import { useCourseStore } from '~/stores/courseStore';
+/* Services */
 import { ApiService } from '~/services/create.course.api';
+import { ApiClassService } from '~/services/create.class.api';
 
 // Hooks para manejar los datos del formulario
 const { bulletPoints, formData, handleEmit, handleEmitSave, updateFormField } = useFormData();
@@ -113,7 +120,8 @@ const resetForm = () => {
     // Reset bullet points
     bulletPoints.value = [];
 };
-
+const route = useRoute();
+console.log(route.name)
 // Modify handleSave function
 const handleSave = async () => {
     if (!formData.value.course_name?.trim()) {
@@ -124,7 +132,7 @@ const handleSave = async () => {
     try {
         isLoading.value = true;
         const formDataObj = new FormData();
-        
+
         // Agregar la imagen
         if (coverFile.value) {
             formDataObj.append('cover', coverFile.value);
@@ -139,15 +147,16 @@ const handleSave = async () => {
                 formDataObj.append(key, String(value)); // Aseguramos que sea string
             }
         });
-
-        const apiService = new ApiService();
-        const response = await apiService.createCourse(formDataObj);
-        
-        if (response) {
-            // Opcional: actualizar store si es necesario
-            resetForm();
-            closeModal();
+        if (route.name === 'course-courseId') {
+            const apiService = new ApiClassService();
+            await apiService.createClass(formDataObj);
+        } else {   
+            const apiService = new ApiService();
+            await apiService.createCourse(formDataObj);
         }
+
+        resetForm();
+        closeModal();
     } catch (error: any) {
         console.error('Error creating course:', error);
         alert(error.response?.data?.message || 'Error al crear el curso');
