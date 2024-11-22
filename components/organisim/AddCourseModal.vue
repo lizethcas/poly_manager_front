@@ -2,8 +2,8 @@
     <div class="p-7 max-w-5xl m-auto w-full bg-white rounded-lg">
         <div class="flex justify-between">
             <h2 class="font-bold text-m">{{ title }}</h2>
-            <img src="~/assets/images/close.webp" alt="close create course" class="w-5 h-5 cursor-pointer"
-                @click="closeModal" />
+            <img src="../../assets/images/close.webp" alt="close create course" class="w-5 h-5 cursor-pointer"
+                @click="closeModal"/>
         </div>
 
         <form @submit.prevent @click.stop>
@@ -49,24 +49,17 @@
 </template>
 
 <script lang="ts" setup>
-import { defineProps, ref, toRaw } from 'vue';
-import { useRoute } from 'vue-router';
-/* Components */
+import { defineProps} from 'vue';
 import BulletPoint from '../molecule/BulletPoint.vue';
-import SelectAtom from '../molecule/SelectAtom.vue';
-/* Data */
 import { createCourse, labels } from '~/data/cardModal';
-/* Interfaces */
 import type { ModalProps } from '~/interfaces/modal.interface';
-/* Hooks */
+import SelectAtom from '../molecule/SelectAtom.vue';
 import { useFormData } from '~/hooks/userFormData';
 import { useCourseStore } from '~/stores/courseStore';
-/* Services */
 import { ApiService } from '~/services/create.course.api';
-import { ApiClassService } from '~/services/create.class.api';
 
 // Hooks para manejar los datos del formulario
-const { bulletPoints, formData, handleEmit, handleEmitSave, updateFormField } = useFormData();
+const { bulletPoints, formData, handleEmit, updateFormField ,handleEmitSave} = useFormData();
 
 // Propiedades del modal
 const { title, showExtraElements } = defineProps<ModalProps>();
@@ -82,7 +75,6 @@ const emits = defineEmits(["closeModal"]);
 
 // Función para cerrar el modal
 const closeModal = () => {
-    resetForm();
     emits("closeModal");
 };
 
@@ -106,69 +98,45 @@ const updateSelectField = (field: string, value: string) => {
 // Add store initialization
 const courseStore = useCourseStore();
 
-// Add loading state
-const isLoading = ref(false);
+// Al inicio del archivo, después de las importaciones
+const defaultCategory = createCourse.categorys[0];
+const defaultLevel = createCourse.levels[0];
 
-// Agregar una nueva ref para el archivo de imagen
-const coverFile = ref<File | null>(null);
-
-// Add this new function
-const resetForm = () => {
-    Object.keys(formData.value).forEach(key => {
-        formData.value[key as keyof typeof formData.value] = '';
-    });
-    // Reset bullet points
-    bulletPoints.value = [];
-};
-const route = useRoute();
-console.log(route.name)
-// Modify handleSave function
-const handleSave = async () => {
-    if (!formData.value.course_name?.trim()) {
+// Update handleSave function
+const handleSave = () => {
+    if (!formData.value.course_name) {
         alert('El nombre del curso es obligatorio');
         return;
     }
 
-    try {
-        isLoading.value = true;
-        const formDataObj = new FormData();
-
-        // Agregar la imagen
-        if (coverFile.value) {
-            formDataObj.append('cover', coverFile.value);
-        }
-
-        // Agregar el resto de datos
-        const formDataToSave = handleEmitSave();
-        Object.entries(formDataToSave).forEach(([key, value]) => {
-            if (key === 'bullet_points') {
-                formDataObj.append(key, JSON.stringify(toRaw(bulletPoints.value)));
-            } else if (key !== 'cover') {
-                formDataObj.append(key, String(value)); // Aseguramos que sea string
-            }
-        });
-        if (route.name === 'course-courseId') {
-            const apiService = new ApiClassService();
-            await apiService.createClass(formDataObj);
-        } else {   
-            const apiService = new ApiService();
-            await apiService.createCourse(formDataObj);
-        }
-
-        resetForm();
-        closeModal();
-    } catch (error: any) {
-        console.error('Error creating course:', error);
-        alert(error.response?.data?.message || 'Error al crear el curso');
-    } finally {
-        isLoading.value = false;
+    const formDataObj = new FormData();
+    
+    // Append all form fields
+    formDataObj.append('course_name', formData.value.course_name);
+    formDataObj.append('bullet_points', JSON.stringify(bulletPoints.value));
+    formDataObj.append('category', formData.value.category || defaultCategory);
+    formDataObj.append('level', formData.value.level || defaultLevel);
+    formDataObj.append('description', formData.value.description || '');
+    
+    // Append the cover file if it exists
+    if ( formData.value.cover instanceof File) {
+        formDataObj.append('cover', formData.value.cover);
     }
+
+    const formDataToSave = handleEmitSave();
+    console.log(formDataToSave)
+    const apiService = new ApiService();
+    apiService.createCourse(formDataObj);
+    courseStore.saveCourse({
+        ...formDataToSave,
+        bullet_points: toRaw(bulletPoints.value)
+        
+    });
+    closeModal();
 };
 
 const updateCoverImage = (imageFile: File) => {
-    coverFile.value = imageFile; // Guardamos el archivo
-    const imageUrl = URL.createObjectURL(imageFile);
-    formData.value.cover = imageUrl; // Para preview
+    formData.value.cover = imageFile;
 };
 
 

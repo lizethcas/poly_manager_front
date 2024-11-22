@@ -11,7 +11,7 @@ export interface FormDataModal {
 export interface CourseForm {
   course_name: string;
   description: string;
-  cover: string | null;
+  cover: File | null;
   bullet_points: string[];
   category: string;
   level: string;

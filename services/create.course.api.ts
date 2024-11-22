@@ -4,7 +4,11 @@ import type { CourseForm } from '~/interfaces/modal.interface';
 export class ApiService {
     async createCourse(formData: FormData) {
         try {
-            const response = await axiosInstance.post('courses/', formData);
+            const response = await axiosInstance.post('courses/', formData, {
+                headers: {
+                    'Content-Type': 'multipart/form-data'
+                }
+            });
             return response.data;
         } catch (error) {
             console.error('Error in createCourse:', error);

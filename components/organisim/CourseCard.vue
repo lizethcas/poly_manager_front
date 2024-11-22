@@ -1,5 +1,5 @@
 <template>
-  <div v-if="courseStore.courses.length > 0" v-for="course in courseStore.courses.slice().reverse()"
+  <div v-if="courses.length > 0" v-for="course in courses.slice().reverse()"
     @click="navigateTo(`/course/${course.id}`)"
     class="flex justify-between border-fresh-green border-2 rounded-xl cursor-pointer my-4 ">
     <div class="flex  w-1/2 my-4">
@@ -26,12 +26,15 @@
 import { useCourseStore } from '~/stores/courseStore';
 import { ApiService } from '~/services/create.course.api';
 import type { CourseForm } from '~/interfaces/modal.interface';
+import { computed } from 'vue';
 const courseStore = useCourseStore();
+const courses = computed(() => courseStore.courses);
 
 const fetchCourses = async () => {
   try {
     const apiService = new ApiService();
     const courses = await apiService.getAllCourses();
+    console.log(courses)
     courseStore.setCourses(courses as CourseForm[]);
   } catch (error) {
     console.error('Error fetching courses:', error);

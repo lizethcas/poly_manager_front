@@ -2251,6 +2251,8 @@ bundle-name@^4.1.0:
   version "4.1.0"
   resolved "https://registry.npmjs.org/bundle-name/-/bundle-name-4.1.0.tgz"
   integrity sha512-tjwM5exMg6BGRI+kNmTntNsvdZS1X8BFYS6tnJ2hdH0kVxM6/eVZ2xy+FqStSWvYmtfFMDLIxurorHwDKfDz5Q==
+  dependencies:
+    run-applescript "^7.0.0"
 
 c12@2.0.1, c12@^2.0.1:
   version "2.0.1"
@@ -4104,6 +4106,8 @@ make-dir@^3.1.0:
   version "3.1.0"
   resolved "https://registry.npmjs.org/make-dir/-/make-dir-3.1.0.tgz"
   integrity sha512-g3FeP20LNwhALb/6Cz6Dd4F2ngze0jz7tbzrD2wAV+o9FeNHe4rL+yK2md0J/fiSf1sa1ADhXqi5+oVwOM/eGw==
+  dependencies:
+    semver "^6.0.0"
 
 mdn-data@2.0.28:
   version "2.0.28"
@@ -5355,7 +5359,7 @@ rollup@^4.20.0, rollup@^4.24.3:
 
 run-applescript@^7.0.0:
   version "7.0.0"
-  resolved "https://registry.npmjs.org/run-applescript/-/run-applescript-7.0.0.tgz"
+  resolved "https://registry.yarnpkg.com/run-applescript/-/run-applescript-7.0.0.tgz#e5a553c2bffd620e169d276c1cd8f1b64778fbeb"
   integrity sha512-9by4Ij99JUr/MCFBUkDKLWK3G9HVXmabKz9U5MlIAIuvuzkiOicRYs8XJLxX+xahD+mLiiCYDqF9dKAgtzKP1A==
 
 run-parallel@^1.1.9:
@@ -5935,7 +5939,7 @@ unenv@^1.10.0:
     node-fetch-native "^1.6.4"
     pathe "^1.1.2"
 
-unhead@1.11.11, unhead@^1.11.11:
+unhead@1.11.11, unhead@^1.11.11, unhead@^1.8.0:
   version "1.11.11"
   resolved "https://registry.npmjs.org/unhead/-/unhead-1.11.11.tgz"
   integrity sha512-98tM2R8OWJhvS6uqTewkfIrsPqFU/VwnKpU2tVZ+jPXSWgWSLmM3K2Y2v5AEM4bZjmC/XH8pLVGzbqB7xzFI/Q==

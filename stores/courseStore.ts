@@ -13,9 +13,7 @@ export const useCourseStore = defineStore("course", {
       this.currentForm = {
         ...courseData,
       };
-      this.courses.push({
-        ...courseData,
-      });
+      
     },
 
     setCourses(courses: CourseForm[]) {
