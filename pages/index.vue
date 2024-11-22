@@ -24,7 +24,7 @@
 import { useModal } from '../composables/useModal';
 import { createCourse } from '~/data/cardModal';
 import homeData from '~/data/home.data';
-import AddCourseModal from '~/components/AddCourseModal.vue';
+import AddCourseModal from '~/components/organisim/AddCourseModal.vue';
 import OrganismCourseCard from '~/components/organisim/CourseCard.vue';
 
 const { isOpen, openModal, closeModal } = useModal();

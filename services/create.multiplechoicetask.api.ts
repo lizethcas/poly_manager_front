@@ -1,17 +1,12 @@
-import { URL_API } from './api';
+import axiosInstance from "./axios.config";
+import type { MultipleChoiceData } from "../interfaces/multiplechoice.interface";
 
-interface MultipleChoiceData {
-    layout: number;
-    instructions: string;
-    question: string;
-    answers: Array<{text: string, is_correct: boolean}>;
-    order: number;
-}
 
-class ApiService {
+
+
+export class ApiMultipleChoiceService {
     async createMultipleChoice(formData: MultipleChoiceData) {
-        const response = await $fetch(`${URL_API}/api/multiplechoice`, {
-            method: 'POST',
+        const response = await axiosInstance.post(`multiplechoice`, {
             body: formData
         });
         return response;
@@ -19,24 +14,19 @@ class ApiService {
 
     // Obtener todas las preguntas de opción múltiple
     async getAllMultipleChoice() {
-        const response = await $fetch(`${URL_API}/api/multiplechoice`, {
-            method: 'GET'
-        });
+        const response = await axiosInstance.get(`multiplechoice`);
         return response;
     }
 
     // Obtener una pregunta por ID
     async getMultipleChoiceById(id: number) {
-        const response = await $fetch(`${URL_API}/api/multiplechoice/${id}`, {
-            method: 'GET'
-        });
+        const response = await axiosInstance.get(`multiplechoice/${id}`);
         return response;
     }
 
     // Actualizar una pregunta
     async updateMultipleChoice(id: number, formData: MultipleChoiceData) {
-        const response = await $fetch(`${URL_API}/api/multiplechoice/${id}`, {
-            method: 'PUT',
+        const response = await axiosInstance.put(`multiplechoice/${id}`, {
             body: formData
         });
         return response;
@@ -44,11 +34,8 @@ class ApiService {
 
     // Eliminar una pregunta
     async deleteMultipleChoice(id: number) {
-        const response = await $fetch(`${URL_API}/api/multiplechoice/${id}`, {
-            method: 'DELETE'
-        });
+        const response = await axiosInstance.delete(`multiplechoice/${id}`);
         return response;
     }
 }
 
-export default new ApiService();

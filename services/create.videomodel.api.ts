@@ -1,16 +1,11 @@
-import { URL_API } from './api';
+import axiosInstance from "./axios.config";
+import type { VideoModelData } from "../interfaces/videomodel.interface";
 
-interface VideoModelData {
-    title: string;
-    instructions: string;
-    video_file: File | null;
-    script: string;
-}
 
-class ApiService {
+
+export class ApiVideoModelService {
     async createVideo(formData: VideoModelData) {
-        const response = await $fetch(`${URL_API}/api/videos`, {
-            method: 'POST',
+        const response = await axiosInstance.post(`videos`, {
             body: formData
         });
         return response;
@@ -18,24 +13,19 @@ class ApiService {
 
     // Obtener todos los videos
     async getAllVideos() {
-        const response = await $fetch(`${URL_API}/api/videos`, {
-            method: 'GET'
-        });
+        const response = await axiosInstance.get(`videos`);
         return response;
     }
 
     // Obtener un video por ID
     async getVideoById(id: number) {
-        const response = await $fetch(`${URL_API}/api/videos/${id}`, {
-            method: 'GET'
-        });
+        const response = await axiosInstance.get(`videos/${id}`);
         return response;
     }
 
     // Actualizar un video
     async updateVideo(id: number, formData: VideoModelData) {
-        const response = await $fetch(`${URL_API}/api/videos/${id}`, {
-            method: 'PUT',
+        const response = await axiosInstance.put(`videos/${id}`, {
             body: formData
         });
         return response;
@@ -43,11 +33,8 @@ class ApiService {
 
     // Eliminar un video
     async deleteVideo(id: number) {
-        const response = await $fetch(`${URL_API}/api/videos/${id}`, {
-            method: 'DELETE'
-        });
+        const response = await axiosInstance.delete(`videos/${id}`);
         return response;
     }
 }
 
-export default new ApiService();

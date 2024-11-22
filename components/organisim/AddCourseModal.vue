@@ -2,8 +2,8 @@
     <div class="p-7 max-w-5xl m-auto w-full bg-white rounded-lg">
         <div class="flex justify-between">
             <h2 class="font-bold text-m">{{ title }}</h2>
-            <ImgAtom src="../assets/images/close.webp" alt="close create course" class="w-5 h-5 cursor-pointer"
-                @click="closeModal"/>
+            <img src="../assets/images/close.webp" alt="close create course" class="w-5 h-5 cursor-pointer"
+                @click="closeModal" />
         </div>
 
         <form @submit.prevent @click.stop>
@@ -50,12 +50,13 @@
 
 <script lang="ts" setup>
 import { defineProps, onMounted, ref } from 'vue';
-import BulletPoint from './molecule/BulletPoint.vue';
+import BulletPoint from '../molecule/BulletPoint.vue';
 import { createCourse, labels } from '~/data/cardModal';
 import type { ModalProps } from '~/interfaces/modal.interface';
-import SelectAtom from './molecule/SelectAtom.vue';
+import SelectAtom from '../molecule/SelectAtom.vue';
 import { useFormData } from '~/hooks/userFormData';
 import { useCourseStore } from '~/stores/courseStore';
+import { ApiService } from '~/services/create.course.api';
 
 // Hooks para manejar los datos del formulario
 const { bulletPoints, formData, handleEmit, handleEmitSave, updateFormField } = useFormData();
@@ -74,6 +75,7 @@ const emits = defineEmits(["closeModal"]);
 
 // Función para cerrar el modal
 const closeModal = () => {
+    resetForm();
     emits("closeModal");
 };
 
@@ -97,26 +99,67 @@ const updateSelectField = (field: string, value: string) => {
 // Add store initialization
 const courseStore = useCourseStore();
 
-// Update handleSave function
-const handleSave = () => {
+// Add loading state
+const isLoading = ref(false);
+
+// Agregar una nueva ref para el archivo de imagen
+const coverFile = ref<File | null>(null);
+
+// Add this new function
+const resetForm = () => {
+    Object.keys(formData.value).forEach(key => {
+        formData.value[key as keyof typeof formData.value] = '';
+    });
+    // Reset bullet points
+    bulletPoints.value = [];
+};
+
+// Modify handleSave function
+const handleSave = async () => {
     if (!formData.value.course_name?.trim()) {
         alert('El nombre del curso es obligatorio');
         return;
     }
 
-    const formDataToSave = handleEmitSave();
-    courseStore.saveCourse({
-        ...formDataToSave,
-        bullet_points: toRaw(bulletPoints.value)
-    });
+    try {
+        isLoading.value = true;
+        const formDataObj = new FormData();
+        
+        // Agregar la imagen
+        if (coverFile.value) {
+            formDataObj.append('cover', coverFile.value);
+        }
 
+        // Agregar el resto de datos
+        const formDataToSave = handleEmitSave();
+        Object.entries(formDataToSave).forEach(([key, value]) => {
+            if (key === 'bullet_points') {
+                formDataObj.append(key, JSON.stringify(toRaw(bulletPoints.value)));
+            } else if (key !== 'cover') {
+                formDataObj.append(key, String(value)); // Aseguramos que sea string
+            }
+        });
 
-    closeModal();
+        const apiService = new ApiService();
+        const response = await apiService.createCourse(formDataObj);
+        
+        if (response) {
+            // Opcional: actualizar store si es necesario
+            resetForm();
+            closeModal();
+        }
+    } catch (error: any) {
+        console.error('Error creating course:', error);
+        alert(error.response?.data?.message || 'Error al crear el curso');
+    } finally {
+        isLoading.value = false;
+    }
 };
 
 const updateCoverImage = (imageFile: File) => {
+    coverFile.value = imageFile; // Guardamos el archivo
     const imageUrl = URL.createObjectURL(imageFile);
-    formData.value.cover = imageUrl; // Asignamos solo la URL de la imagen
+    formData.value.cover = imageUrl; // Para preview
 };
 
 

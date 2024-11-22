@@ -1,6 +1,7 @@
 <template>
-  <div v-if="courseStore.courses.length > 0" v-for="course in courseStore.courses" @click="navigateTo(`/course/${course.courseId}`)"
-    class="flex justify-between border-fresh-green border-2 rounded-xl cursor-pointer my-4">
+  <div v-if="courseStore.courses.length > 0" v-for="course in courseStore.courses.slice().reverse()"
+    @click="navigateTo(`/course/${course.id}`)"
+    class="flex justify-between border-fresh-green border-2 rounded-xl cursor-pointer my-4 ">
     <div class="flex  w-1/2 my-4">
       <div class="bg-green-high text-green-low  rounded-full w-14 h-14 flex items-center justify-center mx-4">
         <p class="text-xl font-bold">{{ course.level.split(".")[0] }}</p>
@@ -23,6 +24,23 @@
 </template>
 <script lang="ts" setup>
 import { useCourseStore } from '~/stores/courseStore';
+import { ApiService } from '~/services/create.course.api';
+import type { CourseForm } from '~/interfaces/modal.interface';
 const courseStore = useCourseStore();
+
+const fetchCourses = async () => {
+  try {
+    const apiService = new ApiService();
+    const courses = await apiService.getAllCourses();
+    courseStore.setCourses(courses as CourseForm[]);
+  } catch (error) {
+    console.error('Error fetching courses:', error);
+  }
+};
+
+onMounted(() => {
+  fetchCourses();
+
+});
 
 </script>

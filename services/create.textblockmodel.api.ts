@@ -1,16 +1,9 @@
-import { URL_API } from './api';
+import axiosInstance from "./axios.config";
+import type { TextBlockData } from "../interfaces/textblockmodel.interface";
 
-interface TextBlockData {
-    lesson: number;
-    title: string;
-    instructions: string;
-    content: string;
-}
-
-class ApiService {
+export class ApiTextBlockService {
     async createTextBlock(formData: TextBlockData) {
-        const response = await $fetch(`${URL_API}/api/textblocks`, {
-            method: 'POST',
+        const response = await axiosInstance.post(`textblocks`, {
             body: formData
         });
         return response;
@@ -18,24 +11,19 @@ class ApiService {
 
     // Obtener todos los bloques de texto
     async getAllTextBlocks() {
-        const response = await $fetch(`${URL_API}/api/textblocks`, {
-            method: 'GET'
-        });
+        const response = await axiosInstance.get(`textblocks`);
         return response;
     }
 
     // Obtener un bloque de texto por ID
     async getTextBlockById(id: number) {
-        const response = await $fetch(`${URL_API}/api/textblocks/${id}`, {
-            method: 'GET'
-        });
+        const response = await axiosInstance.get(`textblocks/${id}`);
         return response;
     }
 
     // Actualizar un bloque de texto
     async updateTextBlock(id: number, formData: TextBlockData) {
-        const response = await $fetch(`${URL_API}/api/textblocks/${id}`, {
-            method: 'PUT',
+        const response = await axiosInstance.put(`textblocks/${id}`, {
             body: formData
         });
         return response;
@@ -43,11 +31,7 @@ class ApiService {
 
     // Eliminar un bloque de texto
     async deleteTextBlock(id: number) {
-        const response = await $fetch(`${URL_API}/api/textblocks/${id}`, {
-            method: 'DELETE'
-        });
+        const response = await axiosInstance.delete(`textblocks/${id}`);
         return response;
     }
 }
-
-export default new ApiService();
