@@ -14,8 +14,8 @@
             </ul>
         </nav>
 
-        <MoleculeBaseInput title="title" type="text" />
-        <MoleculeBaseInput title="Instructions" type="text" />
+        <MoleculeInputFile title="title" type="text" />
+        <MoleculeInputFile title="Instructions" type="text" />
         <div class="flex gap-4 flex-col w-fit">
             <ButtonAtom type="crop" />
             <ButtonAtom type="swap" />

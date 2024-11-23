@@ -1,5 +1,5 @@
 <template>
-  <main class="px-14 text-title-color mb-24">
+  <main class="py-10 px-14 text-title-color mb-24">
     <SearchInput />
     <!-- Course overview content -->
     <AddCourseButton @handleAdd="handleAdd" :text="createClass.buttonText" />

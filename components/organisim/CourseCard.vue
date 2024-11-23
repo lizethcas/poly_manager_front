@@ -1,7 +1,7 @@
 <template>
   <div v-if="courses.length > 0" v-for="course in courses.slice().reverse()"
     @click="navigateTo(`/course/${course.id}`)"
-    class="flex justify-between border-fresh-green border-2 rounded-xl cursor-pointer my-4 ">
+    class="flex justify-between border-fresh-green border-2 rounded-xl cursor-pointer mt-4">
     <div class="flex  w-1/2 my-4">
       <div class="bg-green-high text-green-low  rounded-full w-14 h-14 flex items-center justify-center mx-4">
         <p class="text-xl font-bold" v-if="course.level">{{ course.level.split(".")[0] }}</p>
@@ -18,7 +18,7 @@
       </div>
     </div>
     <div>
-      <img v-if="course.cover" :src="course.cover" alt="edit" class="rounded-[14px] w-36 h-auto" />
+      <img v-if="course.cover" :src="typeof course.cover === 'string' ? course.cover : URL.createObjectURL(course.cover)" alt="" class="rounded-[14px] w-36 h-auto" />
     </div>
   </div>
 </template>
@@ -31,6 +31,7 @@ const courseStore = useCourseStore();
 const courses = ref(courseStore.courses);
 console.log(toRaw(courses.value))
 const fetchCourses = async () => {
+  
   try {
     const apiService = new ApiService();
     const fetchedCourses = await apiService.getAllCourses();

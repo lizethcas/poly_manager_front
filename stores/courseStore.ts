@@ -7,14 +7,18 @@ export const useCourseStore = defineStore("course", {
     currentForm: {} as CourseForm,
     loading: false,
   }),
-  persist: true,
+  persist: {
+    paths: ['currentForm'], // Solo persiste el estado de `currentForm`
+  },
   actions: {
     saveCourse(courseData: CourseForm) {
+      console.log('Saving course:', courseData);
       this.courses.push(courseData);
       this.currentForm = {} as CourseForm;
     },
 
     setCourses(courses: CourseForm[]) {
+      console.log('Setting courses:', courses);
       this.courses = courses;
     },
 
@@ -24,5 +28,8 @@ export const useCourseStore = defineStore("course", {
         ...updates
       };
     },
+
+  
   },
+
 });

@@ -11,7 +11,8 @@
                 <InputFile v-model="formData.cover" @file-selected="updateCoverImage" />
                 <!-- Iterar sobre los labels para los campos del formulario -->
                 <div v-for="(item, index) in labels" :key="'label-' + index">
-                    <MoleculeInputFile :title="item.label_name" :type="item.type" :modelValue="formData[transformedKey(item.label_name)]"
+                    <MoleculeInputFile :title="item.label_name" :type="item.type"
+                        :modelValue="formData[transformedKey(item.label_name)]"
                         @update:modelValue="(value) => updateFormField(transformedKey(item.label_name), value)" />
 
                     <!-- Mostrar elementos adicionales si es necesario -->
@@ -56,7 +57,12 @@ import { useFormData } from '~/hooks/userFormData';
 import { useCourseStore } from '~/stores/courseStore';
 import { ApiService } from '~/services/create.course.api';
 import transformKey from '~/utils/stringTransformations'
+import { useRoute } from 'vue-router';
+import { ApiClassService } from '~/services/create.class.api';
+import type { ClassData } from '~/interfaces/class.interface';
+import type { CourseForm } from '~/interfaces/modal.interface';
 
+const route = useRoute();
 const { bulletPoints, formData, handleEmit, updateFormField } = useFormData();
 
 // Propiedades del modal
@@ -112,16 +118,20 @@ const handleSave = async () => {
     }
 
     const formDataToSave = {
-        id: Date.now(),
         ...formData.value,
         bullet_points: bulletPoints.value,
         cover: formData.value.cover instanceof File ? URL.createObjectURL(formData.value.cover) : null
     };
-
-    const apiService = new ApiService();
-    await apiService.createCourse(formDataObj);
+    console.log(route.name)
+    if (route.name === 'course-courseId') {
+        const apiService = new ApiClassService();
+        await apiService.createClass(formDataObj as ClassData);
+    } else {
+        const apiService = new ApiService();
+        await apiService.createCourse(formDataObj);
+    }
     courseStore.saveCourse(formDataToSave as CourseForm);
-    
+
     closeModal();
 };
 

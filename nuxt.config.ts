@@ -18,8 +18,12 @@ export default defineNuxtConfig({
   modules: [
     "@nuxt/ui",
     "@nuxtjs/tailwindcss",
-    "@pinia/nuxt", // Asegúrate de que @pinia/nuxt esté correctamente configurado.
+    "@pinia/nuxt",
+    '@pinia-plugin-persistedstate/nuxt',
   ],
+  piniaPersistedstate: {
+    storage: 'localStorage', // Puedes usar 'localStorage' o 'sessionStorage'
+  },
   pinia: {
     storesDirs: ['./stores/**', './custom-folder/stores/**'],
   },
