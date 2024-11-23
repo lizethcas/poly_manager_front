@@ -3,7 +3,7 @@
         <div class="flex justify-between">
             <h2 class="font-bold text-m">{{ title }}</h2>
             <img src="../../assets/images/close.webp" alt="close create course" class="w-5 h-5 cursor-pointer"
-                @click="closeModal"/>
+                @click="closeModal" />
         </div>
 
         <form @submit.prevent @click.stop>
@@ -49,7 +49,7 @@
 </template>
 
 <script lang="ts" setup>
-import { defineProps} from 'vue';
+import { defineProps } from 'vue';
 import BulletPoint from '../molecule/BulletPoint.vue';
 import { createCourse, labels } from '~/data/cardModal';
 import type { ModalProps } from '~/interfaces/modal.interface';
@@ -59,7 +59,7 @@ import { useCourseStore } from '~/stores/courseStore';
 import { ApiService } from '~/services/create.course.api';
 
 // Hooks para manejar los datos del formulario
-const { bulletPoints, formData, handleEmit, updateFormField ,handleEmitSave} = useFormData();
+const { bulletPoints, formData, handleEmit, updateFormField, handleEmitSave } = useFormData();
 
 // Propiedades del modal
 const { title, showExtraElements } = defineProps<ModalProps>();
@@ -103,40 +103,54 @@ const defaultCategory = createCourse.categorys[0];
 const defaultLevel = createCourse.levels[0];
 
 // Update handleSave function
-const handleSave = () => {
+const handleSave = async () => {
     if (!formData.value.course_name) {
         alert('El nombre del curso es obligatorio');
         return;
     }
 
     const formDataObj = new FormData();
-    
+
     // Append all form fields
     formDataObj.append('course_name', formData.value.course_name);
     formDataObj.append('bullet_points', JSON.stringify(bulletPoints.value));
     formDataObj.append('category', formData.value.category || defaultCategory);
     formDataObj.append('level', formData.value.level || defaultLevel);
     formDataObj.append('description', formData.value.description || '');
-    
+
     // Append the cover file if it exists
-    if ( formData.value.cover instanceof File) {
+    if (formData.value.cover instanceof File) {
         formDataObj.append('cover', formData.value.cover);
     }
 
-    const formDataToSave = handleEmitSave();
-    console.log(formDataToSave)
+    console.log("Objeto formData.value:", formData.value);
+    console.log("Objeto final formDataObj:", Object.fromEntries(formDataObj.entries()));
+    console.log("Contenido de formDataObj:");
+  
+
+    const formDataToSave = {
+        id: Date.now(),
+        course_name: formData.value.course_name,
+        bullet_points: bulletPoints.value,
+        category: formData.value.category || defaultCategory,
+        level: formData.value.level || defaultLevel,
+        description: formData.value.description || '',
+        cover: formData.value.cover instanceof File ? URL.createObjectURL(formData.value.cover) : null
+    };
+
     const apiService = new ApiService();
-    apiService.createCourse(formDataObj);
-    courseStore.saveCourse({
-        ...formDataToSave,
-        bullet_points: toRaw(bulletPoints.value)
-        
-    });
+    await apiService.createCourse(formDataObj);
+    
+    courseStore.saveCourse(formDataToSave as CourseForm);
+    
     closeModal();
 };
 
 const updateCoverImage = (imageFile: File) => {
-    formData.value.cover = imageFile;
+    // Crear nuevo archivo con nombre sin espacios
+    const newFileName = imageFile.name.replace(/\s+/g, '_');
+    const newFile = new File([imageFile], newFileName, { type: imageFile.type });
+    formData.value.cover = newFile;
 };
 
 

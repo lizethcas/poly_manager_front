@@ -18,7 +18,7 @@
       </div>
     </div>
     <div>
-      <img :src="course.cover ?? undefined" alt="edit" class="rounded-[14px] w-36 h-auto" />
+      <img v-if="course.cover" :src="course.cover" alt="edit" class="rounded-[14px] w-36 h-auto" />
     </div>
   </div>
 </template>
@@ -29,7 +29,7 @@ import type { CourseForm } from '~/interfaces/modal.interface';
 import { computed } from 'vue';
 const courseStore = useCourseStore();
 const courses = computed(() => courseStore.courses);
-
+console.log()
 const fetchCourses = async () => {
   try {
     const apiService = new ApiService();

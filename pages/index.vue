@@ -15,6 +15,7 @@
             </div>
         </div>
         <OrganismCourseCard />
+    
     </main>
 
 
@@ -26,7 +27,9 @@ import { createCourse } from '~/data/cardModal';
 import homeData from '~/data/home.data';
 import AddCourseModal from '~/components/organisim/AddCourseModal.vue';
 import OrganismCourseCard from '~/components/organisim/CourseCard.vue';
-
+import { useCourseStore } from '~/stores/courseStore.js';
+const courseStore = useCourseStore();
+console.log(toRaw(courseStore.currentForm))
 const { isOpen, openModal, closeModal } = useModal();
 
 const handleAdd = () => {

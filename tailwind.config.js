@@ -20,7 +20,7 @@ export default {
       },
       fontSize: {
         m: "1.29rem",
-        xl: "2rem",
+        xl: "1.5rem",
         "2xl": "2.5rem",
       },
       fontWeight: {

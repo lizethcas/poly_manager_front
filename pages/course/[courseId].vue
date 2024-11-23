@@ -1,11 +1,11 @@
 <template>
 
     <header v-if="course" class="pt-20 px-14 text-title-color mb-15 flex">
-        <img src="../../assets/images/back-button-round.webp" alt="regresar una pagina" class="w-10 h-10 cursor-pointer"
+        <img  src="../../assets/images/back-button-round.webp" alt="regresar una pagina" class="w-10 h-10 cursor-pointer"
             @click="navigateTo('/')" />
 
 
-        <img :src="course.cover" :alt="course.course_name" class="w-52 h-44 object-contain" />
+        <img v-if="course.cover" :src="course.cover" :alt="course.course_name" class="w-52 h-44 object-contain" />
 
         <div>
             <h2 class="text-black font-bold text-2xl">{{ course.course_name }}</h2>
