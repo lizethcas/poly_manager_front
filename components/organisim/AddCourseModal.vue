@@ -11,9 +11,7 @@
                 <InputFile v-model="formData.cover" @file-selected="updateCoverImage" />
                 <!-- Iterar sobre los labels para los campos del formulario -->
                 <div v-for="(item, index) in labels" :key="'label-' + index">
-                    <MoleculeBaseInput :title="item.label_name" :type="item.type" :modelValue="Array.isArray(formData[transformedKey(item.label_name)])
-                        ? formData[transformedKey(item.label_name)].join(', ')
-                        : formData[transformedKey(item.label_name)]"
+                    <MoleculeInputFile :title="item.label_name" :type="item.type" :modelValue="formData[transformedKey(item.label_name)]"
                         @update:modelValue="(value) => updateFormField(transformedKey(item.label_name), value)" />
 
                     <!-- Mostrar elementos adicionales si es necesario -->
@@ -41,7 +39,7 @@
             <!-- Botones de acción -->
             <div class="flex justify-center gap-4 mt-6">
                 <div class="min-w-[120px]"></div>
-                <MoleculeButtonGroup @handleSave="handleSave" @handleCancel="closeModal" />
+                <MoleculeActionButtons @handleSave="handleSave" @handleCancel="closeModal" />
             </div>
         </form>
     </div>
@@ -57,9 +55,9 @@ import SelectAtom from '../molecule/SelectAtom.vue';
 import { useFormData } from '~/hooks/userFormData';
 import { useCourseStore } from '~/stores/courseStore';
 import { ApiService } from '~/services/create.course.api';
+import transformKey from '~/utils/stringTransformations'
 
-// Hooks para manejar los datos del formulario
-const { bulletPoints, formData, handleEmit, updateFormField, handleEmitSave } = useFormData();
+const { bulletPoints, formData, handleEmit, updateFormField } = useFormData();
 
 // Propiedades del modal
 const { title, showExtraElements } = defineProps<ModalProps>();
@@ -79,15 +77,7 @@ const closeModal = () => {
 };
 
 // Función para transformar las claves de los labels
-const transformedKey = (key: string): string => {
-    // Remove any colons, extra spaces, and standardize the key name
-    return key
-        .toLowerCase()
-        .trim()
-        .replace(/[:]/g, '')
-        .replace(/\s+/g, '_')
-        .replace(/^_+|_+$/g, '');
-};
+const transformedKey = (key: string) => transformKey(key)
 
 // Modify updateSelectField function
 const updateSelectField = (field: string, value: string) => {
@@ -104,43 +94,32 @@ const defaultLevel = createCourse.levels[0];
 
 // Update handleSave function
 const handleSave = async () => {
-    if (!formData.value.course_name) {
+    // Acceder directamente al valor del computed
+    if (!formData.value?.course_name?.trim()) {
         alert('El nombre del curso es obligatorio');
         return;
     }
 
     const formDataObj = new FormData();
-
-    // Append all form fields
     formDataObj.append('course_name', formData.value.course_name);
     formDataObj.append('bullet_points', JSON.stringify(bulletPoints.value));
     formDataObj.append('category', formData.value.category || defaultCategory);
     formDataObj.append('level', formData.value.level || defaultLevel);
     formDataObj.append('description', formData.value.description || '');
 
-    // Append the cover file if it exists
     if (formData.value.cover instanceof File) {
         formDataObj.append('cover', formData.value.cover);
     }
 
-    console.log("Objeto formData.value:", formData.value);
-    console.log("Objeto final formDataObj:", Object.fromEntries(formDataObj.entries()));
-    console.log("Contenido de formDataObj:");
-  
-
     const formDataToSave = {
         id: Date.now(),
-        course_name: formData.value.course_name,
+        ...formData.value,
         bullet_points: bulletPoints.value,
-        category: formData.value.category || defaultCategory,
-        level: formData.value.level || defaultLevel,
-        description: formData.value.description || '',
         cover: formData.value.cover instanceof File ? URL.createObjectURL(formData.value.cover) : null
     };
 
     const apiService = new ApiService();
     await apiService.createCourse(formDataObj);
-    
     courseStore.saveCourse(formDataToSave as CourseForm);
     
     closeModal();

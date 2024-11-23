@@ -8,3 +8,4 @@ export interface ButtonAtomProps {
   color?: string;
   type: string;
 }
+
