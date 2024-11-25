@@ -1,5 +1,5 @@
 <template>
-    <header class="pt-20 px-14 text-title-color mb-15">
+    <header class="pt-20 px-14 text-title-color mb-4">
         <h1 class="text-xl font-bold mb-4">{{ homeData.title }}</h1>
         <UDivider class=" border-gray-500 py-6" type="solid"></UDivider>
 

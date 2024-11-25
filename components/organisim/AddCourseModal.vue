@@ -8,7 +8,7 @@
 
         <form @submit.prevent @click.stop>
             <div>
-                <InputFile v-model="formData.cover" @file-selected="updateCoverImage" />
+                <InputFile v-model="formData.cover" @file-selected="handleCoverImage" />
                 <!-- Iterar sobre los labels para los campos del formulario -->
                 <div v-for="(item, index) in labels" :key="'label-' + index">
                     <MoleculeInputFile :title="item.label_name" :type="item.type"
@@ -59,11 +59,11 @@ import { ApiService } from '~/services/create.course.api';
 import transformKey from '~/utils/stringTransformations'
 import { useRoute } from 'vue-router';
 import { ApiClassService } from '~/services/create.class.api';
-import type { ClassData } from '~/interfaces/class.interface';
+import type { ClassData } from '~/interfaces/models/class.interface..model';
 import type { CourseForm } from '~/interfaces/modal.interface';
-
 const route = useRoute();
 const { bulletPoints, formData, handleEmit, updateFormField } = useFormData();
+
 
 // Propiedades del modal
 const { title, showExtraElements } = defineProps<ModalProps>();
@@ -98,44 +98,64 @@ const courseStore = useCourseStore();
 const defaultCategory = createCourse.categorys[0];
 const defaultLevel = createCourse.levels[0];
 
+// Agregar al inicio del script
+const fieldMappings = {
+  'course': {
+    course_name: 'course_name',
+    description: 'description',
+    category: 'category',
+    level: 'level',
+    cover: 'cover',
+    bullet_points: 'bullet_points'
+  },
+  'class': {
+    course_name: 'class_name', // mapea course_name del form a class_name en la API
+    description: 'description',
+    cover: 'cover',
+    bullet_points: 'bullet_points',
+    course: 'course' // campo adicional para clases
+  }
+};
+
 // Update handleSave function
 const handleSave = async () => {
-    // Acceder directamente al valor del computed
     if (!formData.value?.course_name?.trim()) {
-        alert('El nombre del curso es obligatorio');
+        alert('El nombre es obligatorio');
         return;
     }
 
-    const formDataObj = new FormData();
-    formDataObj.append('course_name', formData.value.course_name);
-    formDataObj.append('bullet_points', JSON.stringify(bulletPoints.value));
-    formDataObj.append('category', formData.value.category || defaultCategory);
-    formDataObj.append('level', formData.value.level || defaultLevel);
-    formDataObj.append('description', formData.value.description || '');
+    const formType = route.name === 'course-courseId' ? 'class' : 'course';
+    const mappings = fieldMappings[formType];
 
-    if (formData.value.cover instanceof File) {
-        formDataObj.append('cover', formData.value.cover);
-    }
-
-    const formDataToSave = {
-        ...formData.value,
-        bullet_points: bulletPoints.value,
-        cover: formData.value.cover instanceof File ? URL.createObjectURL(formData.value.cover) : null
-    };
-    console.log(route.name)
-    if (route.name === 'course-courseId') {
+    if (formType === 'class') {
+        const requestData = {
+            class_name: formData.value.course_name,
+            description: formData.value.description,
+            course_id: route.params.courseId,
+            bullet_points: JSON.stringify(Array.from(bulletPoints.value)),
+            cover: formData.value.cover
+        };
         const apiService = new ApiClassService();
-        await apiService.createClass(formDataObj as ClassData);
+        await apiService.createClass(requestData);
     } else {
-        const apiService = new ApiService();
-        await apiService.createCourse(formDataObj);
+        const requestData = {
+            course_name: formData.value.course_name,
+            description: formData.value.description,
+            category: formData.value.category || defaultCategory,
+            level: formData.value.level || defaultLevel,
+            bullet_points:JSON.stringify(Array.from(bulletPoints.value)),
+            cover: formData.value.cover
+        };
+        console.log(requestData)
+        const apiService = new ApiService();    
+        await apiService.createCourse(requestData);
     }
-    courseStore.saveCourse(formDataToSave as CourseForm);
-
+    
+    courseStore.saveCourse(formData.value as CourseForm);
     closeModal();
 };
 
-const updateCoverImage = (imageFile: File) => {
+const handleCoverImage = (imageFile: File) => {
     // Crear nuevo archivo con nombre sin espacios
     const newFileName = imageFile.name.replace(/\s+/g, '_');
     const newFile = new File([imageFile], newFileName, { type: imageFile.type });

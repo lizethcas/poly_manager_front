@@ -3,6 +3,7 @@ import type { CourseForm } from '~/interfaces/modal.interface';
 
 export class ApiService {
     async createCourse(formData: FormData) {
+        console.log(formData)
         try {
             const response = await axiosInstance.post('courses/', formData, {
                 headers: {

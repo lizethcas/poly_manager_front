@@ -1,16 +1,7 @@
 <template>
   <div class="p-4">
-    <div class="flex justify-between items-center mb-6">
-      <h3 class="text-2xl font-bold">Classes</h3>
-      <button 
-        class="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600"
-        @click="openAddClassModal"
-      >
-        Add Class
-      </button>
-    </div>
-
-    <!-- Classes List -->
+    
+   <!-- Classes List -->
     <div class="grid gap-4">
       <div v-if="classes.length === 0" class="text-gray-500 text-center py-8">
         No classes scheduled for this course yet.

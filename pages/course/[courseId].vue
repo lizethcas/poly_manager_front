@@ -3,10 +3,7 @@
     <header v-if="course" class="pt-10 px-14 text-title-color mb-15 flex">
         <img src="../../assets/images/back-button-round.webp" alt="regresar una pagina" class="w-10 h-10 cursor-pointer"
             @click="navigateTo('/')" />
-
-
-        <img v-if="course.cover" :src="course.cover" :alt="course.course_name" class="w-52 h-44 object-contain" />
-
+        <img v-if="course.cover" :src="typeof course.cover === 'string' ? course.cover : URL.createObjectURL(course.cover)" :alt="course.course_name" class="w-52 h-44 object-contain" />
         <div class="px-10">
             <h2 class="text-black font-bold text-2xl">{{ course.course_name }}</h2>
             <div class="flex items-center">
@@ -57,13 +54,10 @@
                     </li>
                 </ul>
             </nav>
-
-
-
-            <!-- Router view for nested routes -->
+          <!-- Router view for nested routes -->
             <NuxtPage />
         </div>
-        <NuxtLink :to="`/course/class/1/create-class`" class="hover:text-blue-500">class</NuxtLink>
+        
 
     </main>
 </template>
@@ -71,12 +65,9 @@
 <script setup lang="ts">
 import { useCourseStore } from '~/stores/courseStore';
 import type { CourseForm } from '~/interfaces/modal.interface';
+import { findItem } from '~/utils/findItem.utils';
 const route = useRoute();
 const courseStore = useCourseStore();
-
-onMounted(() => {
-    const currentForm = computed(() => courseStore.currentForm);
-});
 
 const courseId = route.params.courseId as string;
 

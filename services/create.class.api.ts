@@ -1,14 +1,16 @@
 import axiosInstance from "./axios.config";
-import type { ClassData } from "~/interfaces/class.interface";
+import type { ClassData } from "~/interfaces/models/class.interface..model";
 
 export class ApiClassService {
   async createClass(formData: FormData) {
+    console.log(formData)
     try {
-      const response = await axiosInstance.post("courses/", formData, {
+      const response = await axiosInstance.post("classes/", formData, {
         headers: {
           "Content-Type": "multipart/form-data",
         },
       });
+      console.log(response.data)
       return response.data;
     } catch (error) {
       console.error("Error in createCourse:", error);

@@ -1,6 +1,10 @@
-import type { CourseForm } from '~/interfaces/modal.interface';
 
+import type { CourseForm } from '~/interfaces/modal.interface';
 export const updateCoverImage = (imageFile: File, formData: CourseForm) => {
-    const imageUrl = URL.createObjectURL(imageFile);
-    formData.cover = imageUrl; // Esto asegura que cover sea una URL
+    // Crear nuevo archivo con nombre sin espacios
+    const newFileName = imageFile.name.replace(/\s+/g, '_');
+    const newFile = new File([imageFile], newFileName, { type: imageFile.type });
+    formData.cover = newFile;
+
+    return { newFile, newFileName, formData };
 };
