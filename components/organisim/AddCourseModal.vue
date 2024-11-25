@@ -2,18 +2,17 @@
     <div class="p-7 max-w-5xl m-auto w-full bg-white rounded-lg">
         <div class="flex justify-between">
             <h2 class="font-bold text-m">{{ title }}</h2>
-            <img src="~/assets/images/close.webp" alt="close create course" class="w-5 h-5 cursor-pointer"
+            <img src="../../assets/images/close.webp" alt="close create course" class="w-5 h-5 cursor-pointer"
                 @click="closeModal" />
         </div>
 
         <form @submit.prevent @click.stop>
             <div>
-                <InputFile v-model="formData.cover" @file-selected="updateCoverImage" />
+                <InputFile v-model="formData.cover" @file-selected="handleCoverImage" />
                 <!-- Iterar sobre los labels para los campos del formulario -->
                 <div v-for="(item, index) in labels" :key="'label-' + index">
-                    <MoleculeBaseInput :title="item.label_name" :type="item.type" :modelValue="Array.isArray(formData[transformedKey(item.label_name)])
-                        ? formData[transformedKey(item.label_name)].join(', ')
-                        : formData[transformedKey(item.label_name)]"
+                    <MoleculeInputFile :title="item.label_name" :type="item.type"
+                        :modelValue="formData[transformedKey(item.label_name)]"
                         @update:modelValue="(value) => updateFormField(transformedKey(item.label_name), value)" />
 
                     <!-- Mostrar elementos adicionales si es necesario -->
@@ -41,7 +40,7 @@
             <!-- Botones de acción -->
             <div class="flex justify-center gap-4 mt-6">
                 <div class="min-w-[120px]"></div>
-                <MoleculeButtonGroup @handleSave="handleSave" @handleCancel="closeModal" />
+                <MoleculeActionButtons @handleSave="handleSave" @handleCancel="closeModal" />
             </div>
         </form>
     </div>
@@ -49,24 +48,22 @@
 </template>
 
 <script lang="ts" setup>
-import { defineProps, ref, toRaw } from 'vue';
-import { useRoute } from 'vue-router';
-/* Components */
+import { defineProps } from 'vue';
 import BulletPoint from '../molecule/BulletPoint.vue';
-import SelectAtom from '../molecule/SelectAtom.vue';
-/* Data */
 import { createCourse, labels } from '~/data/cardModal';
-/* Interfaces */
 import type { ModalProps } from '~/interfaces/modal.interface';
-/* Hooks */
+import SelectAtom from '../molecule/SelectAtom.vue';
 import { useFormData } from '~/hooks/userFormData';
 import { useCourseStore } from '~/stores/courseStore';
-/* Services */
 import { ApiService } from '~/services/create.course.api';
+import transformKey from '~/utils/stringTransformations'
+import { useRoute } from 'vue-router';
 import { ApiClassService } from '~/services/create.class.api';
+import type { ClassData } from '~/interfaces/models/class.interface..model';
+import type { CourseForm } from '~/interfaces/modal.interface';
+const route = useRoute();
+const { bulletPoints, formData, handleEmit, updateFormField } = useFormData();
 
-// Hooks para manejar los datos del formulario
-const { bulletPoints, formData, handleEmit, handleEmitSave, updateFormField } = useFormData();
 
 // Propiedades del modal
 const { title, showExtraElements } = defineProps<ModalProps>();
@@ -82,20 +79,11 @@ const emits = defineEmits(["closeModal"]);
 
 // Función para cerrar el modal
 const closeModal = () => {
-    resetForm();
     emits("closeModal");
 };
 
 // Función para transformar las claves de los labels
-const transformedKey = (key: string): string => {
-    // Remove any colons, extra spaces, and standardize the key name
-    return key
-        .toLowerCase()
-        .trim()
-        .replace(/[:]/g, '')
-        .replace(/\s+/g, '_')
-        .replace(/^_+|_+$/g, '');
-};
+const transformedKey = (key: string) => transformKey(key)
 
 // Modify updateSelectField function
 const updateSelectField = (field: string, value: string) => {
@@ -106,69 +94,72 @@ const updateSelectField = (field: string, value: string) => {
 // Add store initialization
 const courseStore = useCourseStore();
 
-// Add loading state
-const isLoading = ref(false);
+// Al inicio del archivo, después de las importaciones
+const defaultCategory = createCourse.categorys[0];
+const defaultLevel = createCourse.levels[0];
 
-// Agregar una nueva ref para el archivo de imagen
-const coverFile = ref<File | null>(null);
-
-// Add this new function
-const resetForm = () => {
-    Object.keys(formData.value).forEach(key => {
-        formData.value[key as keyof typeof formData.value] = '';
-    });
-    // Reset bullet points
-    bulletPoints.value = [];
+// Agregar al inicio del script
+const fieldMappings = {
+  'course': {
+    course_name: 'course_name',
+    description: 'description',
+    category: 'category',
+    level: 'level',
+    cover: 'cover',
+    bullet_points: 'bullet_points'
+  },
+  'class': {
+    course_name: 'class_name', // mapea course_name del form a class_name en la API
+    description: 'description',
+    cover: 'cover',
+    bullet_points: 'bullet_points',
+    course: 'course' // campo adicional para clases
+  }
 };
-const route = useRoute();
-console.log(route.name)
-// Modify handleSave function
+
+// Update handleSave function
 const handleSave = async () => {
-    if (!formData.value.course_name?.trim()) {
-        alert('El nombre del curso es obligatorio');
+    if (!formData.value?.course_name?.trim()) {
+        alert('El nombre es obligatorio');
         return;
     }
 
-    try {
-        isLoading.value = true;
-        const formDataObj = new FormData();
+    const formType = route.name === 'course-courseId' ? 'class' : 'course';
+    const mappings = fieldMappings[formType];
 
-        // Agregar la imagen
-        if (coverFile.value) {
-            formDataObj.append('cover', coverFile.value);
-        }
-
-        // Agregar el resto de datos
-        const formDataToSave = handleEmitSave();
-        Object.entries(formDataToSave).forEach(([key, value]) => {
-            if (key === 'bullet_points') {
-                formDataObj.append(key, JSON.stringify(toRaw(bulletPoints.value)));
-            } else if (key !== 'cover') {
-                formDataObj.append(key, String(value)); // Aseguramos que sea string
-            }
-        });
-        if (route.name === 'course-courseId') {
-            const apiService = new ApiClassService();
-            await apiService.createClass(formDataObj);
-        } else {   
-            const apiService = new ApiService();
-            await apiService.createCourse(formDataObj);
-        }
-
-        resetForm();
-        closeModal();
-    } catch (error: any) {
-        console.error('Error creating course:', error);
-        alert(error.response?.data?.message || 'Error al crear el curso');
-    } finally {
-        isLoading.value = false;
+    if (formType === 'class') {
+        const requestData = {
+            class_name: formData.value.course_name,
+            description: formData.value.description,
+            course_id: route.params.courseId,
+            bullet_points: JSON.stringify(Array.from(bulletPoints.value)),
+            cover: formData.value.cover
+        };
+        const apiService = new ApiClassService();
+        await apiService.createClass(requestData);
+    } else {
+        const requestData = {
+            course_name: formData.value.course_name,
+            description: formData.value.description,
+            category: formData.value.category || defaultCategory,
+            level: formData.value.level || defaultLevel,
+            bullet_points:JSON.stringify(Array.from(bulletPoints.value)),
+            cover: formData.value.cover
+        };
+        console.log(requestData)
+        const apiService = new ApiService();    
+        await apiService.createCourse(requestData);
     }
+    
+    courseStore.saveCourse(formData.value as CourseForm);
+    closeModal();
 };
 
-const updateCoverImage = (imageFile: File) => {
-    coverFile.value = imageFile; // Guardamos el archivo
-    const imageUrl = URL.createObjectURL(imageFile);
-    formData.value.cover = imageUrl; // Para preview
+const handleCoverImage = (imageFile: File) => {
+    // Crear nuevo archivo con nombre sin espacios
+    const newFileName = imageFile.name.replace(/\s+/g, '_');
+    const newFile = new File([imageFile], newFileName, { type: imageFile.type });
+    formData.value.cover = newFile;
 };
 
 

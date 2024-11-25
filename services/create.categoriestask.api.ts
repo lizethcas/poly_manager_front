@@ -1,5 +1,5 @@
 import axiosInstance from "./axios.config";
-import type { CategoriesTaskData } from '../interfaces/categoriestask.interfece';
+import type { CategoriesTaskData } from '../interfaces/models/categories_task.model';
 
 
 

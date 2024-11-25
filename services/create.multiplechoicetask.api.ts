@@ -1,5 +1,5 @@
 import axiosInstance from "./axios.config";
-import type { MultipleChoiceData } from "../interfaces/multiplechoice.interface";
+import type { MultipleChoiceData } from "../interfaces/models/multiplechoice.interface";
 
 
 

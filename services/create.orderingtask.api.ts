@@ -1,5 +1,5 @@
 import axiosInstance from "./axios.config";
-import type { OrderingTaskData } from "../interfaces/orderingtask.interface";
+import type { OrderingTaskData } from "../interfaces/models/orderingtask.interface";
 
 export class ApiOrderingTaskService {
     async createOrderingTask(formData: OrderingTaskData) {

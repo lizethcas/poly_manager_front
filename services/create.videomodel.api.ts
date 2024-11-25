@@ -1,5 +1,5 @@
 import axiosInstance from "./axios.config";
-import type { VideoModelData } from "../interfaces/videomodel.interface";
+import type { VideoModelData } from "../interfaces/models/videomodel.interface";
 
 
 

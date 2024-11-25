@@ -1,0 +1,1 @@
+export * from "./components/new_classes.interface";

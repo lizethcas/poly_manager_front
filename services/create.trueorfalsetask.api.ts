@@ -1,5 +1,5 @@
 import axiosInstance from "./axios.config";
-import type { TrueOrFalseData } from "../interfaces/trueorfalsetask.interface";
+import type { TrueOrFalseData } from "../interfaces/models/trueorfalsetask.interface";
 
 
 

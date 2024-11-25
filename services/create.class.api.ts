@@ -1,19 +1,21 @@
 import axiosInstance from "./axios.config";
-import type { ClassData } from "~/interfaces/class.interface";
+import type { ClassData } from "~/interfaces/models/class.interface..model";
 
 export class ApiClassService {
-  async createClass(formData: ClassData) {
-    const response = await axiosInstance.post(`classes`, {
-      method: "POST",
-      body: {
-        img_cover: formData.img_cover,
-        lesson_name: formData.lesson_name,
-        description: formData.description,
-        course: formData.course_id,
-        bullet_points: formData.bullet_points,
-      },
-    });
-    return response;
+  async createClass(formData: FormData) {
+    console.log(formData)
+    try {
+      const response = await axiosInstance.post("classes/", formData, {
+        headers: {
+          "Content-Type": "multipart/form-data",
+        },
+      });
+      console.log(response.data)
+      return response.data;
+    } catch (error) {
+      console.error("Error in createCourse:", error);
+      throw error;
+    }
   }
 
   // Obtener todas las clases
@@ -48,4 +50,3 @@ export class ApiClassService {
     return response;
   }
 }
-

@@ -1,5 +1,5 @@
 import axiosInstance from "./axios.config";
-import type { TextBlockData } from "../interfaces/textblockmodel.interface";
+import type { TextBlockData } from "../interfaces/models/textblockmodel.interface";
 
 export class ApiTextBlockService {
     async createTextBlock(formData: TextBlockData) {

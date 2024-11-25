@@ -1,5 +1,5 @@
 import axiosInstance from "./axios.config";
-import type { FillInTheGapsData } from '../interfaces/fillinthegaps.interface';
+import type { FillInTheGapsData } from '../interfaces/models/fillinthegaps.interface';
 
 
 export class ApiFillInTheGapsService {
