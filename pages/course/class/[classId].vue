@@ -1,514 +1,85 @@
 <template>
     <div>
-        <nav class="flex justify-start gap-4 mb-8">
-            <ul class="flex gap-4">
-                <li>
-                    <button @click="handleModal('image')" class="px-4 py-2 bg-blue-500 text-white rounded">
-                        Image Layout
-                    </button>
-                </li>
-                <li>
-                    <button @click="handleModal('video')" class="px-4 py-2 bg-blue-500 text-white rounded">
-                        Video Layout
-                    </button>
-                </li>
-                <li>
-                    <button @click="handleModal('layoutTask')" class="px-4 py-2 bg-blue-500 text-white rounded">
-                        Layout Task
-                    </button>
-                </li>
-            </ul>
-        </nav>
+        <ClassNavigation 
+            @handle-modal="handleModal"
+            @save-class="submitForm"
+        />
 
-        <div class="mt-8 space-y-8">
-            <div v-if="savedTasks.length > 0" class="space-y-4">
-                <h2 class="text-xl font-bold text-gray-900 mb-4">Elementos del curso</h2>
-                
-                <div v-for="(task, index) in savedTasks" :key="index" 
-                    class="border rounded-lg p-6 bg-white shadow-sm">
-                    <div class="border-b pb-4 mb-4">
-                        <div class="flex justify-between items-start">
-                            <div class="space-y-2">
-                                <h3 class="text-lg font-semibold text-gray-900">{{ task.title || 'Sin título' }}</h3>
-                                <p class="text-sm text-gray-600">{{ task.instructions || 'Sin instrucciones' }}</p>
-                            </div>
-                            <span class="text-sm font-medium text-gray-500">
-                                {{ 
-                                    task.type === 'multipleChoice' ? 'Opción Múltiple' :
-                                    task.type === 'trueFalse' ? 'Verdadero/Falso' :
-                                    task.type === 'ordering' ? 'Ordenamiento' :
-                                    task.type === 'fillGaps' ? 'Completar Espacios' :
-                                    task.type === 'categories' ? 'Categorías' : ''
-                                }}
-                            </span>
-                        </div>
-                    </div>
+        <TaskList 
+            :tasks="savedTasks"
+            @delete-task="removeTask"
+        />
 
-                    <div class="mt-4">
-                        <div v-if="task.type === 'multipleChoice'" class="space-y-3">
-                            <p class="font-medium">Pregunta: {{ task.question }}</p>
-                            <ul class="ml-4 space-y-2">
-                                <li v-for="(answer, aIndex) in task.answers" :key="aIndex" 
-                                    class="flex items-center gap-2">
-                                    <span class="text-sm">
-                                        {{ answer.text }}
-                                        <span class="text-xs text-gray-500">
-                                            {{ answer.is_correct ? '(Correcta)' : '(Incorrecta)' }}
-                                        </span>
-                                    </span>
-                                </li>
-                            </ul>
-                        </div>
-
-                        <div v-if="task.type === 'trueFalse'" class="space-y-3">
-                            <ul class="space-y-2">
-                                <li v-for="(question, qIndex) in task.questions" :key="qIndex" 
-                                    class="flex items-center gap-2">
-                                    <span class="font-medium">{{ question.statement }}</span>
-                                    <span class="text-sm">
-                                        ({{ question.state === 1 ? 'Verdadero' : question.state === 2 ? 'Falso' : 'No establecido' }})
-                                    </span>
-                                </li>
-                            </ul>
-                        </div>
-
-                        <div v-if="task.type === 'ordering'" class="space-y-3">
-                            <ul class="space-y-2">
-                                <li v-for="(item, iIndex) in task.items" :key="iIndex" 
-                                    class="flex items-center gap-2">
-                                    <span class="text-sm">{{ iIndex + 1 }}. {{ item.description }}</span>
-                                </li>
-                            </ul>
-                        </div>
-
-                        <div v-if="task.type === 'fillGaps'" class="space-y-3">
-                            <p class="text-sm">{{ task.text_with_gaps }}</p>
-                            <div class="flex flex-wrap gap-2">
-                                <span v-for="(keyword, kIndex) in task.keywords" :key="kIndex"
-                                    class="px-2 py-1 bg-gray-100 rounded-md text-sm">
-                                    {{ keyword }}
-                                </span>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-
+        <!-- Modal Principal -->
         <div v-if="isOpen" class="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-start pt-20 overflow-y-auto">
             <div class="bg-white p-6 rounded-lg shadow-lg max-w-4xl w-full">
-                <div class="flex justify-between items-center mb-4">
-                    <h2 class="text-xl font-bold">{{ modalTitle }}</h2>
-                    <button @click="isChildModalOpen ? closeChildModal() : closeModal()" class="text-gray-500 hover:text-gray-700">
-                        <span class="sr-only">Close</span>
-                        ×
-                    </button>
-                </div>
+                <!-- Cabecera Modal -->
+                <ModalHeader 
+                    :title="modalTitle"
+                    @close="isChildModalOpen ? closeChildModal() : closeModal()"
+                />
 
+                <!-- Contenido Modal -->
                 <template v-if="currentModal === 'layoutTask' && !isChildModalOpen">
-                    <div class="space-y-4 mb-6">
-                        <div>
-                            <label class="block text-sm font-medium text-gray-700">Título</label>
-                            <input 
-                                type="text" 
-                                v-model="formData.title" 
-                                class="mt-1 block w-full rounded-md border-gray-300 shadow-sm"
-                            >
-                        </div>
-                        <div>
-                            <label class="block text-sm font-medium text-gray-700">Instrucciones</label>
-                            <textarea 
-                                v-model="formData.instructions" 
-                                class="mt-1 block w-full rounded-md border-gray-300 shadow-sm"
-                            ></textarea>
-                        </div>
-                    </div>
-
-                    <div class="mb-6">
-                        <label class="block text-sm font-medium text-gray-700 mb-2">Imagen</label>
-                        <InputFile 
-                            v-model="formData.image" 
-                            @file-selected="handleImageUpload"
-                        />
-                    </div>
-
-                    <div class="space-y-4 mb-6">
-                        <div>
-                            <label class="block text-sm font-medium text-gray-700 mb-2">Audio</label>
-                            <InputFile 
-                                v-model="formData.audio" 
-                                @file-selected="handleAudioUpload"
-                            />
-                        </div>
-                        <div>
-                            <label class="block text-sm font-medium text-gray-700">Transcripción del audio</label>
-                            <textarea 
-                                v-model="formData.audioScript" 
-                                class="mt-1 block w-full rounded-md border-gray-300 shadow-sm h-32"
-                                placeholder="Escribe la transcripción del audio aquí..."
-                            ></textarea>
-                        </div>
-                    </div>
-
-                    <div v-if="formData.tasks.length > 0" class="mt-8 mb-6">
-                        <h3 class="text-lg font-medium text-gray-900 mb-4">Tareas creadas</h3>
-                        <div class="space-y-4">
-                            <div v-for="(task, index) in formData.tasks" :key="index" class="border rounded-lg p-4">
-                                <div v-if="task.type === 'trueFalse'" class="space-y-3">
-                                    <div class="flex justify-between items-center">
-                                        <h4 class="font-medium">Verdadero/Falso</h4>
-                                        <button @click="removeTask(index)" class="text-red-500 hover:text-red-700">
-                                            <span class="sr-only">Eliminar</span>
-                                            ×
-                                        </button>
-                                    </div>
-                                    <ul class="space-y-2">
-                                        <li v-for="(question, qIndex) in task.questions" :key="qIndex" 
-                                            class="flex items-center gap-2">
-                                            <span class="font-medium">{{ question.statement }}</span>
-                                            <span class="text-sm">
-                                                ({{ question.state === 1 ? 'Verdadero' : question.state === 2 ? 'Falso' : 'No establecido' }})
-                                            </span>
-                                        </li>
-                                    </ul>
-                                </div>
-
-                                <div v-if="task.type === 'multipleChoice'" class="space-y-3">
-                                    <div class="flex justify-between items-center">
-                                        <h4 class="font-medium">Opción Múltiple</h4>
-                                        <button @click="removeTask(index)" class="text-red-500 hover:text-red-700">×</button>
-                                    </div>
-                                    <div class="space-y-2">
-                                        <p class="font-medium">Pregunta: {{ task.question }}</p>
-                                        <ul class="ml-4 space-y-1">
-                                            <li v-for="(answer, aIndex) in task.answers" :key="aIndex" 
-                                                class="flex items-center gap-2">
-                                                <span class="text-sm">
-                                                    {{ answer.text }}
-                                                    <span class="text-xs text-gray-500">
-                                                        {{ answer.is_correct ? '(Correcta)' : '(Incorrecta)' }}
-                                                    </span>
-                                                </span>
-                                            </li>
-                                        </ul>
-                                    </div>
-                                </div>
-
-                                <div v-if="task.type === 'ordering'" class="space-y-3">
-                                    <div class="flex justify-between items-center">
-                                        <h4 class="font-medium">Tarea de Ordenamiento</h4>
-                                        <button @click="removeTask(index)" class="text-red-500 hover:text-red-700">×</button>
-                                    </div>
-                                    <ul class="space-y-2">
-                                        <li v-for="(item, iIndex) in task.items" :key="iIndex" 
-                                            class="flex items-center gap-2">
-                                            <span class="text-sm">{{ iIndex + 1 }}. {{ item.description }}</span>
-                                        </li>
-                                    </ul>
-                                </div>
-
-                                <div v-if="task.type === 'categories'" class="space-y-3">
-                                    <div class="flex justify-between items-center">
-                                        <h4 class="font-medium">Tarea de Categorías</h4>
-                                        <button @click="removeTask(index)" class="text-red-500 hover:text-red-700">×</button>
-                                    </div>
-                                    <div class="space-y-4">
-                                        <div v-for="(category, cIndex) in task.categories" :key="cIndex" class="ml-4">
-                                            <h5 class="font-medium">{{ category.name }}</h5>
-                                            <ul class="list-disc ml-4">
-                                                <li v-for="(item, iIndex) in category.items" :key="iIndex" 
-                                                    class="text-sm">
-                                                    {{ item }}
-                                                </li>
-                                            </ul>
-                                        </div>
-                                    </div>
-                                </div>
-
-                                <div v-if="task.type === 'fillGaps'" class="space-y-3">
-                                    <div class="flex justify-between items-center">
-                                        <h4 class="font-medium">Completar Espacios</h4>
-                                        <button @click="removeTask(index)" class="text-red-500 hover:text-red-700">×</button>
-                                    </div>
-                                    <p class="text-sm">{{ task.text_with_gaps }}</p>
-                                    <div class="flex flex-wrap gap-2">
-                                        <span v-for="(keyword, kIndex) in task.keywords" :key="kIndex"
-                                            class="px-2 py-1 bg-gray-100 rounded-md text-sm">
-                                            {{ keyword }}
-                                        </span>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="mt-8">
-                        <h3 class="text-lg font-medium text-gray-900 mb-4">Agregar nueva tarea</h3>
-                        <div class="grid grid-cols-2 gap-4">
-                            <button 
-                                v-for="task in taskTypes" 
-                                :key="task.type"
-                                @click="selectTaskType(task.type)"
-                                class="p-4 border rounded-lg hover:bg-gray-50 flex flex-col items-center transition-colors"
-                            >
-                                <span class="font-medium">{{ task.name }}</span>
-                                <span class="text-sm text-gray-500">{{ task.description }}</span>
-                            </button>
-                        </div>
-                    </div>
+                    <LayoutTaskForm 
+                        v-model:form-data="formData"
+                        :tasks="formData.tasks"
+                        @select-task="selectTaskType"
+                        @remove-task="removeTask"
+                    />
                 </template>
 
+                <!-- Modal Hijo para Tareas Específicas -->
                 <template v-if="isChildModalOpen">
-                    <div class="space-y-4 mb-6">
-                        <div>
-                            <label class="block text-sm font-medium text-gray-700">Title</label>
-                            <input type="text" v-model="formData.title" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm">
-                        </div>
-                        <div>
-                            <label class="block text-sm font-medium text-gray-700">Instructions</label>
-                            <textarea v-model="formData.instructions" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm"></textarea>
-                        </div>
-                    </div>
+                    <ImageTask 
+                        v-if="currentModal === 'image'"
+                        v-model:task-data="tempTaskData"
+                        @save="saveTask"
+                        @cancel="closeChildModal"
+                    />
+                    
+                    <VideoTask 
+                        v-if="currentModal === 'video'"
+                        v-model:task-data="tempTaskData"
+                        @save="saveTask"
+                        @cancel="closeChildModal"
+                    />
 
-                    <div class="space-y-4">
-                        <template v-if="currentModal === 'layoutTask'">
-                            <div class="grid grid-cols-2 gap-4">
-                                <button 
-                                    v-for="task in taskTypes" 
-                                    :key="task.type"
-                                    @click="selectTaskType(task.type)"
-                                    class="p-4 border rounded-lg hover:bg-gray-50 flex flex-col items-center"
-                                >
-                                    <span class="font-medium">{{ task.name }}</span>
-                                    <span class="text-sm text-gray-500">{{ task.description }}</span>
-                                </button>
-                            </div>
-                        </template>
+                    <MultipleChoiceTask 
+                        v-if="currentModal === 'multipleChoice'"
+                        v-model:task-data="tempTaskData"
+                        @save="saveTask"
+                        @cancel="closeChildModal"
+                    />
 
-                        <template v-if="currentModal === 'image'">
-                            <div>
-                                <label class="block text-sm font-medium text-gray-700">Upload Image</label>
-                                <input type="file" @change="handleFileUpload" accept="image/*" class="mt-1 block w-full">
-                            </div>
-                        </template>
+                    <TrueFalseTask 
+                        v-if="currentModal === 'trueFalse'"
+                        v-model:task-data="tempTaskData"
+                        @save="saveTask"
+                        @cancel="closeChildModal"
+                    />
 
-                        <template v-if="currentModal === 'video'">
-                            <div>
-                                <label class="block text-sm font-medium text-gray-700">Upload Video</label>
-                                <input type="file" @change="handleFileUpload" accept="video/*" class="mt-1 block w-full">
-                            </div>
-                            <div>
-                                <label class="block text-sm font-medium text-gray-700">Video Script</label>
-                                <textarea v-model="formData.script" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm"></textarea>
-                            </div>
-                        </template>
+                    <OrderingTask 
+                        v-if="currentModal === 'ordering'"
+                        v-model:task-data="tempTaskData"
+                        @save="saveTask"
+                        @cancel="closeChildModal"
+                    />
 
-                        <template v-if="currentModal === 'multipleChoice'">
-                            <div class="space-y-4">
-                                <div>
-                                    <label class="block text-sm font-medium text-gray-700">Pregunta</label>
-                                    <input 
-                                        type="text" 
-                                        v-model="tempTaskData.question" 
-                                        class="mt-1 block w-full rounded-md border-gray-300 shadow-sm"
-                                    >
-                                </div>
-                                <div class="space-y-2">
-                                    <div v-for="(answer, index) in tempTaskData.answers" :key="index" class="flex gap-2">
-                                        <input 
-                                            type="text" 
-                                            v-model="answer.text" 
-                                            placeholder="Respuesta" 
-                                            class="flex-1 rounded-md border-gray-300 shadow-sm"
-                                        >
-                                        <label class="flex items-center gap-2">
-                                            <input type="checkbox" v-model="answer.is_correct">
-                                            Correcta
-                                        </label>
-                                        <button @click="removeAnswer(index)" class="text-red-500">Eliminar</button>
-                                    </div>
-                                    <button @click="addAnswer" class="text-blue-500">+ Agregar respuesta</button>
-                                </div>
-                            </div>
-                            <div class="mt-4 flex justify-end gap-2">
-                                <button @click="closeChildModal" class="px-4 py-2 border rounded">Cancelar</button>
-                                <button @click="saveTask" class="px-4 py-2 bg-blue-500 text-white rounded">Guardar</button>
-                            </div>
-                        </template>
+                    <CategoriesTask 
+                        v-if="currentModal === 'categories'"
+                        v-model:task-data="tempTaskData"
+                        @save="saveTask"
+                        @cancel="closeChildModal"
+                    />
 
-                        <template v-if="currentModal === 'trueFalse'">
-                            <div class="space-y-4">
-                                <div v-for="(question, index) in tempTaskData.questions" :key="index" class="space-y-2 border-b pb-4">
-                                    <div class="flex justify-between items-center">
-                                        <div class="flex-1">
-                                            <input 
-                                                type="text" 
-                                                v-model="question.statement" 
-                                                placeholder="Escribe la afirmación" 
-                                                class="w-full rounded-md border-gray-300 shadow-sm"
-                                            >
-                                        </div>
-                                        <select 
-                                            v-model="question.state" 
-                                            class="ml-2 rounded-md border-gray-300 shadow-sm"
-                                        >
-                                            <option value="1">Verdadero</option>
-                                            <option value="2">Falso</option>
-                                            <option value="3">No establecido</option>
-                                        </select>
-                                        <button @click="removeQuestion(index)" class="ml-2 text-red-500 hover:text-red-700">
-                                            ×
-                                        </button>
-                                    </div>
-                                </div>
-                                
-                                <button 
-                                    @click="addQuestion" 
-                                    class="text-blue-500 hover:text-blue-700"
-                                >
-                                    + Agregar afirmación
-                                </button>
-
-                                <div class="mt-4 flex justify-end gap-2">
-                                    <button @click="closeChildModal" class="px-4 py-2 border rounded">
-                                        Cancelar
-                                    </button>
-                                    <button @click="saveTask" class="px-4 py-2 bg-blue-500 text-white rounded">
-                                        Guardar
-                                    </button>
-                                </div>
-                            </div>
-                        </template>
-
-                        <template v-if="currentModal === 'ordering'">
-                            <div class="space-y-4">
-                                <div class="space-y-2">
-                                    <div v-for="(item, index) in tempTaskData.items" :key="index" 
-                                        class="flex items-center gap-2 p-2 bg-white rounded-lg border">
-                                        <span class="text-gray-500 min-w-[2rem]">{{ index + 1 }}.</span>
-                                        <input 
-                                            type="text" 
-                                            v-model="item.description" 
-                                            placeholder="Descripción del elemento"
-                                            class="flex-1 rounded-md border-gray-300 shadow-sm"
-                                        >
-                                        <button @click="removeOrderingItem(index)" 
-                                            class="text-red-500 hover:text-red-700 px-2">
-                                            ×
-                                        </button>
-                                    </div>
-                                </div>
-
-                                <button 
-                                    @click="addOrderingItem" 
-                                    class="w-full py-2 px-4 border border-blue-500 text-blue-500 rounded-md hover:bg-blue-50 transition-colors"
-                                >
-                                    + Agregar elemento
-                                </button>
-                                
-                                <div class="mt-4 flex justify-end gap-2">
-                                    <button @click="closeChildModal" class="px-4 py-2 border rounded">
-                                        Cancelar
-                                    </button>
-                                    <button 
-                                        @click="saveTask" 
-                                        class="px-4 py-2 bg-blue-500 text-white rounded"
-                                        :disabled="!isOrderingTaskValid"
-                                    >
-                                        Guardar
-                                    </button>
-                                </div>
-                            </div>
-                        </template>
-
-                        <template v-if="currentModal === 'categories'">
-                            <div class="space-y-4">
-                                <div v-for="(category, categoryIndex) in tempTaskData.categories" :key="categoryIndex" 
-                                    class="p-4 border rounded-lg space-y-4">
-                                    <div class="flex justify-between items-center">
-                                        <input 
-                                            type="text" 
-                                            v-model="category.name" 
-                                            placeholder="Nombre de la categoría"
-                                            class="flex-1 rounded-md border-gray-300 shadow-sm mr-2"
-                                        >
-                                        <button @click="removeCategory(categoryIndex)" 
-                                            class="text-red-500 hover:text-red-700">
-                                            ×
-                                        </button>
-                                    </div>
-
-                                    <div class="pl-4 space-y-2">
-                                        <div v-for="(item, itemIndex) in category.items" :key="itemIndex" 
-                                            class="flex items-center gap-2">
-                                            <input 
-                                                type="text" 
-                                                v-model="category.items[itemIndex]" 
-                                                placeholder="Elemento de la categoría"
-                                                class="flex-1 rounded-md border-gray-300 shadow-sm"
-                                            >
-                                            <button @click="removeCategoryItem(categoryIndex, itemIndex)" 
-                                                class="text-red-500 hover:text-red-700">
-                                                ×
-                                            </button>
-                                        </div>
-                                        <button 
-                                            @click="addCategoryItem(categoryIndex)" 
-                                            class="text-blue-500 hover:text-blue-700 text-sm">
-                                            + Agregar elemento
-                                        </button>
-                                    </div>
-                                </div>
-
-                                <button 
-                                    @click="addCategory" 
-                                    class="w-full py-2 px-4 border border-blue-500 text-blue-500 rounded-md hover:bg-blue-50 transition-colors">
-                                    + Agregar categoría
-                                </button>
-
-                                <div class="mt-4 flex justify-end gap-2">
-                                    <button @click="closeChildModal" class="px-4 py-2 border rounded">
-                                        Cancelar
-                                    </button>
-                                    <button 
-                                        @click="saveTask" 
-                                        class="px-4 py-2 bg-blue-500 text-white rounded"
-                                    >
-                                        Guardar
-                                    </button>
-                                </div>
-                            </div>
-                        </template>
-
-                        <template v-if="currentModal === 'fillGaps'">
-                            <div class="space-y-4">
-                                <div>
-                                    <label class="block text-sm font-medium text-gray-700">Texto con espacios</label>
-                                    <textarea 
-                                        v-model="tempTaskData.text_with_gaps" 
-                                        placeholder="Usa [palabra] para indicar espacios. Ejemplo: El [gato] es [negro]"
-                                        class="mt-1 block w-full rounded-md border-gray-300 shadow-sm h-32"
-                                    ></textarea>
-                                </div>
-
-                                <div class="mt-4 flex justify-end gap-2">
-                                    <button @click="closeChildModal" class="px-4 py-2 border rounded">
-                                        Cancelar
-                                    </button>
-                                    <button @click="saveTask" class="px-4 py-2 bg-blue-500 text-white rounded">
-                                        Guardar
-                                    </button>
-                                </div>
-                            </div>
-                        </template>
-                    </div>
+                    <FillGapsTask 
+                        v-if="currentModal === 'fillGaps'"
+                        v-model:task-data="tempTaskData"
+                        @save="saveTask"
+                        @cancel="closeChildModal"
+                    />
                 </template>
-
-                <div class="mt-6 flex justify-end">
-                    <button @click="submitForm" class="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600">
-                        Save
-                    </button>
-                </div>
             </div>
         </div>
     </div>
@@ -516,7 +87,25 @@
 
 <script setup lang="ts">
 import { ref, computed } from 'vue';
-import { useModal } from '~/composables/useModal';
+import { useRoute } from 'vue-router';
+import { useModal } from '@/composables/useModal';
+import TasksApiService from '@/services/tasks.api';
+
+// Importar componentes con rutas absolutas
+import ClassNavigation from '@/components/class/ClassNavigation.vue';
+import TaskList from '@/components/class/TaskList.vue';
+import ModalHeader from '@/components/common/ModalHeader.vue';
+import LayoutTaskForm from '@/components/tasks/LayoutTaskForm.vue';
+import ImageTask from '@/components/tasks/ImageTask.vue';
+import VideoTask from '@/components/tasks/VideoTask.vue';
+import MultipleChoiceTask from '@/components/tasks/MultipleChoiceTask.vue';
+import TrueFalseTask from '@/components/tasks/TrueFalseTask.vue';
+import OrderingTask from '@/components/tasks/OrderingTask.vue';
+import CategoriesTask from '@/components/tasks/CategoriesTask.vue';
+import FillGapsTask from '@/components/tasks/FillGapsTask.vue';
+
+const route = useRoute();
+const classId = computed(() => Number(route.params.classId));
 
 const { isOpen, openModal, closeModal } = useModal();
 const currentModal = ref('');
@@ -531,23 +120,19 @@ const formData = ref({
 });
 
 const tempTaskData = ref({
-    type: '',
+    instructions: '',
+    // Datos para Multiple Choice
     question: '',
-    answers: [] as any[],
-    questions: [] as any[], // Para true/false
-    items: [] as Array<{
-        id: number,
-        description: string,
-        order: number
-    }>,
-    categories: [] as Array<{
-        name: string,
-        items: Array<{
-            text: string
-        }>
-    }>,
+    answers: [],
+    // Datos para True/False
+    questions: [],
+    // Datos para Ordering
+    items: [],
+    // Datos para Categories
+    categories: [],
+    // Datos para Fill Gaps
     text_with_gaps: '',
-    keywords: [] as string[]
+    keywords: []
 });
 
 const modalTitle = computed(() => {
@@ -631,10 +216,52 @@ const removeCategoryItem = (categoryIndex: number, itemIndex: number) => {
 const savedTasks = ref([]);
 
 const submitForm = async () => {
-    savedTasks.value = [...formData.value.tasks];
-    
-    formData.value.tasks = [];
-    closeModal();
+    try {
+        // Primero crear el layout
+        const layoutData = new FormData();
+        layoutData.append('class_model', classId.value.toString());
+        layoutData.append('title', formData.value.title);
+        layoutData.append('instructions', formData.value.instructions);
+        
+        // Verificar que tenemos un classId válido
+        console.log('ClassId being sent:', classId.value);
+        
+        if (formData.value.image) {
+            layoutData.append('cover', formData.value.image);
+        }
+        if (formData.value.audio) {
+            layoutData.append('audio', formData.value.audio);
+            layoutData.append('audio_script', formData.value.audioScript);
+        }
+
+        // Imprimir el FormData para debugging
+        for (let pair of layoutData.entries()) {
+            console.log(pair[0] + ': ' + pair[1]);
+        }
+
+        const layout = await TasksApiService.createLayout(classId.value, layoutData);
+
+        // Luego crear cada tarea asociada al layout
+        for (const task of formData.value.tasks) {
+            const taskData = {
+                ...task,
+                layout: layout.id,
+                instructions: formData.value.instructions
+            };
+            await TasksApiService.createTask(layout.id, taskData, task.type);
+        }
+
+        savedTasks.value = [...formData.value.tasks];
+        formData.value.tasks = [];
+        closeModal();
+
+    } catch (error) {
+        console.error('Error al guardar:', error);
+        // Mostrar más detalles del error
+        if (error.response) {
+            console.error('Error response:', error.response.data);
+        }
+    }
 };
 
 const taskTypes = [
@@ -668,7 +295,7 @@ const taskTypes = [
 const selectTaskType = (type: string) => {
     currentModal.value = type;
     tempTaskData.value = {
-        type,
+        instructions: '',
         question: '',
         answers: [],
         questions: [],
@@ -698,62 +325,77 @@ const saveTask = () => {
     let taskToSave;
 
     switch (currentModal.value) {
-        case 'trueFalse':
-            taskToSave = {
-                type: 'trueFalse',
-                questions: [...tempTaskData.value.questions]
-            };
-            break;
         case 'multipleChoice':
             taskToSave = {
                 type: 'multipleChoice',
-                question: tempTaskData.value.question,
-                answers: tempTaskData.value.answers
+                taskData: {
+                    instructions: tempTaskData.value.instructions,
+                    question: tempTaskData.value.question,
+                    answers: tempTaskData.value.answers.map(answer => ({
+                        text: answer.text,
+                        is_correct: answer.is_correct
+                    }))
+                }
             };
             break;
 
-        case 'categories':
+        case 'trueFalse':
             taskToSave = {
-                type: 'categories',
-                categories: tempTaskData.value.categories
+                type: 'trueFalse',
+                taskData: {
+                    instructions: tempTaskData.value.instructions,
+                    questions: tempTaskData.value.questions.map(q => ({
+                        statement: q.statement,
+                        state: q.state
+                    }))
+                }
             };
             break;
 
         case 'ordering':
             taskToSave = {
                 type: 'ordering',
-                items: tempTaskData.value.items
+                taskData: {
+                    instructions: tempTaskData.value.instructions,
+                    items: tempTaskData.value.items.map(item => ({
+                        id: item.id,
+                        description: item.description,
+                        order: item.order
+                    }))
+                }
+            };
+            break;
+
+        case 'categories':
+            taskToSave = {
+                type: 'categories',
+                taskData: {
+                    instructions: tempTaskData.value.instructions,
+                    categories: tempTaskData.value.categories.map(cat => ({
+                        name: cat.name,
+                        items: cat.items
+                    }))
+                }
             };
             break;
 
         case 'fillGaps':
-            const matches = tempTaskData.value.text_with_gaps.match(/\[(.*?)\]/g) || [];
-            const keywords = matches.map(match => match.replace(/[\[\]]/g, ''));
-            
             taskToSave = {
                 type: 'fillGaps',
-                text_with_gaps: tempTaskData.value.text_with_gaps,
-                keywords: keywords
+                taskData: {
+                    instructions: tempTaskData.value.instructions,
+                    text_with_gaps: tempTaskData.value.text_with_gaps,
+                    keywords: tempTaskData.value.text_with_gaps.match(/\[(.*?)\]/g)?.map(k => k.slice(1, -1)) || []
+                }
             };
             break;
     }
 
     if (taskToSave) {
-        console.log('Tarea a guardar:', taskToSave); // Para debugging
+        console.log('Guardando tarea:', taskToSave);
         formData.value.tasks.push(taskToSave);
     }
 
-    // Limpiar datos temporales
-    tempTaskData.value = {
-        type: '',
-        question: '',
-        answers: [],
-        questions: [],
-        items: [],
-        categories: [],
-        items: [],
-        text_with_gaps: ''
-    };
     closeChildModal();
 };
 
