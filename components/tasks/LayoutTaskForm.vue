@@ -166,12 +166,19 @@
                 </div>
             </div>
         </div>
+        <button 
+            @click="saveLayoutTemporarily"
+            class="mt-6 w-full bg-blue-600 text-white py-2 px-4 rounded-md hover:bg-blue-700"
+        >
+            Guardar Layout
+        </button>
     </div>
 </template>
 
 <script setup lang="ts">
 import { computed } from 'vue';
 import InputFile from '../InputFile.vue';
+import { useLayoutStore } from '@/stores/layout.store';
 
 const props = defineProps<{
     formData: {
@@ -184,7 +191,7 @@ const props = defineProps<{
     tasks: any[];
 }>();
 
-const emit = defineEmits(['update:formData', 'select-task', 'remove-task']);
+const emit = defineEmits(['update:formData', 'select-task', 'remove-task', 'layout-saved']);
 
 const localFormData = computed({
     get: () => props.formData,
@@ -230,5 +237,30 @@ const handleFileUpload = (type: string, file: File) => {
     } else if (type === 'audio') {
         localFormData.value.audio = file;
     }
+};
+
+const layoutStore = useLayoutStore();
+
+const saveLayoutTemporarily = () => {
+    const layoutData = {
+        title: localFormData.value.title,
+        instructions: localFormData.value.instructions,
+        tasks: props.tasks,
+        img_cover: localFormData.value.image,
+        audio: localFormData.value.audio,
+        audio_script: localFormData.value.audioScript
+    };
+
+    const savedLayout = layoutStore.saveTemporaryLayout(layoutData);
+    emit('layout-saved', savedLayout);
+    
+    // Limpiar el formulario
+    localFormData.value = {
+        title: '',
+        instructions: '',
+        image: null,
+        audio: null,
+        audioScript: ''
+    };
 };
 </script> 

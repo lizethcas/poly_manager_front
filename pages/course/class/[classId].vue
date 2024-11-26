@@ -5,6 +5,40 @@
             @save-class="submitForm"
         />
 
+        <!-- Nueva sección informativa -->
+        <div class="mt-6 px-6">
+            <h2 class="text-xl font-semibold text-gray-700 mb-3">
+                Contenido de la clase
+            </h2>
+            <p class="text-gray-600 mb-4">
+                En esta sección se mostrarán los elementos creados para la clase:
+                imágenes, videos y tareas.
+            </p>
+            
+            <!-- Lista de layouts temporales -->
+            <div v-if="temporaryLayouts.length > 0" class="space-y-4">
+                <div v-for="layout in temporaryLayouts" :key="layout.id" class="bg-white p-4 rounded-lg shadow">
+                    <h3 class="font-medium text-lg">{{ layout.title }}</h3>
+                    <p class="text-gray-600 mt-2">{{ layout.instructions }}</p>
+                    
+                    <!-- Lista de tareas del layout -->
+                    <div v-if="layout.tasks?.length" class="mt-4">
+                        <h4 class="font-medium text-sm text-gray-700">Tareas incluidas:</h4>
+                        <ul class="ml-4 mt-2 list-disc">
+                            <li v-for="(task, index) in layout.tasks" :key="index" class="text-gray-600">
+                                {{ getTaskTypeName(task.type) }}
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Mensaje cuando no hay contenido -->
+            <div v-else class="text-gray-500 italic">
+                No hay contenido creado aún. Utiliza los botones superiores para comenzar a crear.
+            </div>
+        </div>
+
         <TaskList 
             :tasks="savedTasks"
             @delete-task="removeTask"
@@ -26,6 +60,7 @@
                         :tasks="formData.tasks"
                         @select-task="selectTaskType"
                         @remove-task="removeTask"
+                        @layout-saved="onLayoutSaved"
                     />
                 </template>
 
@@ -90,6 +125,7 @@ import { ref, computed } from 'vue';
 import { useRoute } from 'vue-router';
 import { useModal } from '@/composables/useModal';
 import TasksApiService from '@/services/tasks.api';
+import { useLayoutStore } from '@/stores/layout.store';
 
 // Importar componentes con rutas absolutas
 import ClassNavigation from '@/components/class/ClassNavigation.vue';
@@ -147,6 +183,15 @@ const modalTitle = computed(() => {
 });
 
 const handleModal = (type: string) => {
+    formData.value = {
+        title: '',
+        instructions: '',
+        image: null,
+        audio: null,
+        audioScript: '',
+        tasks: []
+    };
+    
     currentModal.value = type;
     if (type === 'layoutTask') {
         isChildModalOpen.value = false;
@@ -419,4 +464,37 @@ const isCategoriesTaskValid = computed(() => {
                category.items.every(item => item.text.trim() !== '') // Items no vacíos
            );
 });
+
+const layoutStore = useLayoutStore();
+const temporaryLayouts = computed(() => layoutStore.getTemporaryLayouts);
+
+const onLayoutSaved = (layout) => {
+    // Reiniciar el formulario
+    formData.value = {
+        title: '',
+        instructions: '',
+        image: null,
+        audio: null,
+        audioScript: '',
+        tasks: [] // Importante: reiniciar también las tareas
+    };
+    
+    // Cerrar el modal
+    closeModal();
+    
+    // Reiniciar los estados del modal
+    currentModal.value = '';
+    isChildModalOpen.value = false;
+};
+
+const getTaskTypeName = (type: string) => {
+    const taskTypes = {
+        multipleChoice: 'Opción múltiple',
+        trueFalse: 'Verdadero/Falso',
+        ordering: 'Ordenamiento',
+        categories: 'Categorías',
+        fillGaps: 'Completar espacios'
+    };
+    return taskTypes[type] || type;
+};
 </script>
