@@ -1,7 +1,7 @@
 <template>
     <div class="flex items-center gap-4 mb-4 w-full">
         <label class="min-w-[120px] text-middele-gray">{{ title }}</label>
-        <div class="w-5/12 text-fresh-green">
+        <div class="w-5/12 text-primary-color">
             <USelect 
                 v-model="selectedOption" 
                 :options="options" 

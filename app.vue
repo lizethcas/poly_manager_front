@@ -6,12 +6,7 @@
 </template>
 
 <script setup lang="ts">
-import { useCourseStore } from '@/stores/courseStore';
 
-const courseStore = useCourseStore();
-
-
-console.log(courseStore.courses);
 
 </script>
 

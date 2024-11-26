@@ -9,7 +9,7 @@
     </header>
     <main class=" px-14 text-title-color mb-24">
         <div v-if="isOpen"
-            class="absolute top-0 left-0 w-full min-h-full bg-gray-600 bg-opacity-50 flex justify-center items-start pt-20 overflow-y-auto">
+            class="fixed top-0 left-0 w-full min-h-full bg-gray-600 bg-opacity-50 flex justify-center items-start pt-20 overflow-y-auto">
             <div class="w-full max-w-5xl m-auto p-5">
                 <AddCourseModal :title="createCourse.title" @closeModal="closeModal" :showExtraElements="true" />
             </div>

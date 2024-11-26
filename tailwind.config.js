@@ -4,8 +4,23 @@ export default {
   theme: {
     extend: {
       colors: {
-        "title-color": "#00000b",
-        "fresh-green": "#78CBB6",
+
+        /* text colors */
+        "fuscous-gray-950 ": "#262626",
+        "title-color": "#262626",
+
+        /* primary colors */
+        "primary-color": "#0A394D",
+        "tarawera-700": "#10718e",
+
+
+        /* Courses colors */
+        "baby-steps-color": "#13A73C",
+        "elementary-color": "#2764E7",
+        "pre-intermediate-color": "#9747FF",
+        "intermediate-color": "#8DBDC2",
+        "upper-intermediate-color": "#C1694F",
+        
         "light-gray": "#BEBBBB ",
         "deep-teal": "#0A394D",
         "light-grayish-blue": "#E1E8EF",
@@ -19,6 +34,7 @@ export default {
 
       },
       fontSize: {
+        sm: "0.857rem",
         m: "1.29rem",
         xl: "1.5rem",
         "2xl": "2.5rem",

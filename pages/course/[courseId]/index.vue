@@ -7,7 +7,7 @@
     </div>
 
 
-    <NuxtLink :to="`/course/class/1/create-class`" class="hover:text-blue-500">class</NuxtLink>
+    <NuxtLink :to="`/course/class/1/`" class="hover:text-blue-500">class</NuxtLink>
     <!-- Course overview content -->
     <AddCourseButton @handleAdd="handleAdd" :text="createClass.buttonText" />
     <div v-if="isOpen" class="fixed inset-0 w-full h-full bg-gray-600 bg-opacity-50 overflow-y-auto">
