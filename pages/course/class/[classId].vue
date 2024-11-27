@@ -37,6 +37,8 @@
             <div v-else class="text-gray-500 italic">
                 No hay contenido creado aún. Utiliza los botones superiores para comenzar a crear.
             </div>
+
+            <button>guarda</button>
         </div>
 
         <TaskList 
@@ -117,6 +119,17 @@
                 </template>
             </div>
         </div>
+
+        <!-- Mostrar errores -->
+        <div v-if="error" class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative" role="alert">
+            <strong class="font-bold">Error!</strong>
+            <span class="block sm:inline">{{ error }}</span>
+        </div>
+
+        <!-- Mostrar loading -->
+        <div v-if="isLoading" class="fixed inset-0 bg-gray-500 bg-opacity-75 flex items-center justify-center">
+            <div class="animate-spin rounded-full h-32 w-32 border-b-2 border-gray-900"></div>
+        </div>
     </div>
 </template>
 
@@ -126,6 +139,7 @@ import { useRoute } from 'vue-router';
 import { useModal } from '@/composables/useModal';
 import TasksApiService from '@/services/tasks.api';
 import { useLayoutStore } from '@/stores/layout.store';
+import { useTaskStore } from '~/stores/taskStore';
 
 // Importar componentes con rutas absolutas
 import ClassNavigation from '@/components/class/ClassNavigation.vue';
@@ -261,8 +275,17 @@ const removeCategoryItem = (categoryIndex: number, itemIndex: number) => {
 const savedTasks = ref([]);
 
 const submitForm = async () => {
+    isLoading.value = true;
+    error.value = null;
+    
     try {
-        // Primero crear el layout
+        console.log('Iniciando guardado de layout y tareas');
+        
+        if (!taskStore) {
+            throw new Error('Store no inicializado correctamente');
+        }
+
+        // Crear layout
         const layoutData = new FormData();
         layoutData.append('class_model', classId.value.toString());
         layoutData.append('title', formData.value.title);
@@ -284,28 +307,25 @@ const submitForm = async () => {
             console.log(pair[0] + ': ' + pair[1]);
         }
 
-        const layout = await TasksApiService.createLayout(classId.value, layoutData);
+        const savedLayout = await TasksApiService.createLayout(classId.value, layoutData);
+        console.log('Layout guardado:', savedLayout);
 
-        // Luego crear cada tarea asociada al layout
-        for (const task of formData.value.tasks) {
-            const taskData = {
-                ...task,
-                layout: layout.id,
-                instructions: formData.value.instructions
-            };
-            await TasksApiService.createTask(layout.id, taskData, task.type);
+        // Guardar tareas
+        const success = await taskStore.saveTasksToLayout(savedLayout.id);
+        
+        if (!success) {
+            throw new Error('Error al guardar las tareas');
         }
 
-        savedTasks.value = [...formData.value.tasks];
-        formData.value.tasks = [];
-        closeModal();
+        console.log('Proceso completado exitosamente');
+        alert('Layout y tareas guardados correctamente');
 
-    } catch (error) {
-        console.error('Error al guardar:', error);
-        // Mostrar más detalles del error
-        if (error.response) {
-            console.error('Error response:', error.response.data);
-        }
+    } catch (err) {
+        console.error('Error en submitForm:', err);
+        error.value = err instanceof Error ? err.message : 'Error desconocido';
+        alert(`Error al guardar: ${error.value}`);
+    } finally {
+        isLoading.value = false;
     }
 };
 
@@ -497,4 +517,11 @@ const getTaskTypeName = (type: string) => {
     };
     return taskTypes[type] || type;
 };
+
+// 2. Inicialización del store
+const taskStore = useTaskStore();
+
+// 3. Manejo de errores y estado
+const error = ref<string | null>(null);
+const isLoading = ref(false);
 </script>

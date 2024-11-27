@@ -3,17 +3,20 @@ import type { ClassData } from "~/interfaces/models/class.interface..model";
 
 export class ApiClassService {
   async createClass(formData: FormData) {
-    console.log(formData)
     try {
+      // Verificar el contenido del FormData antes de enviarlo
+      for (let pair of formData.entries()) {
+        console.log(pair[0] + ': ' + pair[1]); // Debug
+      }
+
       const response = await axiosInstance.post("classes/", formData, {
         headers: {
           "Content-Type": "multipart/form-data",
         },
       });
-      console.log(response.data)
       return response.data;
-    } catch (error) {
-      console.error("Error in createCourse:", error);
+    } catch (error: any) {
+      console.error("Error details:", error.response?.data); // Ver detalles del error
       throw error;
     }
   }

@@ -179,6 +179,7 @@
 import { computed } from 'vue';
 import InputFile from '../InputFile.vue';
 import { useLayoutStore } from '@/stores/layout.store';
+import { useTaskStore } from '@/stores/taskStore';
 
 const props = defineProps<{
     formData: {
@@ -240,27 +241,45 @@ const handleFileUpload = (type: string, file: File) => {
 };
 
 const layoutStore = useLayoutStore();
+const taskStore = useTaskStore();
 
 const saveLayoutTemporarily = () => {
-    const layoutData = {
-        title: localFormData.value.title,
-        instructions: localFormData.value.instructions,
-        tasks: props.tasks,
-        img_cover: localFormData.value.image,
-        audio: localFormData.value.audio,
-        audio_script: localFormData.value.audioScript
-    };
+    try {
+        console.log('[LayoutForm] Guardando layout temporalmente');
+        
+        // Guardar las tareas en el taskStore
+        if (props.tasks && props.tasks.length > 0) {
+            console.log('[LayoutForm] Guardando tareas:', props.tasks);
+            props.tasks.forEach(task => {
+                taskStore.addTemporalTask(task);
+            });
+        }
 
-    const savedLayout = layoutStore.saveTemporaryLayout(layoutData);
-    emit('layout-saved', savedLayout);
-    
-    // Limpiar el formulario
-    localFormData.value = {
-        title: '',
-        instructions: '',
-        image: null,
-        audio: null,
-        audioScript: ''
-    };
+        const layoutData = {
+            title: localFormData.value.title,
+            instructions: localFormData.value.instructions,
+            tasks: taskStore.tasks,
+            img_cover: localFormData.value.image,
+            audio: localFormData.value.audio,
+            audio_script: localFormData.value.audioScript
+        };
+
+        console.log('[LayoutForm] Layout data:', layoutData);
+        const savedLayout = layoutStore.saveTemporaryLayout(layoutData);
+        emit('layout-saved', savedLayout);
+        
+        // Limpiar el formulario
+        localFormData.value = {
+            title: '',
+            instructions: '',
+            image: null,
+            audio: null,
+            audioScript: ''
+        };
+
+    } catch (error) {
+        console.error('[LayoutForm] Error al guardar:', error);
+        throw error;
+    }
 };
 </script> 
