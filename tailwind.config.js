@@ -6,19 +6,23 @@ export default {
       colors: {
 
         /* text colors */
-        "fuscous-gray-950 ": "#262626",
+        "fuscous-gray-950": "#262626",
+        "fuscous-gray-400": "#888888",
+        "fuscous-gray-600": "#5D5D5D",
+        "fuscous-gray-100": "#E7E7E7",
         "title-color": "#262626",
 
         /* primary colors */
         "primary-color": "#0A394D",
         "tarawera-700": "#10718e",
+      
 
 
         /* Courses colors */
         "baby-steps-color": "#13A73C",
         "elementary-color": "#2764E7",
         "pre-intermediate-color": "#9747FF",
-        "intermediate-color": "#8DBDC2",
+        "intermediate-color": "#1C5A69",
         "upper-intermediate-color": "#C1694F",
         
         "light-gray": "#BEBBBB ",
@@ -38,6 +42,7 @@ export default {
         m: "1.29rem",
         xl: "1.5rem",
         "2xl": "2.5rem",
+        "3rem": "3rem",
       },
       fontWeight: {
         thin: "100",

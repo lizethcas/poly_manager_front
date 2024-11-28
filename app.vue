@@ -1,7 +1,7 @@
 <template>
-  <div>
+
     <NuxtPage />
-  </div>
+
   
 </template>
 
@@ -10,8 +10,3 @@
 
 </script>
 
-<style scoped>
-body {
-  font-size: 14px;
-}
-</style>

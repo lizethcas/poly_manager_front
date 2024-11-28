@@ -1,9 +1,9 @@
 <template>
     <ul
-        class="fixed text-center rounded-md p-2 flex w-[80%] mx-auto justify-evenly bottom-14 shadow-lg bg-white left-0 right-0">
+        class="fixed text-center rounded-md p-2 flex w-[80%] mx-auto justify-evenly bottom-2 shadow-lg bg-white left-0 right-0">
         <li v-for="icon in icons" :key="icon.name" class="flex flex-col items-center" @click="$emit('open-modal', icon.label, icon.name)">
-            <Icon :name="icon.name" size="30" class="text-primary-color hover:text-tarawera-700 cursor-pointer" />
-            <p class="text-sm text-primary-color hover:text-tarawera-700 cursor-pointer max-w-14">{{ icon.label }}</p>
+            <Icon :name="icon.name" size="24" class="text-primary-color hover:text-tarawera-700 cursor-pointer" />
+            <p class="text-[0.7rem] text-primary-color hover:text-tarawera-700 cursor-pointer max-w-14">{{ icon.label }}</p>
         </li>
     </ul>
 </template>

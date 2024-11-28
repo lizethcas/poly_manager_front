@@ -31,7 +31,7 @@ export class ApiService {
     // Obtener un curso por ID
     async getCourseById(id: number) {
         try {
-            const response = await axiosInstance.get(`/api/courses/${id}`);
+            const response = await axiosInstance.get(`courses/${id}/classes`);
             return response.data;
         } catch (error) {
             console.error('Error in getCourseById:', error);

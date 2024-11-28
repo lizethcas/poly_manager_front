@@ -5,7 +5,8 @@ export interface ImgAtomProps {
 
 export interface ButtonAtomProps {
   text?: string;
-  color?: string;
   type: string;
+  size?: string;
+  icon?: string;
+  defaultLabel?: string;
 }
-

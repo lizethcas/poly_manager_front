@@ -1,5 +1,5 @@
 <template>
-    <div class="p-7 max-w-5xl m-auto w-full bg-white rounded-lg">
+    <div class="p-7 max-w-2xl m-auto w-full bg-white rounded-lg  h-[70vh] overflow-y-auto">
         <div class="flex justify-between">
             <h2 class="font-bold text-m">{{ title }}</h2>
             <img src="../../assets/images/close.webp" alt="close create course" class="w-5 h-5 cursor-pointer"
@@ -55,13 +55,19 @@ import type { ModalProps } from '~/interfaces/modal.interface';
 import SelectAtom from '../molecule/SelectAtom.vue';
 import { useFormData } from '~/hooks/userFormData';
 import { useCourseStore } from '~/stores/courseStore';
+import { useClassStore } from '~/stores/class.store';
 import { ApiService } from '~/services/create.course.api';
 import transformKey from '~/utils/stringTransformations'
 import { useRoute } from 'vue-router';
 import { ApiClassService } from '~/services/create.class.api';
 import type { ClassData } from '~/interfaces/models/class.interface..model';
 import type { CourseForm } from '~/interfaces/modal.interface';
+
+
+
 const route = useRoute();
+const courseStore = useCourseStore();
+const classStore = useClassStore();
 const { bulletPoints, formData, handleEmit, updateFormField } = useFormData();
 
 
@@ -92,30 +98,13 @@ const updateSelectField = (field: string, value: string) => {
 };
 
 // Add store initialization
-const courseStore = useCourseStore();
+
 
 // Al inicio del archivo, después de las importaciones
 const defaultCategory = createCourse.categorys[0];
 const defaultLevel = createCourse.levels[0];
 
-// Agregar al inicio del script
-const fieldMappings = {
-  'course': {
-    course_name: 'course_name',
-    description: 'description',
-    category: 'category',
-    level: 'level',
-    cover: 'cover',
-    bullet_points: 'bullet_points'
-  },
-  'class': {
-    course_name: 'class_name', // mapea course_name del form a class_name en la API
-    description: 'description',
-    cover: 'cover',
-    bullet_points: 'bullet_points',
-    course: 'course' // campo adicional para clases
-  }
-};
+
 
 // Update handleSave function
 const handleSave = async () => {
@@ -125,7 +114,7 @@ const handleSave = async () => {
     }
 
     const formType = route.name === 'course-courseId' ? 'class' : 'course';
-    const mappings = fieldMappings[formType];
+
 
     if (formType === 'class') {
         const requestData = {
@@ -137,21 +126,23 @@ const handleSave = async () => {
         };
         const apiService = new ApiClassService();
         await apiService.createClass(requestData);
+        classStore.saveClass(formData.value as CourseForm);
     } else {
         const requestData = {
             course_name: formData.value.course_name,
             description: formData.value.description,
             category: formData.value.category || defaultCategory,
             level: formData.value.level || defaultLevel,
-            bullet_points:JSON.stringify(Array.from(bulletPoints.value)),
+            bullet_points: JSON.stringify(Array.from(bulletPoints.value)),
             cover: formData.value.cover
         };
         console.log(requestData)
-        const apiService = new ApiService();    
+        const apiService = new ApiService();
         await apiService.createCourse(requestData);
+        courseStore.saveCourse(formData.value as CourseForm);
     }
+
     
-    courseStore.saveCourse(formData.value as CourseForm);
     closeModal();
 };
 
