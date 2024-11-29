@@ -10,9 +10,11 @@
             <img src="~/assets/images/back-button-round.webp" alt="regresar una pagina"
                 class="w-10 h-10 cursor-pointer items-center" @click="navigateTo('/')" />
             <div class="flex items-start">
-                <img v-if="course.cover"
+                <img v-if="course.cover" :src="getCoverUrl(course.cover)" alt=""
+                    class="mx-4 object-cover w-36 h-36 border-2 rounded-xl" />
+                <!-- <img v-if="course.cover"
                     :src="typeof course.cover === 'string' ? course.cover : URL.createObjectURL(course.cover)"
-                    :alt="course.course_name" class="mx-4 object-contain w-36 h-auto border-2 rounded-xl" />
+                    :alt="course.course_name" class="mx-4 object-cover w-36 h-36 border-2 rounded-xl" /> -->
                 <div class="flex flex-col items-start">
                     <h2 class="text-tarawera-700 font-bold text-2xl">{{ course.course_name }}</h2>
                     <div class="flex items-center">
@@ -92,9 +94,10 @@ import type { CourseForm } from '~/interfaces/modal.interface';
 const route = useRoute();
 const courseStore = useCourseStore();
 const { getLevelColor } = useGetColor();
+const { getCoverUrl } = useGetCover();
 const routeCourseId = route.params.courseId as string;
 const courseIdNumber = routeCourseId;
-console.log(courseIdNumber)
+console.log(toRaw(courseStore.courses))
 
 const course = computed(() => {
     const foundCourse = courseStore.courses.find((course: CourseForm) => course.id === Number(courseIdNumber));

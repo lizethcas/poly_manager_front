@@ -16,6 +16,7 @@ export const useCourseStore = defineStore("course", {
 
     setCourses(courses: CourseForm[]) {
       this.courses = courses;
+      console.log(this.courses)
     },
 
     updateCurrentForm(updates: Partial<CourseForm>) {
