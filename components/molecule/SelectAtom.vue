@@ -1,12 +1,9 @@
 <template>
     <div class="flex items-center gap-4 mb-4 w-full">
-        <label class="min-w-[120px] text-middele-gray">{{ title }}</label>
+        <label v-if="!label" class="min-w-[120px] text-middele-gray">{{ title }}</label>
         <div class="w-5/12 text-primary-color">
-            <USelect 
-                v-model="selectedOption" 
-                :options="options" 
-                @update:modelValue="handleChange"
-            />
+            <USelect v-model="selectedOption" :options="options" @update:modelValue="handleChange" variant="outline"
+                :ui="{ ring: 'ring-gray-300' }" />
         </div>
     </div>
 </template>
@@ -17,6 +14,7 @@ import type { ModalProps } from '~/interfaces/modal.interface';
 
 const props = defineProps<ModalProps & {
     modelValue?: string
+    label?: boolean
 }>();
 
 const emit = defineEmits<{

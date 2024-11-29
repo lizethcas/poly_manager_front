@@ -4,10 +4,10 @@
             <div v-if="icon">
                 <label for="file-upload" class="min-w-[120px] text-primary-color font-bold text-md">{{ title }}</label>
                 <div @click="triggerFileUpload"
-                    class="hover:text-fuscous-gray-600 p-2 bg-fuscous-gray-100 min-w-20 w-full text-center rounded-lg cursor-pointer hover:scale-105 transition-all duration-300 group  ">
+                    class="hover:text-fuscous-gray-600 p-2 bg-fuscous-gray-100 min-w-20 max-w-10 w-full text-center rounded-lg cursor-pointer hover:scale-105 transition-all duration-300 group  ">
                     <Icon name="material-symbols:upload" class="text-fuscous-gray-400 group-hover:text-fuscous-gray-600"
                         size="24" />
-                    <p class="text-fuscous-gray-400 group-hover:text-fuscous-gray-600">Upload</p>
+                    <p class="text-fuscous-gray-400 group-hover:text-fuscous-gray-600 text-xs">Upload</p>
                 </div>
             </div>
 

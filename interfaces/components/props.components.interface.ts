@@ -10,3 +10,8 @@ export interface ButtonAtomProps {
   icon?: string;
   defaultLabel?: string;
 }
+
+export interface PropsInteractiveTask extends ImgAtomProps {
+  title: string;
+ 
+}

@@ -14,7 +14,7 @@
                     :src="typeof course.cover === 'string' ? course.cover : URL.createObjectURL(course.cover)"
                     :alt="course.course_name" class="mx-4 object-contain w-36 h-auto border-2 rounded-xl" />
                 <div class="flex flex-col items-start">
-                    <h2 class="text-primary-color font-bold text-2xl">{{ course.course_name }}</h2>
+                    <h2 class="text-tarawera-700 font-bold text-2xl">{{ course.course_name }}</h2>
                     <div class="flex items-center">
                         <div :class="['rounded-full w-10  flex items-start ', getLevelColor(course.level)]">
                             <p :class="[
@@ -49,24 +49,24 @@
                     <ul class="flex gap-8">
                         <li>
                             <NuxtLink :to="`/course/${routeCourseId}`"
-                                class="relative pb-2 font-medium text-gray-60 hover:text-primary-color" :class="{
-                                    'text-primary-color underline-active': $route.path === `/${routeCourseId}/lessons`
+                                class="relative pb-2 font-bold text-gray-60 hover:text-tarawera-700" :class="{
+                                    'text-tarawera-700 underline-active': $route.path === `/course/${routeCourseId}`
                                 }">
                                 Lessons
                             </NuxtLink>
                         </li>
                         <li>
                             <NuxtLink :to="`/course/${routeCourseId}/students`"
-                                class="relative pb-2 font-medium text-gray-60 hover:text-primary-color" :class="{
-                                    'text-primary-color underline-active': $route.path === `/${routeCourseId}/students`
+                                class="relative pb-2 font-medium text-gray-60 hover:text-tarawera-700" :class="{
+                                    'text-tarawera-700 underline-active': $route.path === `/course/${routeCourseId}/students`
                                 }">
                                 Students
                             </NuxtLink>
                         </li>
                         <li>
                             <NuxtLink :to="`/course/${routeCourseId}/statistics`"
-                                class="relative pb-2 font-medium text-gray-60 hover:text-primary-color" :class="{
-                                    'text-primary-color underline-active': $route.path === `/${routeCourseId}/statistics`
+                                class="relative pb-2 font-medium text-gray-60 hover:text-tarawera-700" :class="{
+                                    'text-tarawera-700 underline-active': $route.path === `/course/${routeCourseId}/statistics`
                                 }">
                                 Statistics
                             </NuxtLink>

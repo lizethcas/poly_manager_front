@@ -1,7 +1,7 @@
 <template>
   <div v-if="courses.length > 0" v-for="course in courses.slice().reverse()" @click="navigateTo(`/course/${course.id}`)"
     :class="[
-      'flex justify-between border-2 rounded-xl cursor-pointer mt-4 hover:scale-105 transition-all duration-300',
+      'w-full flex justify-between border-2 rounded-xl cursor-pointer mt-4 hover:scale-105 transition-all duration-300',
       getLevelColor(course.level) // Aplica el color de borde
     ]">
     <div class="flex w-1/2 mt-4">

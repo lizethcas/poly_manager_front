@@ -33,7 +33,7 @@ import { ref } from 'vue';
 import { useModal } from '~/composables/useModal';
 import EditClassNavigation from '~/components/organisim/EditClassNavigation.vue';
 import BaseTaskModal from '~/components/organisim/BaseTaskModal.vue';
-import { useRoute } from 'vue-router';
+
 
 
 const { isOpen, openModal, closeModal } = useModal();
@@ -44,7 +44,7 @@ const showEditNavigation = ref(false);
 // Escuchar el evento y pasar los valores recibidos
 const openModalHandler = (label: string, name: string) => {
     currentModal.value = { label, name };
-    console.log(currentModal.value.label)
+  
     openModal();  // Asegúrate de abrir el modal
 };
 

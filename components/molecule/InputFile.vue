@@ -1,7 +1,7 @@
 <!-- MoleculeBaseInput.vue -->
 <template>
   <div :class="['gap-4 mb-4 w-full', containerClass]">
-    <label for="" class="min-w-[120px] text-middele-gray">{{ props.title }}</label>
+    <label v-if="!label" class="min-w-[120px] text-middele-gray">{{ props.title }}</label>
     <UInput v-if="type == 'text'" :type="type" :size="size || 'xs'" class="w-full" v-model="inputValue"
       :required="props.required" />
     <UTextarea v-if="type == 'text_area'" :size="size || 'xs'" v-model="inputValue" class="w-full" />
@@ -13,6 +13,7 @@ import { ref, defineProps, defineEmits, watch } from 'vue';
 
 
 const props = defineProps({
+  label: Boolean,
   title: String,
   type: String,
   modelValue: String,
@@ -21,7 +22,7 @@ const props = defineProps({
     default: false
   },
   size: {
-    type: String as () => 'sm' | 'md' | 'lg',
+    type: String as () => 'sm' | 'md' | 'lg' | 'xs',
     default: 'sm'
   },
   containerClass: {

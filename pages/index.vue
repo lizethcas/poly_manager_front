@@ -7,7 +7,7 @@
         <h2 class="mt-4 font-bold text-m ">{{ homeData.subTitle }}</h2>
         <AddCourseButton @handleAdd="handleAdd" :text="createCourse.buttonText" />
     </header>
-    <main class=" px-14 text-title-color mb-24">
+    <main class=" px-14 text-title-color mb-24 flex flex-wrap items-center justify-center">
         <div v-if="isOpen"
             class="fixed top-0 left-0 w-full min-h-full bg-gray-600 bg-opacity-50 flex justify-center items-start  overflow-y-auto">
             <div class="w-full max-w-5xl m-auto p-5">

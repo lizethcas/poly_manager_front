@@ -7,7 +7,7 @@
 import { defineProps, computed } from 'vue';
 import type { ButtonAtomProps } from '~/interfaces/components/props.components.interface';
 
-const { text, type, size } = defineProps<ButtonAtomProps>();
+const { text, type } = defineProps<ButtonAtomProps>();
 const emits = defineEmits(['handleClick']);
 
 const handleClick = () => {
