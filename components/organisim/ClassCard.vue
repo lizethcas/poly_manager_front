@@ -74,6 +74,7 @@ const openModalHandler = () => {
 };
 
 const handlePreviewClick = (classId: number | undefined, courseId: number | undefined) => {
+    console.log(classId, courseId);
   if (classId && courseId) {
     navigateTo(`/course/${courseId}/class/${classId}`);
   } else {

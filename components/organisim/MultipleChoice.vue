@@ -5,7 +5,7 @@
             <h3 class="text-tarawera-700 font-bold">Question {{ qIndex + 1 }}</h3>
             <div class="flex items-center gap-2 p-2">
                 <Icon name="mingcute:dots-fill" size="24" class="text-gray-500" />
-                <UInput v-model="question.text" type="text" size="xs" class="w-full mt-1" />
+                <UInput v-model="question.question" type="text" size="xs" class="w-full mt-1" />
                 <div class="bg-gray-200 rounded-md p-1 flex items-center justify-center">
                     <Icon name="material-symbols:close" size="18" class="text-gray-500 cursor-pointer"
                         @click="removeQuestion(qIndex)" />
@@ -26,7 +26,7 @@
                                 <Icon name="mingcute:check-2-fill" size="24" class="text-white flex items-center" />
                             </span>
                         </label>
-                        <UInput v-model="option.text" type="text" size="xs" class="w-full" />
+                        <UInput v-model="option.answer" type="text" size="xs" class="w-full" />
                         <div class="bg-gray-200 rounded-md p-1 flex items-center justify-center">
                             <Icon name="material-symbols:close" size="18" class="text-gray-500 cursor-pointer"
                                 @click="removeOption(qIndex, oIndex)" />
@@ -44,43 +44,52 @@
 </template>
 
 <script setup lang="ts">
-import { ref } from 'vue'
+import { ref, computed } from 'vue'
 
+let id = 1
 interface Option {
-    text: string
+    answer: string
     isCorrect: boolean
+    id: number
 }
 
 interface Question {
-    text: string
+    question: string
+
     options: Option[]
 }
 
 const questions = ref<Question[]>([{
-    text: '',
+    question: '',
+
+
     options: [{
-        text: '',
-        isCorrect: false
+        answer: '',
+        isCorrect: false,
+        id: id++
     }]
 }])
 
 const addOption = (questionIndex: number) => {
     questions.value[questionIndex].options.push({
-        text: '',
-        isCorrect: false
+        answer: '',
+        isCorrect: false,
+        id: id++
     })
 }
 
 const addQuestion = () => {
     questions.value.push({
-        text: '',
+        question: '',
         options: [{
-            text: '',
-            isCorrect: false
+            answer: '',
+            isCorrect: false,
+            id: id++
         }]
     })
 }
 
+console.log(toRaw(questions.value))
 const removeOption = (questionIndex: number, optionIndex: number) => {
     questions.value[questionIndex].options.splice(optionIndex, 1)
 }

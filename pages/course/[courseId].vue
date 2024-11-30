@@ -98,7 +98,7 @@ const { getCoverUrl } = useGetCover();
 
 const routeCourseId = route.params.courseId as string;
 const courseIdNumber = routeCourseId;
-console.log(toRaw(courseStore.courses))
+
 
 const course = computed(() => {
     const foundCourse = courseStore.courses.find((course: CourseForm) => course.id === Number(courseIdNumber));

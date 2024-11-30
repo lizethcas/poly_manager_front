@@ -1,5 +1,5 @@
 <template>
-  <div v-if="courses.length > 0" v-for="course in courses" :key="course.id" @click="navigateToCourse(course.id)"
+  <div v-if="courses.length > 0" v-for="course in courses.slice().reverse()" :key="course.id" @click="navigateToCourse(course.id)"
     :class="[
       'w-full flex justify-between border-2 rounded-xl cursor-pointer mt-4 hover:scale-105 transition-all duration-300',
       getLevelColor(course.level) // Aplica el color de borde
@@ -51,11 +51,6 @@ const courses = computed(() => courseStore.courses);
 const { getLevelColor } = useGetColor();
 const { getCoverUrl } = useGetCover();
 
-console.log(toRaw(courses));
-
-onMounted(async () => {
-  courseStore.setCourses();
-});
 
 const navigateToCourse = (courseId: number) => {
   // Verificar que el ID existe antes de navegar
