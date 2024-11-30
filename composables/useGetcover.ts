@@ -1,9 +1,7 @@
 export const useGetCover = () => {
-  const getCoverUrl = (cover: string | File) => {
+  const getCoverUrl = (cover: string | File): string => {
     if (cover instanceof File) {
-      const objectUrl = URL.createObjectURL(cover);
-      onUnmounted(() => URL.revokeObjectURL(objectUrl)); // Revoca la URL cuando el componente se desmonta
-      return objectUrl;
+      return URL.createObjectURL(cover);
     }
     return typeof cover === "string" && cover !== ""
       ? cover

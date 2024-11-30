@@ -60,4 +60,5 @@ export default defineNuxtConfig({
   runtimeConfig: {
     autoImports: ['defineStore', 'storeToRefs'], // Esto normalmente no se coloca en runtimeConfig, verifica si es necesario.
   },
+
 });

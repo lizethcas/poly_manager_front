@@ -1,5 +1,5 @@
 <template>
-  <div v-if="courses.length > 0" v-for="course in courses.slice().reverse()" @click="navigateTo(`/course/${course.id}`)"
+  <div v-if="courses.length > 0" v-for="course in courses" :key="course.id" @click="navigateToCourse(course.id)"
     :class="[
       'w-full flex justify-between border-2 rounded-xl cursor-pointer mt-4 hover:scale-105 transition-all duration-300',
       getLevelColor(course.level) // Aplica el color de borde
@@ -23,7 +23,7 @@
         </h3>
         <h2 class="text-gray-high font-bold text-xl" v-if="course.course_name">{{ course.course_name }}</h2>
         <div class="flex items-center w-10/12 justify-between mt-2">
-          <p class="text-gray-high border-2 border-gray-light rounded-full px-2">published</p>
+          <p class="text-gray-high border-2 border-gray-light rounded-full px-2">publisheds</p>
           <p class="text-gray-high border-2 border-gray-light rounded-full px-2">2</p>
           <p class="text-gray-high border-2 border-gray-light rounded-full px-2">45</p>
         </div>
@@ -41,33 +41,30 @@
 <script lang="ts" setup>
 import { useCourseStore } from '~/stores/courseStore';
 import { useGetColor } from '~/composables/useGetColor';
-import { ApiService } from '~/services/create.course.api';
-import type { CourseForm } from '~/interfaces/modal.interface';
+/* import { ApiService } from '~/services/create.course.api';
+import type { CourseForm } from '~/interfaces/modal.interface'; */
 import { useGetCover } from '~/composables/useGetcover';
 const courseStore = useCourseStore();
+console.log(courseStore.courses)
 const courses = computed(() => courseStore.courses);
 
 const { getLevelColor } = useGetColor();
 const { getCoverUrl } = useGetCover();
 
+console.log(toRaw(courses));
 
 onMounted(async () => {
-  try {
-    const apiService = new ApiService();
-    const fetchedCourses = await apiService.getAllCourses();
-
-    if (Array.isArray(fetchedCourses)) {
-      courseStore.setCourses(fetchedCourses as CourseForm[]);
-    } else {
-      console.warn('Received invalid courses data');
-      courseStore.setCourses([]);
-    }
-  } catch (error) {
-    console.error('Error fetching courses:', error);
-    courseStore.setCourses([]);
-  }
+  courseStore.setCourses();
 });
 
-
+const navigateToCourse = (courseId: number) => {
+  // Verificar que el ID existe antes de navegar
+  const course = courseStore.courses.find(c => c.id === courseId);
+  if (course) {
+    navigateTo(`/course/${courseId}`);
+  } else {
+    console.error('Curso no encontrado');
+  }
+};
 
 </script>

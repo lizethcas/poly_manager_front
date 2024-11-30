@@ -14,7 +14,7 @@
 
             <div class="flex justify-end w-full">
                 <div class="w-[95%] items-end">
-                    <h3 class="text-tarawera-700 font-bold">Answer options:</h3>
+                    <h3 class="text-fuscous-400 font-bold">Answer options:</h3>
                     <!-- Iteramos sobre las opciones de cada pregunta -->
                     <div v-for="(option, oIndex) in question.options" :key="oIndex" class="flex items-center gap-2 p-2">
                         <Icon name="mingcute:dots-fill" size="24" class="text-gray-500" />

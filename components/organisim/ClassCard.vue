@@ -37,18 +37,17 @@
 import { onMounted } from 'vue';
 import { toRefs } from 'vue';
 import { useClassStore } from '~/stores/class.store';
-import { useGetUrl } from '~/composables/useGetUrl';
 import {ApiService} from '~/services/create.course.api';
 import type { ClassData } from '~/interfaces/models/class.interface..model';
 
 import { navigateTo } from '#app';
 
 // Extraemos las propiedades reactivas del store
-const { getCoverUrl } = useGetUrl();
+const { getCoverUrl } = useGetCover();
 const classStore = useClassStore();
 const { classes, loading } = toRefs(classStore);
 const routeCourseId = useRoute().params.courseId as string;
-console.log(routeCourseId);
+
 
 onMounted(async () => {
     classStore.loading = true; // Marcamos como cargando
@@ -62,15 +61,16 @@ onMounted(async () => {
         classStore.loading = false; // Terminamos de cargar
     }
 });
-
+/* aun no esta implementado */
 const onDragStart = (event: DragEvent) => {
     // Aquí puedes manejar el inicio del arrastre, por ejemplo, cambiar el estilo o estado
     event.dataTransfer?.setData('text', 'Esto es un drag');
 };
 
+/* aun no esta implementado */
 const openModalHandler = () => {
     console.log('open modal');
-    // Add your modal logic here
+  
 };
 
 const handlePreviewClick = (classId: number | undefined, courseId: number | undefined) => {

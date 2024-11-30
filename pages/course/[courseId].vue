@@ -95,6 +95,7 @@ const route = useRoute();
 const courseStore = useCourseStore();
 const { getLevelColor } = useGetColor();
 const { getCoverUrl } = useGetCover();
+
 const routeCourseId = route.params.courseId as string;
 const courseIdNumber = routeCourseId;
 console.log(toRaw(courseStore.courses))

@@ -1,5 +1,5 @@
 import { defineStore } from "pinia";
-import type { ClassData } from '~/interfaces/models/class.interface..model'
+import type { ClassData } from "~/interfaces/models/class.interface..model";
 
 export const useClassStore = defineStore("class", {
   state: () => ({
@@ -10,7 +10,6 @@ export const useClassStore = defineStore("class", {
   persist: true,
   actions: {
     saveClass(courseData: ClassData) {
-      this.classes.push(courseData);
       this.currenClass = courseData as ClassData;
     },
 
@@ -22,7 +21,7 @@ export const useClassStore = defineStore("class", {
       if (this.currenClass) {
         this.currenClass = {
           ...this.currenClass,
-          ...updates as ClassData
+          ...(updates as ClassData),
         } as ClassData;
       }
     },

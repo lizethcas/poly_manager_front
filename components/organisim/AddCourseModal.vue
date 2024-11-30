@@ -136,13 +136,13 @@ const handleSave = async () => {
             bullet_points: JSON.stringify(Array.from(bulletPoints.value)),
             cover: formData.value.cover
         };
-        console.log(requestData)
+
         const apiService = new ApiService();
         await apiService.createCourse(requestData);
-        courseStore.saveCourse(formData.value as CourseForm);
+        courseStore.setCourses();
     }
 
-    
+
     closeModal();
 };
 
