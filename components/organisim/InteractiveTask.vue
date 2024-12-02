@@ -1,5 +1,5 @@
 <template>
-    <div class="flex flex-nowrap w-full items-center justify-center gap-2">
+    <div class="flex flex-nowrap w-full items-center justify-between gap-2">
         <div v-for="task in interactiveTaskData" 
              :key="task.alt"
              @click="$emit('open-task', task.title)"

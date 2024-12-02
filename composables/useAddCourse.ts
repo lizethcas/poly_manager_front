@@ -1,4 +1,3 @@
-import { ref } from 'vue'
 import { ApiService } from '~/services/create.course.api'
 import { useCourseStore } from '~/stores/courseStore'
 import { createCourse } from '~/data/cardModal'

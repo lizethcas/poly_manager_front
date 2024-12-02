@@ -17,16 +17,12 @@
                 <MoleculeInputFile :title="'Title'" type="text" />
                 <MoleculeInputFile :title="'Instructions'" type="text_area" />
             </div>
+            
             <!-- Slot for specific content -->
             <slot></slot>
 
             <!-- Submit Button -->
-
-
-            <div class="flex justify-center gap-4 mt-6">
-                <div class="min-w-[120px]"></div>
-                <MoleculeActionButtons @handleSave="handleSave" @handleCancel="$emit('close')" />
-            </div>
+           
         </div>
     </div>
 </template>
@@ -34,11 +30,5 @@
 <script setup lang="ts">
 
 defineProps(['isOpen', 'title', 'modelValue', 'icon', 'type']);
-defineEmits(['close', 'submit', 'update:modelValue']);
-
-const handleSave = () => {
-    console.log('save');
- 
-}
 
 </script>

@@ -14,14 +14,14 @@
             </div>
             <div class="mx-4">
                 <p class="text-xl font-bold text-primary-color">{{ classItem.class_name }}</p>
-                <div class="flex items-center gap-2 border border-gray-500 rounded-full p-2 w-fit mb-2">
-                    <Icon name="material-symbols-light:check" size="24" class="text-gray-500" />
+                <div class="flex text-xs items-center gap-2 border border-gray-500 rounded-full p-1 w-fit mb-2">
+                    <Icon name="material-symbols-light:check" size="14" class="text-gray-500" />
                     <p>12/30</p>
                 </div>
 
                 <div class="flex items-center gap-2">
-                    <AtomosButtonAtom :type="'edit'" :size="'24px'" @handleClick="openModalHandler" />
-                    <AtomosButtonAtom :type="'preview'" :size="'24px'" @handleClick="handlePreviewClick(classItem.id, routeCourseId)" />
+                    <AtomosButtonAtom :type="'edit'" :size="'24px'" @handleClick="handlePreviewClick(classItem.id, routeCourseId)" />
+                    <AtomosButtonAtom :type="'preview'" :size="'24px'" @handleClick="openModalHandler" />
                 </div>
 
 

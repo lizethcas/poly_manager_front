@@ -1,20 +1,21 @@
 <template>
-    <div class="flex items-center gap-4 mb-4 w-full">
+    <div class="flex items-center gap-4 ">
         <label v-if="!label" class="min-w-[120px] text-middele-gray">{{ title }}</label>
-        <div class="w-5/12 text-primary-color">
-            <USelect v-model="selectedOption" :options="options" @update:modelValue="handleChange" variant="outline"
-                :ui="{ ring: 'ring-gray-300' }" />
+        <div class=" text-primary-color">
+            <USelect v-model="selectedOption" :options="options" @update:modelValue="handleChange" variant="outline" size="xs"
+            class="bg-gray-100 " />
         </div>
     </div>
 </template>
 
 <script lang="ts" setup>
-import { ref, watch } from 'vue';
+import { ref, watch } from 'vue'; 
 import type { ModalProps } from '~/interfaces/modal.interface';
 
 const props = defineProps<ModalProps & {
     modelValue?: string
-    label?: boolean
+    label?: boolean,
+    title?: string
 }>();
 
 const emit = defineEmits<{
