@@ -3,8 +3,3 @@ export interface ClassesNavBar {
   link: string;
   name: string;
 }
-interface PropsInteractiveTask {
-    image: string;
-    alt: string;
-    title: string;
-}

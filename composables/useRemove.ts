@@ -5,7 +5,7 @@ import type { Question } from '~/interfaces/components/props.components.interfac
 export const useRemove = (questions: Ref<Question[]>) => {
   const removeOption = (questionIndex: number, optionIndex: number) => {
     const updatedQuestions = JSON.parse(JSON.stringify(questions.value));
-    updatedQuestions[questionIndex].options.splice(optionIndex, 1);
+    updatedQuestions[questionIndex].answers.splice(optionIndex, 1);
     questions.value = updatedQuestions;
   };
 

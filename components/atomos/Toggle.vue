@@ -1,5 +1,9 @@
 <template>
-  <UToggle v-model="selected" size="sm" class="bg-tarawera-700 items-center"/>
+  <UToggle v-model="selected" size="sm" :class="{
+    'items-center': true,
+    'bg-tarawera-700 text-white': selected, // Activo
+    'bg-fuscous-gray-100 text-fuscous-gray-600': !selected // Inactivo
+  }" />
 </template>
 
 <script setup lang="ts">

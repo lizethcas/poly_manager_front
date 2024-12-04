@@ -16,16 +16,17 @@ export interface PropsInteractiveTask extends ImgAtomProps {
 }
 
 export interface Option {
-  answer: string;
+  text: string;
   isCorrect: boolean;
+
 }
 
 export interface Question {
   question: string;
-  options: Option[];
+  answers: Option[];
+  order: number;
+  typeTask?: string;
 }
-
-
 
 export interface InputTaskProps {
   answer: string;
@@ -33,11 +34,18 @@ export interface InputTaskProps {
   removeOption: (qIndex: number, oIndex: number) => void;
   qIndex: number;
   oIndex: number;
-  type?: 'checkbox' | 'input' | 'select' | 'file';
+  type?: "checkbox" | "input" | "select" | "file";
 }
 
 export interface MultipleTasksProps {
-  typeTask: 'correctAnswer' | 'truefalse' | 'category' | 'sorting' | 'order';
+  typeTask:
+    | "correctAnswer"
+    | "truefalse"
+    | "category"
+    | "sorting"
+    | "order"
+    | "text_area";
   titleTask?: string;
   subtitleTask?: string;
+  description?: string;
 }

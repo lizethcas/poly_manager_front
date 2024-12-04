@@ -17,9 +17,9 @@ const handleClick = () => {
 const buttons: ButtonAtomProps[] = [
     { type: 'crop', icon: 'ic:baseline-crop', size: 's', defaultLabel: 'crop' },
     { type: 'delete', icon: 'i-heroicons-trash', size: 's', defaultLabel: 'delete' },
-    { type: 'swap', icon: 'system-uicons:swap', size: 'sm', defaultLabel: 'swap' },
-    { type: 'edit', icon: 'basil:edit-solid', size: 'sm', defaultLabel: 'edit' },
-    { type: 'preview', icon: 'mdi:eye', size: 'sm', defaultLabel: 'preview' },
+    { type: 'swap', icon: 'system-uicons:swap', size: 's', defaultLabel: 'swap' },
+    { type: 'edit', icon: 'basil:edit-solid', size: 's', defaultLabel: 'edit' },
+    { type: 'preview', icon: 'mdi:eye', size: 's', defaultLabel: 'preview' },
 ];
 
 // Filtra los botones que coinciden con el tipo

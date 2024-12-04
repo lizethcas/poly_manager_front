@@ -1,7 +1,7 @@
 <template>
     <div class="w-full">
         <div v-if="classes.length === 0"
-            class="font-bold flex justify-center items-center text-center h-screen text-fuscous-gray-950 text-xl ">
+            class="font-bold flex justify-center items-center text-center h-screen text-fuscous-gray-950 text-md ">
 
             <div>
                 <p>There are no activities created for this course yet.</p>

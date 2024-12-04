@@ -15,6 +15,7 @@ export const useCourseStore = defineStore("course", {
     },
 
     async setCourses() {
+     
       try {
         const apiService = new ApiService();
         const fetchedCourses = await apiService.getAllCourses();

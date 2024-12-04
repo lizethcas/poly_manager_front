@@ -1,5 +1,5 @@
 <template>
-    <div class="shadow-md shadow-fuscous-gray-300 rounded-lg p-4 flex items-center justify-between">
+    <div class="shadow-md shadow-fuscous-gray-300 rounded-lg p-2 flex items-center justify-between">
         <InputFile fileType="image" icon="true" title="Main image:" />
         <div class=" flex flex-col justify-between items-center">
             <AtomosButtonAtom type="crop" />

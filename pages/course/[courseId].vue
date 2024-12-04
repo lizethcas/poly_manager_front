@@ -6,17 +6,14 @@
 
     <!-- El contenido del curso una vez cargado -->
     <div v-if="course">
-        <header class="pt-6 px-14 text-title-color mb-15 flex items-center">
+        <header class="pt-6 px-14 text-title-color mb-4 flex items-center">
             <img src="~/assets/images/back-button-round.webp" alt="regresar una pagina"
                 class="w-10 h-10 cursor-pointer items-center" @click="navigateTo('/')" />
-            <div class="flex items-start">
+            <div class="flex items-center" >
                 <img v-if="course.cover" :src="getCoverUrl(course.cover)" alt=""
-                    class="mx-4 object-cover w-36 h-36 border-2 rounded-xl" />
-                <!-- <img v-if="course.cover"
-                    :src="typeof course.cover === 'string' ? course.cover : URL.createObjectURL(course.cover)"
-                    :alt="course.course_name" class="mx-4 object-cover w-36 h-36 border-2 rounded-xl" /> -->
-                <div class="flex flex-col items-start">
-                    <h2 class="text-tarawera-700 font-bold text-2xl">{{ course.course_name }}</h2>
+                    class="mx-4 object-cover w-28 h-28 border-2 rounded-xl" />
+                <div class="flex flex-col justify-start items-start">
+                    <h2 class="text-fuscous-950 font-bold text-2xl">{{ course.course_name }}</h2>
                     <div class="flex items-center">
                         <div :class="['rounded-full w-10  flex items-start ', getLevelColor(course.level)]">
                             <p :class="[

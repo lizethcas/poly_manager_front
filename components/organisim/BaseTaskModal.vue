@@ -6,7 +6,7 @@
             <div class="flex justify-between items-center mb-4 border-b-[1px] pb-2">
                 <div class="flex items-center gap-2">
                     <Icon :name="icon" size="30" class="text-primary-color" />
-                    <h2 class="text-xl font-bold text-primary-color ">{{ title }}</h2>
+                    <h2 class="text-m font-bold text-primary-color ">{{ title }}</h2>
                 </div>
                 <img src="../../assets/images/close.webp" alt="close create course" class="w-5 h-5 cursor-pointer"
                     @click="$emit('close')" />
@@ -14,8 +14,8 @@
 
             <!-- Common Fields -->
             <div class="space-y-4 mb-6">
-                <MoleculeInputFile :title="'Title'" type="text" />
-                <MoleculeInputFile :title="'Instructions'" type="text_area" />
+                <MoleculeInputFile :title="'Title'" type="text" class="text-md" />
+                <MoleculeInputFile :title="'Instructions'" type="text_area" class="text-md" />
             </div>
             
             <!-- Slot for specific content -->
