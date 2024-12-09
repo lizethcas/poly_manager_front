@@ -9,6 +9,7 @@ export interface ButtonAtomProps {
   size?: string;
   icon?: string;
   defaultLabel?: string;
+  isActive?: boolean;
 }
 
 export interface PropsInteractiveTask extends ImgAtomProps {
@@ -18,13 +19,11 @@ export interface PropsInteractiveTask extends ImgAtomProps {
 export interface Option {
   text: string;
   isCorrect: boolean;
-
 }
 
 export interface Question {
   question: string;
   answers: Option[];
-  order: number;
   typeTask?: string;
 }
 

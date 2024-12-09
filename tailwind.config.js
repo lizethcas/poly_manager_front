@@ -17,6 +17,7 @@ export default {
         /* primary colors */
         "primary-color": "#0A394D",
         "tarawera-700": "#10718e",
+        "tarawera-800": "##165c74",
         "tarawera-600": "#0A8DB0",
         "tarawera-200": "#A6F1FB",
         "tarawera-100": "#D0F9FD",

@@ -41,29 +41,30 @@
     </div>
 
     <!-- Este botón se encarga de agregar una nueva pregunta -->
-    <UTooltip :text="isActive ? '' : 'You must add questions and answers to add or save the task'" :ui="{
+    <UTooltip :text="isActive ? '' : 'all questions and answers are required'" :ui="{
         container: ' text-fuscous-gray-600 text-xs rounded-md flex items-center gap-2 px-2 py-1 mt-2',
     }">
         <button v-if="titleTask" :class="{
             'bg-fuscous-gray-100  text-fuscous-gray-600 text-xs rounded-md flex items-center gap-2 px-2 py-1 mt-2': true,
             'bg-fuscous-gray-100 text-fuscous-gray-600': isActive,
-            'bg-fuscous-gray-200 text-fuscous-gray-300 cursor-not-allowed': !isActive
+            'bg-fuscous-gray-100 text-fuscous-gray-200 cursor-not-allowed': !isActive
         }" @click="addQuestion" :disabled="!isActive">
             <Icon :disabled="!isActive" name="icon-park-solid:add" size="14" class="bg-fuscous-gray-500 " />Add
             question
         </button>
-        <button :class="{
+        <!--    <button :class="{
             'text-xs rounded-md px-2 py-1 mt-2 mx-1 max-w-32': true,
             'bg-tarawera-700 hover:bg-primary-color text-white ': isActive,
             'bg-fuscous-gray-200 text-fuscous-gray-300 cursor-not-allowed': !isActive
         }" @click="saveTask" :disabled="!isActive">
             Save
-        </button>
+        </button> -->
     </UTooltip>
 </template>
 
 <script setup lang="ts">
 import { ref, watch } from 'vue';
+import EventBus from '~/composables/useEvenBus';
 /* Components */
 import InputTask from '../molecule/InputTask.vue';
 import TextAreaTask from '../molecule/TextAreaTask.vue';
@@ -71,7 +72,6 @@ import TextAreaTask from '../molecule/TextAreaTask.vue';
 import { useRemove } from '~/composables/useRemove';
 import { useGetTypeTask } from '~/composables/useGetTypeTask';
 import { useDragAnDrop } from '~/composables/useDragAndDrop';
-import { useTasksStore } from '~/stores/tasks.store';
 /* Interfaces */
 import type { Question, MultipleTasksProps } from '~/interfaces/components/props.components.interface';
 
@@ -89,14 +89,14 @@ const questions = ref<Question[]>([{
             isCorrect: false,
         },
     ],
-    order: 1,
     typeTask: titleTask,
 }]);
 
 const { removeOption, removeQuestion } = useRemove(questions);
 const { getType } = useGetTypeTask();
 const { onDragStart, onDragOver, onDrop } = useDragAnDrop(questions);
-const tasksStore = useTasksStore();
+
+
 
 // Este método se encarga de agregar una nueva opción a una pregunta
 const addOption = (questionIndex: number) => {
@@ -114,7 +114,7 @@ const addQuestion = () => {
             text: '',
             isCorrect: false,
         }],
-        order: questions.value.length + 1,
+
         typeTask: typeTask,
     });
 };
@@ -129,19 +129,22 @@ const updateOptionIsCorrect = (questionIndex: number, optionIndex: number, value
     questions.value[questionIndex].answers[optionIndex].isCorrect = value;
 };
 
-const saveTask = () => {
+/* const saveTask = () => {
     const value = JSON.stringify(questions.value, null, 2);
 
     tasksStore.saveTask(value);
 
-};
+}; */
 
 // Nueva función para evaluar si el formulario tiene información
 const hasQuestionsWithAnswers = () => {
-    return questions.value.some(question =>
-        question.question.trim() !== '' &&
-        question.answers.some(answer => answer.text.trim() !== '')
-    );
+    return questions.value.every(question => {
+        // Verifica que la pregunta no esté vacía
+        if (question.question.trim() === '') return false;
+
+        // Verifica que todas las respuestas tengan texto
+        return question.answers.every(answer => answer.text.trim() !== '');
+    });
 };
 
 // Observa los cambios en las preguntas para actualizar el estado de isActive
@@ -150,16 +153,10 @@ watch(questions, () => {
 }, { deep: true });
 
 // Observa los cambios en las preguntas y actualiza el valor en el store
-watch(questions, (newVal) => {
+watch(questions, (newVal, oldVal) => {
     emit('update:value', newVal);
-    const value = JSON.stringify(newVal, null, 2);
-    console.log('value', value);
-    if (tasksStore.questions.length > 0) {
-        const existTask = tasksStore.questions.some(question => question.typeTask === typeTask);
-        console.log('existTask', existTask);
-        if (existTask) {
-            tasksStore.updateTasks(value);
-        }
-    }
+
+    // Emitir el evento con el objeto questions
+    EventBus.emit('questionsUpdated', newVal);
 }, { deep: true });
 </script>
