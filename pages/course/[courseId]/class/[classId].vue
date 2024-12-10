@@ -55,7 +55,6 @@ const tasksStore = useTasksStore();
 
 const currentModal = ref({ label: '', name: '' });
 const formData = ref({ title: '', instructions: '' });
-const isActive = ref(false);
 const showEditNavigation = ref(false);
 const combinedData = ref({});
 
@@ -63,8 +62,16 @@ const combinedData = ref({});
 // Manejar la actualización del objeto questions
 const handleQuestionsUpdate = (questions: Question[]) => {
     combinedData.value = {
+        ...combinedData.value,
         ...formData.value,
         questions: questions,
+    };
+};
+
+const handleFileSelected = (file: string) => {
+    combinedData.value = {
+        ...formData.value,
+        cover: file,
     };
 };
 
@@ -75,14 +82,18 @@ const handleVideoSelected = (video_file: string) => {
     };
 };
 
-// Modify the onMounted and add watch for currentModal
-watch(() => currentModal.value.label, (newLabel) => {
-    // Clean up previous listeners
-    
+// Modify the watch for currentModal
+watch(() => currentModal.value.label, (newLabel, oldLabel) => {
+    // Remove previous listeners
+    if (oldLabel) {
+        EventBus.off('questionsUpdated');
+        EventBus.off('file-selected');
+    }
 
-    // Set up new listeners based on modal type
+    // Add new listeners based on modal type
     if (newLabel === 'Layout block') {
         EventBus.on('questionsUpdated', handleQuestionsUpdate);
+        EventBus.on('file-selected', handleFileSelected);
     } else if (newLabel === 'Video layout') {
         EventBus.on('file-selected', handleVideoSelected);
     }

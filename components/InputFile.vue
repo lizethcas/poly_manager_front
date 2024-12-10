@@ -66,6 +66,7 @@ const triggerFileUpload = () => {
 // Handle file selection
 const handleChange = (event) => {
     const file = event.target.files[0];
+    console.log(file)
 
     if (file) {
         fileName.value = file.name;
@@ -79,7 +80,8 @@ const handleChange = (event) => {
         // Fix: Remove incorrect watch and emit the event directly
         EventBus.emit('file-selected',  URL.createObjectURL(file));
         emit('update:modelValue', previewUrl.value);
-        emit('file-selected', file);
+
     }
 };
 </script>
+
