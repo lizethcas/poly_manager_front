@@ -64,16 +64,54 @@ const combinedData = ref({});
 const handleQuestionsUpdate = (questions: Question[]) => {
     combinedData.value = {
         ...formData.value,
-        questions: toRaw(questions),
-        video_file: '',
+        questions: questions,
     };
 };
 
-// Escuchar el evento cuando el componente se monta
-onMounted(() => {
-    EventBus.on('questionsUpdated', handleQuestionsUpdate);
-    handleSave();
-});
+const handleVideoSelected = (video_file: string) => {
+    combinedData.value = {
+        ...formData.value,
+        video_file: video_file,
+    };
+};
+
+// Modify the onMounted and add watch for currentModal
+watch(() => currentModal.value.label, (newLabel) => {
+    // Clean up previous listeners
+    
+
+    // Set up new listeners based on modal type
+    if (newLabel === 'Layout block') {
+        EventBus.on('questionsUpdated', handleQuestionsUpdate);
+    } else if (newLabel === 'Video layout') {
+        EventBus.on('file-selected', handleVideoSelected);
+    }
+}, { immediate: true });
+
+// Remove handleSave from onMounted
+
+
+const handleSave = () => {
+    if (currentModal.value.label === 'Layout block') {
+        if (!combinedData.value.questions || combinedData.value.questions.length === 0) {
+            console.warn('No questions data available');
+            return;
+        }
+        console.log('Saving task:', toRaw(combinedData.value));
+        tasksStore.saveTask(combinedData.value);
+    } else if (currentModal.value.label === 'Video layout') {
+        if (!combinedData.value.video_file) {
+            console.warn('No video data available');
+            return;
+        }
+        console.log('Saving video:', toRaw(combinedData.value));
+    }
+
+    // Reset forms after saving
+    formData.value = { title: '', instructions: '' };
+    combinedData.value = {};
+    closeModal();
+};
 
 // Escuchar el evento y pasar los valores recibidos
 const openModalHandler = (label: string, name: string) => {
@@ -82,89 +120,4 @@ const openModalHandler = (label: string, name: string) => {
     openModal();  // Asegúrate de abrir el modal
 };
 
-
-const handleSave = () => {
-
-    if (currentModal.value.label === 'Video layout') {
-        console.log('videoData', videoData.value);
-        return;
-    }
-
-    if (currentModal.value.label === 'Layout block') {
-        if (Object.keys(toRaw(combinedData.value)).length === 0) {
-            isActive.value = false;
-            console.log('El objeto combinedData está vacío');
-            return;
-        } else {
-            console.log(toRaw(combinedData.value));
-            tasksStore.saveTask(combinedData.value);
-            formData.value = {
-                title: '',
-                instructions: '',
-            };
-            combinedData.value = {
-                title: '',
-                instructions: '',
-                questions: [] as Question[],
-            };
-
-        }
-
-    }
-
-    closeModal();
-
-    /* switch (title) {
-        case 'Layout block':
-            console.log(toRaw(combinedData.value));
-            tasksStore.saveTask(combinedData.value);
-            closeModal();
-            console.log(title);
-            break;
-        case 'Video layout':
-            console.log(title);
-            break;
-        case 'Text layout':
-            console.log(title);
-            break;
-        case 'Audio layout':
-            console.log(title);
-            break;
-        case 'Info block':
-            console.log(title);
-            break;
-        case 'SCORM file':
-            console.log(title);
-            break;
-        case 'Gallery layout':
-            console.log(title);
-            break;
-        case 'AI chat':
-            console.log(title);
-            break;
-        case 'Multimedia block':
-            console.log(title);
-            break;
-        case 'Interactive activities':
-            console.log(title);
-            break;
-        case 'Knowledge check':
-            console.log(title);
-            break;
-        case 'Word list':
-            console.log(title);
-            break;
-        case 'Table':
-            console.log(title);
-            break;
-        case 'Dividers':
-            console.log(title);
-            break;
-        default:
-            console.log(title);
-            break;
-    }
-} */
-
-}
 </script>

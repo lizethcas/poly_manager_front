@@ -1,7 +1,7 @@
 <template>
     <uploadImage v-model="formData.cover" @file-selected="handleCoverImage" />
 
-    <MoleculeInputFile type="text_area" title="Add script" size="lg" container-class="py-2" />
+    <MoleculeInput type="text_area" title="Add script" size="lg" container-class="py-2" />
 
 
     <NuxtLayout>
@@ -29,7 +29,7 @@
 </template>
 <script setup lang="ts">
 import uploadImage from '~/components/organisim/UploadImage.vue';
-import MoleculeInputFile from '~/components/molecule/InputFile.vue';
+import MoleculeInput from '~/components/molecule/Input.vue';
 import OrganisimMultipleTasks from '~/components/organisim/MultipleTasks.vue';
 import TaskLayout from '~/layouts/TaskLayout.vue';
 import { useDescription } from '~/composables/useDescription';

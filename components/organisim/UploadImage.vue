@@ -23,4 +23,10 @@
 <script setup lang="ts">
 import InputFile from '~/components/InputFile.vue';
 import AtomosButtonAtom from '~/components/atomos/ButtonAtom.vue';
+import eventBus from '~/composables/useEvenBus';
+
+eventBus.on('file-selected', (file: string) => {
+    console.log('File selected:', file);
+});
+
 </script>

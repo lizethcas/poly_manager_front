@@ -29,7 +29,9 @@
             </div>
 
             <!-- Upload button -->
-             <UButton v-if="!icon" class="flex justify-center text-white hover:scale-105 hover:bg-primary-color transition-all duration-300 bg-primary-color" @click="triggerFileUpload">
+            <UButton v-if="!icon"
+                class="flex justify-center text-white hover:scale-105 hover:bg-primary-color transition-all duration-300 bg-primary-color"
+                @click="triggerFileUpload">
                 Upload
             </UButton>
 
@@ -45,7 +47,7 @@
 <script setup>
 import ImgAtom from "./atomos/ImgAtom.vue";
 import { ref, defineProps, defineEmits } from "vue";
-
+import EventBus from '~/composables/useEvenBus';
 // Props and events
 const props = defineProps(['modelValue', 'title', 'icon']);
 const emit = defineEmits(['update:modelValue', 'file-selected']);
@@ -74,7 +76,8 @@ const handleChange = (event) => {
             previewUrl.value = URL.createObjectURL(file);
         }
 
-        // Emit events
+        // Fix: Remove incorrect watch and emit the event directly
+        EventBus.emit('file-selected',  URL.createObjectURL(file));
         emit('update:modelValue', previewUrl.value);
         emit('file-selected', file);
     }

@@ -153,10 +153,11 @@ watch(questions, () => {
 }, { deep: true });
 
 // Observa los cambios en las preguntas y actualiza el valor en el store
-watch(questions, (newVal, oldVal) => {
+watch(questions, (newVal) => {
     emit('update:value', newVal);
 
     // Emitir el evento con el objeto questions
     EventBus.emit('questionsUpdated', newVal);
+  
 }, { deep: true });
 </script>

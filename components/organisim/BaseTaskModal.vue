@@ -14,8 +14,8 @@
 
             <!-- Common Fields -->
             <div class="space-y-4 mb-6">
-                <MoleculeInputFile :title="'Title'" type="text" class="text-md" v-model="formData.title" />
-                <MoleculeInputFile :title="'Instructions'" type="text_area" class="text-md"
+                <MoleculeInput :title="'Title'" type="text" class="text-md" v-model="formData.title" />
+                <MoleculeInput :title="'Instructions'" type="text_area" class="text-md"
                     v-model="formData.instructions" />
 
 

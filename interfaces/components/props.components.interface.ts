@@ -25,6 +25,8 @@ export interface Question {
   question: string;
   answers: Option[];
   typeTask?: string;
+  cover?: string;
+  scipt?: string;
 }
 
 export interface InputTaskProps {
