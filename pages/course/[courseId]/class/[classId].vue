@@ -12,17 +12,17 @@
             </div>
         </div>
         <button v-if="tasksStore.questions.length > 0" @click="showEditNavigation = true"
-                    class="hover:underline hover:text-tarawera-700 text-fuscous-gray-950 px-4 py-2 rounded-md">Add
-                    Block</button>
+            class="hover:underline hover:text-tarawera-700 text-fuscous-gray-950 px-4 py-2 rounded-md">Add
+            Block</button>
         <transition name="slide-up" @before-enter="beforeEnter" @enter="enter" @leave="leave">
-            <EditClassNavigation v-if="showEditNavigation" 
-                @open-modal="openModalHandler" />
+            <EditClassNavigation v-if="showEditNavigation" @open-modal="openModalHandler" />
         </transition>
         <div v-if="isOpen">
             <BaseTaskModal :is-open="isOpen" @close="closeModal" :title="currentModal.label" v-model="formData"
                 class="max-h-[80vh]  overflow-y-auto" :icon="currentModal.name">
                 <div>
                     <OrganisimLayoutBlock v-if="currentModal.label === 'Layout block'" />
+                    <VideoBlock v-if="currentModal.label === 'Video layout'" />
 
                 </div>
                 <div class="flex items-center gap-2 py-4 text-sm">
@@ -46,6 +46,7 @@ import { useAnimation } from '~/composables/useAnimation';
 import EventBus from '~/composables/useEvenBus';
 import type { Question } from '~/interfaces/components/props.components.interface';
 import Task from '~/components/organisim/task.vue';
+import VideoBlock from '~/components/organisim/VideoBlock.vue';
 import { useTasksStore } from '~/stores/tasks.store';
 
 const { isOpen, openModal, closeModal } = useModal();
@@ -63,7 +64,8 @@ const combinedData = ref({});
 const handleQuestionsUpdate = (questions: Question[]) => {
     combinedData.value = {
         ...formData.value,
-        questions: toRaw(questions)
+        questions: toRaw(questions),
+        video_file: '',
     };
 };
 
@@ -82,15 +84,35 @@ const openModalHandler = (label: string, name: string) => {
 
 
 const handleSave = () => {
-    if (Object.keys(toRaw(combinedData.value)).length === 0) {
-        isActive.value = false;
-        console.log('El objeto combinedData está vacío');
+
+    if (currentModal.value.label === 'Video layout') {
+        console.log('videoData', videoData.value);
         return;
-    } else {
-        console.log(toRaw(combinedData.value));
-        tasksStore.saveTask(combinedData.value);
-        closeModal();
     }
+
+    if (currentModal.value.label === 'Layout block') {
+        if (Object.keys(toRaw(combinedData.value)).length === 0) {
+            isActive.value = false;
+            console.log('El objeto combinedData está vacío');
+            return;
+        } else {
+            console.log(toRaw(combinedData.value));
+            tasksStore.saveTask(combinedData.value);
+            formData.value = {
+                title: '',
+                instructions: '',
+            };
+            combinedData.value = {
+                title: '',
+                instructions: '',
+                questions: [] as Question[],
+            };
+
+        }
+
+    }
+
+    closeModal();
 
     /* switch (title) {
         case 'Layout block':
