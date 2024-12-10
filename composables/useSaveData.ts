@@ -20,5 +20,14 @@ export const useSaveData = () => {
     };
   };
 
-  return { layoutBlockData, videoBlockData };
+  const textBlockData = (data: any, text: string) => {  
+    data.value = {
+      ...data.value,
+      title: data.value.title,
+      instructions: data.value.instructions,
+      textContent: text,
+    };
+  };
+
+  return { layoutBlockData, videoBlockData, textBlockData };
 };

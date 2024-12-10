@@ -37,7 +37,7 @@
         </div>
 
         <!-- Hidden input -->
-        <input id="file-upload" type="file" class="hidden" ref="fileInput" @change="handleChange" />
+        <input id="file-upload" type="file" class="hidden" ref="fileInput" @change="handleChange" accept=".pdf,.doc,.docx" />
 
     </div>
 </template>

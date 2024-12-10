@@ -23,7 +23,9 @@
                 <div>
                     <OrganisimLayoutBlock v-if="currentModal.label === 'Layout block'" />
                     <VideoBlock v-if="currentModal.label === 'Video layout'" />
-
+                    <TextBlock v-if="currentModal.label === 'Text block'" />
+                    <MultimediaBlock v-if="currentModal.label === 'Multimedia block'" />
+                    <InteractiveActivities v-if="currentModal.label === 'Interactive activities'" />
                 </div>
                 <div class="flex items-center gap-2 py-4 text-sm">
                     <p>Include the stats</p>
@@ -47,6 +49,9 @@ import EventBus from '~/composables/useEvenBus';
 import type { Question } from '~/interfaces/components/props.components.interface';
 import Task from '~/components/organisim/task.vue';
 import VideoBlock from '~/components/organisim/VideoBlock.vue';
+import TextBlock from '~/components/organisim/TextBlock.vue';
+import MultimediaBlock from '~/components/organisim/MultimediaBlock.vue';
+import InteractiveActivities from '~/components/organisim/InteractiveActivities.vue';
 import { useTasksStore } from '~/stores/tasks.store';
 
 const { isOpen, openModal, closeModal } = useModal();
@@ -84,6 +89,15 @@ const openModalHandler = (label: string, name: string) => {
 
 
 const handleSave = () => {
+    if (currentModal.value.label === 'Text layout') {
+        tasksStore.saveTask({
+            ...formData.value,
+            textContent: textContent.value,
+            type: 'text'
+        });
+        closeModal();
+        return;
+    }
 
     if (currentModal.value.label === 'Video layout') {
         console.log('videoData', videoData.value);
