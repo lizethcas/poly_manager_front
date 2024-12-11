@@ -1,5 +1,5 @@
 import { defineStore } from 'pinia';
-import ApiService from '../services/create.layout.api';
+import * as ApiService from '../services/create.layout.api';
 import { URL_API } from '../services/api';
 
 interface LayoutData {
@@ -10,10 +10,12 @@ interface LayoutData {
   img_cover: File | null;
   audio: File | null;
   audio_script: string;
+  tasks?: any[];
 }
 
 interface LayoutState {
     layouts: LayoutData[];
+    temporaryLayouts: LayoutData[];
     currentLayout: LayoutData | null;
     loading: boolean;
     error: string | null;
@@ -22,12 +24,29 @@ interface LayoutState {
 export const useLayoutStore = defineStore('layout', {
   state: (): LayoutState => ({
     layouts: [],
+    temporaryLayouts: [],
     currentLayout: null,
     loading: false,
     error: null,
   }),
 
   actions: {
+    saveTemporaryLayout(layoutData: Partial<LayoutData>) {
+      const tempLayout = {
+        id: Date.now(),
+        lesson: 0,
+        title: layoutData.title || '',
+        instructions: layoutData.instructions || '',
+        img_cover: layoutData.img_cover || null,
+        audio: layoutData.audio || null,
+        audio_script: layoutData.audio_script || '',
+        tasks: layoutData.tasks || []
+      };
+      
+      this.temporaryLayouts.push(tempLayout);
+      return tempLayout;
+    },
+
     async createLayout(formData: LayoutData) {
       try {
         this.loading = true;
@@ -120,5 +139,6 @@ export const useLayoutStore = defineStore('layout', {
     getCurrentLayout: (state) => state.currentLayout,
     isLoading: (state) => state.loading,
     getError: (state) => state.error,
+    getTemporaryLayouts: (state) => state.temporaryLayouts,
   },
 });

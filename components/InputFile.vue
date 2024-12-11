@@ -39,7 +39,7 @@
         </div>
 
         <!-- Hidden input -->
-        <input id="file-upload" type="file" class="hidden" ref="fileInput" @change="handleChange" />
+        <input id="file-upload" type="file" class="hidden" ref="fileInput" @change="handleChange" accept=".pdf,.doc,.docx" />
 
     </div>
 </template>
@@ -77,8 +77,8 @@ const handleChange = (event) => {
             previewUrl.value = URL.createObjectURL(file);
         }
 
-        // Fix: Remove incorrect watch and emit the event directly
-        EventBus.emit('file-selected',  URL.createObjectURL(file));
+        // Emit events
+        EventBus.emit('file-selected', { url: URL.createObjectURL(file), fileType: file.type.split('/')[0] });
         emit('update:modelValue', previewUrl.value);
 
     }

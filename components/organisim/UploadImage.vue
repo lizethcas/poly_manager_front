@@ -16,17 +16,14 @@
                 <AtomosButtonAtom type="delete" />
             </div>
         </div>
-        <slot name="audio" />
+        <slot />
     </div>
 
 </template>
 <script setup lang="ts">
-import InputFile from '~/components/InputFile.vue';
-import AtomosButtonAtom from '~/components/atomos/ButtonAtom.vue';
-import eventBus from '~/composables/useEvenBus';
+import InputFile from '../InputFile.vue';
+import AtomosButtonAtom from '../atomos/ButtonAtom.vue';
 
-eventBus.on('file-selected', (file: string) => {
-    console.log('File selected:', file);
-});
+
 
 </script>

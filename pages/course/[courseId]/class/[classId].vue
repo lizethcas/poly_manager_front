@@ -23,7 +23,9 @@
                 <div>
                     <OrganisimLayoutBlock v-if="currentModal.label === 'Layout block'" />
                     <VideoBlock v-if="currentModal.label === 'Video layout'" />
-
+                    <TextBlock v-if="currentModal.label === 'Text block'" />
+                    <MultimediaBlock v-if="currentModal.label === 'Multimedia block'" />
+                    <InteractiveActivities v-if="currentModal.label === 'Interactive activities'" />
                 </div>
                 <div class="flex items-center gap-2 py-4 text-sm">
                     <p>Include the stats</p>
@@ -47,6 +49,9 @@ import EventBus from '~/composables/useEvenBus';
 import type { Question } from '~/interfaces/components/props.components.interface';
 import Task from '~/components/organisim/task.vue';
 import VideoBlock from '~/components/organisim/VideoBlock.vue';
+import TextBlock from '~/components/organisim/TextBlock.vue';
+import MultimediaBlock from '~/components/organisim/MultimediaBlock.vue';
+import InteractiveActivities from '~/components/organisim/InteractiveActivities.vue';
 import { useTasksStore } from '~/stores/tasks.store';
 
 const { isOpen, openModal, closeModal } = useModal();
@@ -57,73 +62,6 @@ const currentModal = ref({ label: '', name: '' });
 const formData = ref({ title: '', instructions: '' });
 const showEditNavigation = ref(false);
 const combinedData = ref({});
-
-
-// Manejar la actualización del objeto questions
-const handleQuestionsUpdate = (questions: Question[]) => {
-    combinedData.value = {
-        ...combinedData.value,
-        ...formData.value,
-        questions: questions,
-    };
-};
-
-const handleFileSelected = (file: string) => {
-    combinedData.value = {
-        ...formData.value,
-        cover: file,
-    };
-};
-
-const handleVideoSelected = (video_file: string) => {
-    combinedData.value = {
-        ...formData.value,
-        video_file: video_file,
-    };
-};
-
-// Modify the watch for currentModal
-watch(() => currentModal.value.label, (newLabel, oldLabel) => {
-    // Remove previous listeners
-    if (oldLabel) {
-        EventBus.off('questionsUpdated');
-        EventBus.off('file-selected');
-    }
-
-    // Add new listeners based on modal type
-    if (newLabel === 'Layout block') {
-        EventBus.on('questionsUpdated', handleQuestionsUpdate);
-        EventBus.on('file-selected', handleFileSelected);
-    } else if (newLabel === 'Video layout') {
-        EventBus.on('file-selected', handleVideoSelected);
-    }
-}, { immediate: true });
-
-// Remove handleSave from onMounted
-
-
-const handleSave = () => {
-    if (currentModal.value.label === 'Layout block') {
-        if (!combinedData.value.questions || combinedData.value.questions.length === 0) {
-            console.warn('No questions data available');
-            return;
-        }
-        console.log('Saving task:', toRaw(combinedData.value));
-        tasksStore.saveTask(combinedData.value);
-    } else if (currentModal.value.label === 'Video layout') {
-        if (!combinedData.value.video_file) {
-            console.warn('No video data available');
-            return;
-        }
-        console.log('Saving video:', toRaw(combinedData.value));
-    }
-
-    // Reset forms after saving
-    formData.value = { title: '', instructions: '' };
-    combinedData.value = {};
-    closeModal();
-};
-
 // Escuchar el evento y pasar los valores recibidos
 const openModalHandler = (label: string, name: string) => {
     currentModal.value = { label, name };
@@ -131,4 +69,63 @@ const openModalHandler = (label: string, name: string) => {
     openModal();  // Asegúrate de abrir el modal
 };
 
+
+const handleSave = () => {
+  
+
+    closeModal();
+
+    /* switch (title) {
+        case 'Layout block':
+            console.log(toRaw(combinedData.value));
+            tasksStore.saveTask(combinedData.value);
+            closeModal();
+            console.log(title);
+            break;
+        case 'Video layout':
+            console.log(title);
+            break;
+        case 'Text layout':
+            console.log(title);
+            break;
+        case 'Audio layout':
+            console.log(title);
+            break;
+        case 'Info block':
+            console.log(title);
+            break;
+        case 'SCORM file':
+            console.log(title);
+            break;
+        case 'Gallery layout':
+            console.log(title);
+            break;
+        case 'AI chat':
+            console.log(title);
+            break;
+        case 'Multimedia block':
+            console.log(title);
+            break;
+        case 'Interactive activities':
+            console.log(title);
+            break;
+        case 'Knowledge check':
+            console.log(title);
+            break;
+        case 'Word list':
+            console.log(title);
+            break;
+        case 'Table':
+            console.log(title);
+            break;
+        case 'Dividers':
+            console.log(title);
+            break;
+        default:
+            console.log(title);
+            break;
+    }
+} */
+
+}
 </script>

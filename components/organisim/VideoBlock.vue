@@ -9,14 +9,12 @@
 import InputFile from '~/components/InputFile.vue';
 import Input from '~/components/molecule/Input.vue';
 import EventBus from '~/composables/useEvenBus';
-
 onMounted(() => {
     EventBus.on('file-selected', handleVideoSelected);
 });
 
 const handleVideoSelected = (videoUrl: string) => {
     console.log('Video selected:', videoUrl);
-  
 };
 </script>
 
