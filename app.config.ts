@@ -4,7 +4,7 @@ export default defineAppConfig({
     button: {
       color: {
         freshGreen: {
-          solid: 'bg-fresh-green'
+          solid: 'bg-primary-color'
         },
         gray:{
           solid: 'bg-light-grayish-blue'

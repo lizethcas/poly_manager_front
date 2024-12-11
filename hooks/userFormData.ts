@@ -1,4 +1,4 @@
-import { ref, toRaw, computed } from "vue";
+import { ref, computed } from "vue";
 import { useCourseStore } from '~/stores/courseStore';
 
 export function useFormData() {
@@ -12,7 +12,7 @@ export function useFormData() {
   const handleEmitSave = () => {
     return {
       ...courseStore.currentForm,
-      bullet_points: bulletPoints.value.filter(point => point.trim() !== '')
+      bullet_points: JSON.stringify(bulletPoints.value.filter(point => point.trim() !== ''))
     };
   };
 

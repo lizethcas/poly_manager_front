@@ -1,5 +1,5 @@
 <template>
     <div>
-        create-class
+        <h1>Statistics</h1>
     </div>
 </template>

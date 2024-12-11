@@ -3,7 +3,7 @@ import type { CourseForm } from '~/interfaces/modal.interface';
 
 export class ApiService {
     async createCourse(formData: FormData) {
-        console.log(formData)
+        
         try {
             const response = await axiosInstance.post('courses/', formData, {
                 headers: {
@@ -24,14 +24,14 @@ export class ApiService {
             return response.data;
         } catch (error) {
             console.error('Error in getAllCourses:', error);
-            throw error;
+            return [];
         }
     }
 
     // Obtener un curso por ID
     async getCourseById(id: number) {
         try {
-            const response = await axiosInstance.get(`/api/courses/${id}`);
+            const response = await axiosInstance.get(`courses/${id}/classes`);
             return response.data;
         } catch (error) {
             console.error('Error in getCourseById:', error);

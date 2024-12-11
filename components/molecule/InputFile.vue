@@ -1,23 +1,33 @@
 <!-- MoleculeBaseInput.vue -->
 <template>
-  <div class="flex items-center gap-4 mb-4 w-full">
-    <label for="" class="min-w-[120px] text-middele-gray">{{ props.title }}</label>
-    <UInput v-if="type == 'text'" :type="type" size="xl" class="w-full" v-model="inputValue" :required="props.required"   />
-    <UTextarea v-if="type == 'text_area'" v-model="inputValue" class="w-full" />
+  <div :class="['gap-4 mb-4 w-full', containerClass]">
+    <label v-if="!label" class="min-w-[120px] text-middele-gray text-sm">{{ props.title }}</label>
+    <UInput v-if="type == 'text'" :type="type" :size="size || 'xs'" class="w-full" v-model="inputValue"
+      :required="props.required" />
+    <UTextarea v-if="type == 'text_area'" :size="size || 'xs'" v-model="inputValue" class="w-full" />
   </div>
 </template>
 
 <script lang="ts" setup>
-import { ref, defineProps, defineEmits,watch } from 'vue';
+import { ref, defineProps, defineEmits, watch } from 'vue';
 
 
 const props = defineProps({
+  label: Boolean,
   title: String,
   type: String,
   modelValue: String,
   required: {
     type: Boolean,
-    default: false 
+    default: false
+  },
+  size: {
+    type: String as () => 'sm' | 'md' | 'lg' | 'xs',
+    default: 'sm'
+  },
+  containerClass: {
+    type: [String, Array, Object],
+    default: 'flex'
   }
 
 });

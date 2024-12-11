@@ -16,6 +16,7 @@ export default defineNuxtConfig({
   compatibilityDate: "2024-04-03",
   devtools: { enabled: true },
   modules: [
+    "@hebilicious/vue-query-nuxt",
     "@nuxt/ui",
     "@nuxtjs/tailwindcss",
     "@pinia/nuxt",
@@ -60,4 +61,5 @@ export default defineNuxtConfig({
   runtimeConfig: {
     autoImports: ['defineStore', 'storeToRefs'], // Esto normalmente no se coloca en runtimeConfig, verifica si es necesario.
   },
+
 });
