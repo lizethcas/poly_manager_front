@@ -179,7 +179,15 @@ EventBus.on('instructions', (value) => {
     };
 });
 
+/* const handleCoverImage = (data: { url: string; fileType: string }) => {
+    // Crear nuevo archivo con nombre sin espacios
+    const newFileName = imageFile.name.replace(/\s+/g, '_');
+    return new File([data.url], newFileName, { type: data.fileType });
+
+};
+ */
 EventBus.on('file-selected', (data: { url: string; fileType: string }) => {
+    
     if (data.fileType === 'image') {
         fileData.value.cover = data.url;
     } else if (data.fileType === 'audio') {

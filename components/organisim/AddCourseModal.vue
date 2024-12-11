@@ -125,8 +125,10 @@ const handleSave = async () => {
             bullet_points: JSON.stringify(Array.from(bulletPoints.value)),
             cover: formData.value.cover
         };
+        
         const apiService = new ApiClassService();
-        await apiService.createClass(requestData);
+        const response = await apiService.createClass(requestData);
+        console.log(response);
         classStore.saveClass(formData.value as CourseForm);
     } else {
         const requestData = {
