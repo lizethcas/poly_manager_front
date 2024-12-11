@@ -11,7 +11,7 @@
                 <InputFile v-model="formData.cover" @file-selected="handleCoverImage" />
                 <!-- Iterar sobre los labels para los campos del formulario -->
                 <div v-for="(item, index) in labels" :key="'label-' + index">
-                    <MoleculeInputFile :title="item.label_name" :type="item.type"
+                    <MoleculeInput :title="item.label_name" :type="item.type"
                         :modelValue="formData[transformedKey(item.label_name)]"
                         @update:modelValue="(value) => updateFormField(transformedKey(item.label_name), value)" />
 
@@ -53,6 +53,7 @@ import BulletPoint from '../molecule/BulletPoint.vue';
 import { createCourse, labels } from '~/data/cardModal';
 import type { ModalProps } from '~/interfaces/modal.interface';
 import SelectAtom from '../molecule/SelectAtom.vue';
+
 import { useFormData } from '~/hooks/userFormData';
 import { useCourseStore } from '~/stores/courseStore';
 import { useClassStore } from '~/stores/class.store';
