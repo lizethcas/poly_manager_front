@@ -76,7 +76,7 @@ const handleChange = (event) => {
         if (['image', 'video', 'audio'].includes(fileType.value)) {
             previewUrl.value = URL.createObjectURL(file);
         }
-
+        console.log(URL.createObjectURL(file))
         // Emit the actual file along with the preview URL
         EventBus.emit('file-selected', { 
             file: file,  // Add the actual file

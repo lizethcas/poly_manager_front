@@ -100,9 +100,10 @@ const instructionsData = ref({
 
 // Add these refs to store file data
 const fileData = ref({
-    cover: '',
-    audio: '',
-    script: ''
+    cover: null,
+    audio: null,
+    script: '',
+    stats: false
 });
 
 // Este método se encarga de agregar una nueva opción a una pregunta
@@ -153,22 +154,24 @@ watch(questions, () => {
 }, { deep: true });
 
 // Observa los cambios en las preguntas y actualiza el valor en el store
-watch(questions, (newVal) => {
+watch(questions, () => {
     multipleTasksData.value = {
         title: instructionsData.value.title,
         instructions: instructionsData.value.instructions,
         cover: fileData.value.cover,
         audio: fileData.value.audio,
         script: fileData.value.script,
-        questions: questions.value.map(q => ({
-            question: q.question,
+        stats: fileData.value.stats,
+        question: questions.value.map(q => ({
+            question_text: q.question,
             answers: q.answers.map(a => ({
-                isCorrect: a.isCorrect,
-                answer: a.text
+                is_correct: a.isCorrect,
+                answer_text: a.text
             }))
         }))
     };
     console.log(multipleTasksData.value);
+    EventBus.emit('multiple-tasks-data', multipleTasksData.value);
 }, { deep: true });
 
 // Add this event listener outside of the watch
@@ -179,13 +182,9 @@ EventBus.on('instructions', (value) => {
     };
 });
 
-/* const handleCoverImage = (data: { url: string; fileType: string }) => {
-    // Crear nuevo archivo con nombre sin espacios
-    const newFileName = imageFile.name.replace(/\s+/g, '_');
-    return new File([data.url], newFileName, { type: data.fileType });
 
-};
- */
+
+
 EventBus.on('file-selected', (data: { url: string; fileType: string }) => {
     
     if (data.fileType === 'image') {
@@ -203,6 +202,10 @@ EventBus.on('file-selected', (data: { url: string; fileType: string }) => {
 
 EventBus.on('text-script', (value: string) => {
     fileData.value.script = value;
+});
+
+EventBus.on('toggle-selected', (value: boolean) => {
+    fileData.value.stats = value;
 });
 
 </script>

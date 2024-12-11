@@ -3,7 +3,6 @@ import type { ClassData } from "~/interfaces/models/class.interface..model";
 
 export class ApiClassService {
   async createClass(formData: FormData) {
-    console.log(formData);
     try {
       const response = await axiosInstance.post("classes/", formData, {
         headers: {

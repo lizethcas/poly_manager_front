@@ -61,7 +61,7 @@ import { ApiService } from '~/services/create.course.api';
 import transformKey from '~/utils/stringTransformations'
 import { useRoute } from 'vue-router';
 import { ApiClassService } from '~/services/create.class.api';
-import type { ClassData } from '~/interfaces/models/class.interface..model';
+
 import type { CourseForm } from '~/interfaces/modal.interface';
 
 

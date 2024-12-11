@@ -1714,23 +1714,23 @@
   dependencies:
     remove-accents "0.5.0"
 
-"@tanstack/query-core@5.62.2":
-  version "5.62.2"
-  resolved "https://registry.yarnpkg.com/@tanstack/query-core/-/query-core-5.62.2.tgz#4eef3201422f246788fb41d01662c2dea3136d9a"
-  integrity sha512-LcwVcC5qpsDpHcqlXUUL5o9SaOBwhNkGeV+B06s0GBoyBr8FqXPuXT29XzYXR36lchhnerp6XO+CWc84/vh7Zg==
+"@tanstack/query-core@5.62.7":
+  version "5.62.7"
+  resolved "https://registry.yarnpkg.com/@tanstack/query-core/-/query-core-5.62.7.tgz#c7f6d0131c08cd2f60e73ec6e7b70e2e9e335def"
+  integrity sha512-fgpfmwatsrUal6V+8EC2cxZIQVl9xvL7qYa03gsdsCy985UTUlS4N+/3hCzwR0PclYDqisca2AqR1BVgJGpUDA==
 
 "@tanstack/virtual-core@3.10.9":
   version "3.10.9"
   resolved "https://registry.yarnpkg.com/@tanstack/virtual-core/-/virtual-core-3.10.9.tgz#55710c92b311fdaa8d8c66682a0dbdd684bc77c4"
   integrity sha512-kBknKOKzmeR7lN+vSadaKWXaLS0SZZG+oqpQ/k80Q6g9REn6zRHS/ZYdrIzHnpHgy/eWs00SujveUN/GJT2qTw==
 
-"@tanstack/vue-query@^5.62.2":
-  version "5.62.2"
-  resolved "https://registry.yarnpkg.com/@tanstack/vue-query/-/vue-query-5.62.2.tgz#a44d91a2b55de4931f45968d50528267b296faad"
-  integrity sha512-osmptKF+Ung+UFNgKDhOrQxmlZsRp0zATCz8ARTbcay20CCnv6rvBR/+LJlb/M9YGQU/chrt/nPIi1Ax+j0SUw==
+"@tanstack/vue-query@^5.62.7":
+  version "5.62.7"
+  resolved "https://registry.yarnpkg.com/@tanstack/vue-query/-/vue-query-5.62.7.tgz#3829c4f59a7f9f9ba8c2856102d6d9416c046371"
+  integrity sha512-FVSnVw2fw9BHciCbWWSfPMB3PRtGHbGf4Q1Gq7mFlieojiKZBF5Nz5AKFQLKs+IGnrVDTKqfU8ojjPfthPTYxQ==
   dependencies:
     "@tanstack/match-sorter-utils" "^8.19.4"
-    "@tanstack/query-core" "5.62.2"
+    "@tanstack/query-core" "5.62.7"
     "@vue/devtools-api" "^6.6.3"
     vue-demi "^0.14.10"
 
@@ -4276,14 +4276,9 @@ lodash.uniq@^4.5.0:
   resolved "https://registry.npmjs.org/lodash.uniq/-/lodash.uniq-4.5.0.tgz"
   integrity sha512-xfBaXQd9ryd9dlSDvnvI0lvxfLJlYAZzXomUYzLKtUeOQvOP5piqAWuGtrhWeqaXK9hhoM/iyJc5AV+XfsX3HQ==
 
-lodash@^4.17.14, lodash@^4.17.15:
+lodash@^4.17.14, lodash@^4.17.15, lodash@^4.17.21:
   version "4.17.21"
   resolved "https://registry.npmjs.org/lodash/-/lodash-4.17.21.tgz"
-  integrity sha512-v2kDEe57lecTulaDIuNTPy3Ry4gLGJ6Z1O3vE1krgXZNrsQ+LFTGHVxVjcXPs17LhbZVGedAJv8XZ1tvj5FvSg==
-
-lodash@^4.17.21:
-  version "4.17.21"
-  resolved "https://registry.yarnpkg.com/lodash/-/lodash-4.17.21.tgz#679591c564c3bffaae8454cf0b3df370c3d6911c"
   integrity sha512-v2kDEe57lecTulaDIuNTPy3Ry4gLGJ6Z1O3vE1krgXZNrsQ+LFTGHVxVjcXPs17LhbZVGedAJv8XZ1tvj5FvSg==
 
 lru-cache@^10.2.0, lru-cache@^10.4.3:

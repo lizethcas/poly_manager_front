@@ -7,5 +7,14 @@
 </template>
 
 <script setup lang="ts">
+import EventBus from '~/composables/useEvenBus';
+
 const selected = ref(false)
+
+watch(selected, (value) => {
+  EventBus.emit('toggle-selected', value);
+});
+
+
+
 </script>
