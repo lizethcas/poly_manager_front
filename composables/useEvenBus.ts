@@ -9,7 +9,10 @@ const EventBus = reactive({
       const customEvent = e as CustomEvent;
       callback(customEvent.detail);
     });
-  }
+  },
+  off: (event: string, listener: EventListener) => {
+    document.removeEventListener(event, listener);
+  },
 });
 
 export default EventBus;

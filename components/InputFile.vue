@@ -29,7 +29,9 @@
             </div>
 
             <!-- Upload button -->
-             <UButton v-if="!icon" class="flex justify-center text-white hover:scale-105 hover:bg-primary-color transition-all duration-300 bg-primary-color" @click="triggerFileUpload">
+            <UButton v-if="!icon"
+                class="flex justify-center text-white hover:scale-105 hover:bg-primary-color transition-all duration-300 bg-primary-color"
+                @click="triggerFileUpload">
                 Upload
             </UButton>
 
@@ -64,6 +66,7 @@ const triggerFileUpload = () => {
 // Handle file selection
 const handleChange = (event) => {
     const file = event.target.files[0];
+    console.log(file)
 
     if (file) {
         fileName.value = file.name;
@@ -77,7 +80,8 @@ const handleChange = (event) => {
         // Emit events
         EventBus.emit('file-selected', { url: URL.createObjectURL(file), fileType: file.type.split('/')[0] });
         emit('update:modelValue', previewUrl.value);
-        emit('file-selected', file);
+
     }
 };
 </script>
+

@@ -60,7 +60,6 @@ const tasksStore = useTasksStore();
 
 const currentModal = ref({ label: '', name: '' });
 const formData = ref({ title: '', instructions: '' });
-const isActive = ref(false);
 const showEditNavigation = ref(false);
 const combinedData = ref({});
 // Escuchar el evento y pasar los valores recibidos
