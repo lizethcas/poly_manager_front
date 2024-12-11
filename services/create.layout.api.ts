@@ -41,6 +41,31 @@ export class ApiLayoutService {
         const response = await axiosInstance.delete(`layouts/${id}`);
         return response;
     }
+
+    async createMultipleChoiceTask(taskData: any): Promise<ApiResponse<any>> {
+        const response = await axiosInstance.post('multiple-choice/', taskData);
+        return response;
+    }
+
+    async createTrueFalseTask(taskData: any): Promise<ApiResponse<any>> {
+        const response = await axiosInstance.post('true-false/', taskData);
+        return response;
+    }
+
+    async createOrderingTask(taskData: any): Promise<ApiResponse<any>> {
+        const response = await axiosInstance.post('ordering/', taskData);
+        return response;
+    }
+
+    async createCategoriesTask(taskData: any): Promise<ApiResponse<any>> {
+        const response = await axiosInstance.post('categories/', taskData);
+        return response;
+    }
+
+    async createFillGapsTask(taskData: any): Promise<ApiResponse<any>> {
+        const response = await axiosInstance.post('fill-gaps/', taskData);
+        return response;
+    }
 }
 
 

@@ -32,7 +32,7 @@
 
 <script setup lang="ts">
 import { ref } from 'vue';
-
+import EventBus from '~/composables/useEvenBus';
 // Maneja los datos de los inputs
 const formData = ref({
     title: '',
@@ -42,6 +42,7 @@ const formData = ref({
 // Observa los cambios en formData y registra en consola
 watch(formData, (newValue) => {
     emit('update:modelValue', newValue);
+    EventBus.emit('instructions', newValue);
 }, { deep: true });
 
 const emit = defineEmits(['update:modelValue', 'close']);

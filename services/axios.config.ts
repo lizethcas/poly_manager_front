@@ -1,9 +1,10 @@
 import axios from 'axios';
 
 const axiosInstance = axios.create({
-  baseURL: process.env.NUXT_API_URL || 'http://localhost:8000/dashboard/api/',
+  baseURL: 'http://localhost:8000/dashboard/api/',
+  timeout: 5000,
   headers: {
-    'Content-Type': 'multipart/form-data'
+    'Content-Type': 'application/json',
   }
 });
 
