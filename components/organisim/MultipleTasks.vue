@@ -52,14 +52,9 @@
             <Icon :disabled="!isActive" name="icon-park-solid:add" size="14" class="bg-fuscous-gray-500 " />Add
             question
         </button>
-        <!--    <button :class="{
-            'text-xs rounded-md px-2 py-1 mt-2 mx-1 max-w-32': true,
-            'bg-tarawera-700 hover:bg-primary-color text-white ': isActive,
-            'bg-fuscous-gray-200 text-fuscous-gray-300 cursor-not-allowed': !isActive
-        }" @click="saveTask" :disabled="!isActive">
-            Save
-        </button> -->
     </UTooltip>
+
+
 </template>
 
 <script setup lang="ts">
@@ -95,8 +90,20 @@ const questions = ref<Question[]>([{
 const { removeOption, removeQuestion } = useRemove(questions);
 const { getType } = useGetTypeTask();
 const { onDragStart, onDragOver, onDrop } = useDragAnDrop(questions);
+const multipleTasksData = ref({});
 
+// Add these refs to store the instructions data
+const instructionsData = ref({
+    title: '',
+    instructions: ''
+});
 
+// Add these refs to store file data
+const fileData = ref({
+    cover: '',
+    audio: '',
+    script: ''
+});
 
 // Este método se encarga de agregar una nueva opción a una pregunta
 const addOption = (questionIndex: number) => {
@@ -129,13 +136,6 @@ const updateOptionIsCorrect = (questionIndex: number, optionIndex: number, value
     questions.value[questionIndex].answers[optionIndex].isCorrect = value;
 };
 
-/* const saveTask = () => {
-    const value = JSON.stringify(questions.value, null, 2);
-
-    tasksStore.saveTask(value);
-
-}; */
-
 // Nueva función para evaluar si el formulario tiene información
 const hasQuestionsWithAnswers = () => {
     return questions.value.every(question => {
@@ -153,10 +153,48 @@ watch(questions, () => {
 }, { deep: true });
 
 // Observa los cambios en las preguntas y actualiza el valor en el store
-watch(questions, (newVal, oldVal) => {
-    emit('update:value', newVal);
-
-    // Emitir el evento con el objeto questions
-    EventBus.emit('questionsUpdated', newVal);
+watch(questions, (newVal) => {
+    multipleTasksData.value = {
+        title: instructionsData.value.title,
+        instructions: instructionsData.value.instructions,
+        cover: fileData.value.cover,
+        audio: fileData.value.audio,
+        script: fileData.value.script,
+        questions: questions.value.map(q => ({
+            question: q.question,
+            answers: q.answers.map(a => ({
+                isCorrect: a.isCorrect,
+                answer: a.text
+            }))
+        }))
+    };
+    console.log(multipleTasksData.value);
 }, { deep: true });
+
+// Add this event listener outside of the watch
+EventBus.on('instructions', (value) => {
+    instructionsData.value = {
+        title: value.title,
+        instructions: value.instructions
+    };
+});
+
+EventBus.on('file-selected', (data: { url: string; fileType: string }) => {
+    if (data.fileType === 'image') {
+        fileData.value.cover = data.url;
+    } else if (data.fileType === 'audio') {
+        fileData.value.audio = data.url;
+    }
+
+    // Update multipleTasksData whenever a file is selected
+    multipleTasksData.value = {
+        ...multipleTasksData.value,
+        [data.fileType]: data.url
+    };
+});
+
+EventBus.on('text-script', (value: string) => {
+    fileData.value.script = value;
+});
+
 </script>

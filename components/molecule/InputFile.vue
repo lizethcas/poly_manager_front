@@ -10,7 +10,7 @@
 
 <script lang="ts" setup>
 import { ref, defineProps, defineEmits, watch } from 'vue';
-
+import EventBus from '~/composables/useEvenBus';
 
 const props = defineProps({
   label: Boolean,
@@ -38,6 +38,7 @@ const inputValue = ref(props.modelValue)
 
 watch(inputValue, (newValue) => {
   emit('update:modelValue', newValue);
-
+  EventBus.emit('text-script', newValue);
 });
 </script>
+

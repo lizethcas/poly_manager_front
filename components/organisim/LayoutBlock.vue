@@ -1,5 +1,5 @@
 <template>
-    <uploadImage v-model="formData.cover" @file-selected="handleCoverImage" />
+    <uploadImage  />
 
     <MoleculeInputFile type="text_area" title="Add script" size="lg" container-class="py-2" />
 
@@ -33,15 +33,12 @@ import MoleculeInputFile from '~/components/molecule/InputFile.vue';
 import OrganisimMultipleTasks from '~/components/organisim/MultipleTasks.vue';
 import TaskLayout from '~/layouts/TaskLayout.vue';
 import { useDescription } from '~/composables/useDescription';
-const formData = ref<{ cover: File | null }>({ cover: null });
 const taskTitle = ref<string>('Multiple choice')
 defineEmits(['close', 'submit', 'update:modelValue']);
 
 const { getTaskDescription } = useDescription();
 
-const handleCoverImage = (file: File) => {
-    formData.value.cover = file;
-};
+
 
 const handleOpenTask = (title: string) => {
     taskTitle.value = title

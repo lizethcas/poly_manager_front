@@ -11,7 +11,7 @@
 <script lang="ts" setup>
 import { ref, watch } from 'vue'; 
 import type { ModalProps } from '~/interfaces/modal.interface';
-
+import EventBus from '~/composables/useEvenBus';
 const props = defineProps<ModalProps & {
     modelValue?: string
     label?: boolean,
@@ -35,6 +35,7 @@ watch(
         if (newOptions?.length) {
             selectedOption.value = props.modelValue || newOptions[0];
             emit('update:modelValue', selectedOption.value);
+            EventBus.emit('selectedOption', selectedOption.value);
         }
     },
     { immediate: true }

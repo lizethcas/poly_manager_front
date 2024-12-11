@@ -45,7 +45,7 @@
 <script setup>
 import ImgAtom from "./atomos/ImgAtom.vue";
 import { ref, defineProps, defineEmits } from "vue";
-
+import EventBus from '~/composables/useEvenBus';
 // Props and events
 const props = defineProps(['modelValue', 'title', 'icon']);
 const emit = defineEmits(['update:modelValue', 'file-selected']);
@@ -75,6 +75,7 @@ const handleChange = (event) => {
         }
 
         // Emit events
+        EventBus.emit('file-selected', { url: URL.createObjectURL(file), fileType: file.type.split('/')[0] });
         emit('update:modelValue', previewUrl.value);
         emit('file-selected', file);
     }

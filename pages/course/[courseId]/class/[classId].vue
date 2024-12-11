@@ -63,23 +63,6 @@ const formData = ref({ title: '', instructions: '' });
 const isActive = ref(false);
 const showEditNavigation = ref(false);
 const combinedData = ref({});
-
-
-// Manejar la actualización del objeto questions
-const handleQuestionsUpdate = (questions: Question[]) => {
-    combinedData.value = {
-        ...formData.value,
-        questions: toRaw(questions),
-        video_file: '',
-    };
-};
-
-// Escuchar el evento cuando el componente se monta
-onMounted(() => {
-    EventBus.on('questionsUpdated', handleQuestionsUpdate);
-    handleSave();
-});
-
 // Escuchar el evento y pasar los valores recibidos
 const openModalHandler = (label: string, name: string) => {
     currentModal.value = { label, name };
@@ -89,42 +72,7 @@ const openModalHandler = (label: string, name: string) => {
 
 
 const handleSave = () => {
-    if (currentModal.value.label === 'Text layout') {
-        tasksStore.saveTask({
-            ...formData.value,
-            textContent: textContent.value,
-            type: 'text'
-        });
-        closeModal();
-        return;
-    }
-
-    if (currentModal.value.label === 'Video layout') {
-        console.log('videoData', videoData.value);
-        return;
-    }
-
-    if (currentModal.value.label === 'Layout block') {
-        if (Object.keys(toRaw(combinedData.value)).length === 0) {
-            isActive.value = false;
-            console.log('El objeto combinedData está vacío');
-            return;
-        } else {
-            console.log(toRaw(combinedData.value));
-            tasksStore.saveTask(combinedData.value);
-            formData.value = {
-                title: '',
-                instructions: '',
-            };
-            combinedData.value = {
-                title: '',
-                instructions: '',
-                questions: [] as Question[],
-            };
-
-        }
-
-    }
+  
 
     closeModal();
 
