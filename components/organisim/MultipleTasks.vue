@@ -74,6 +74,8 @@ import type { Question, MultipleTasksProps } from '~/interfaces/components/props
 const emit = defineEmits(['update:value', 'save-task']);
 const { typeTask, titleTask, subtitleTask, description } = defineProps<MultipleTasksProps>();
 
+console.log('typeTask:', typeTask);
+
 const value = ref('');
 const isActive = ref(false);
 const questions = ref<Question[]>([{
@@ -94,7 +96,7 @@ const multipleTasksData = ref({});
 
 // Add these refs to store the instructions data
 const instructionsData = ref({
-    title: '',
+    tittle: '',
     instructions: ''
 });
 
@@ -156,12 +158,13 @@ watch(questions, () => {
 // Observa los cambios en las preguntas y actualiza el valor en el store
 watch(questions, () => {
     multipleTasksData.value = {
-        title: instructionsData.value.title,
+        tittle: instructionsData.value.tittle,
         instructions: instructionsData.value.instructions,
         cover: fileData.value.cover,
         audio: fileData.value.audio,
         script: fileData.value.script,
         stats: fileData.value.stats,
+
         question: questions.value.map(q => ({
             question_text: q.question,
             answers: q.answers.map(a => ({
@@ -170,14 +173,16 @@ watch(questions, () => {
             }))
         }))
     };
-    console.log(multipleTasksData.value);
     EventBus.emit('multiple-tasks-data', multipleTasksData.value);
+    EventBus.on('selectedOption', (value: string) => {
+        console.log('selectedOption:', value);
+    });
 }, { deep: true });
 
 // Add this event listener outside of the watch
 EventBus.on('instructions', (value) => {
     instructionsData.value = {
-        title: value.title,
+        tittle: value.title,
         instructions: value.instructions
     };
 });
@@ -185,18 +190,17 @@ EventBus.on('instructions', (value) => {
 
 
 
-EventBus.on('file-selected', (data: { url: string; fileType: string }) => {
-    
+EventBus.on('file-selected', (data: { url: string | null; fileType: string; file?: File }) => {
     if (data.fileType === 'image') {
-        fileData.value.cover = data.url;
+        fileData.value.cover = data.file || null;
     } else if (data.fileType === 'audio') {
-        fileData.value.audio = data.url;
+        fileData.value.audio = data.file || null;
     }
 
-    // Update multipleTasksData whenever a file is selected
+    // Update multipleTasksData with the File object
     multipleTasksData.value = {
         ...multipleTasksData.value,
-        [data.fileType]: data.url
+        [data.fileType === 'image' ? 'cover' : 'audio']: data.file
     };
 });
 
@@ -207,5 +211,12 @@ EventBus.on('text-script', (value: string) => {
 EventBus.on('toggle-selected', (value: boolean) => {
     fileData.value.stats = value;
 });
+
+
+
+// Add this watch near your other watch statements
+watch(() => typeTask, (newValue) => {
+    console.log('typeTask changed:', newValue);
+}, { immediate: true });
 
 </script>

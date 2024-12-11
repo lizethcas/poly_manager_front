@@ -1,7 +1,7 @@
 <template>
     <div>
         <h3 class="text-s font-bold text-tarawera-700 my-4">Multimedia:</h3>
-        <select v-model="selectedComponent">
+        <select v-model="selectedComponent" @change="handleChange">
             <option value="video">Video</option>
             <option value="audio">Audio</option>
             <option value="embeddedVideo">Embedded Video</option>
@@ -20,5 +20,30 @@ import MultimediaBlockAudio from '~/components/organisim/MultimediaBlockAudio.vu
 import MultimediaBlockEmbeddedVideo from '~/components/organisim/MultimediaBlockEmbeddedVideo.vue';
 import MultimediaBlockAttachment from '~/components/organisim/MultimediaBlockAttachment.vue';
 const selectedComponent = ref('video');
+import EventBus from '~/composables/useEvenBus';
+
+/* const instructionsData = ref({
+    tittle: '',
+    instructions: ''
+});
+
+EventBus.on('instructions', (value) => {
+    instructionsData.value = {
+        tittle: value.title,
+        instructions: value.instructions
+    };
+});
+ */
+/* watch(() => instructionsData.value, (newValue) => {
+    console.log('instructionsData changed:', newValue);
+    
+}, { immediate: true });
+ */
+
+const handleChange = () => {
+   
+    EventBus.emit('seletedOption', selectedComponent.value);
+};
+
 </script>
 
