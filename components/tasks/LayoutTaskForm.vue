@@ -179,7 +179,7 @@
 import { computed } from 'vue';
 import InputFile from '../InputFile.vue';
 import { useLayoutStore } from '@/stores/layout.store';
-import { useTaskStore } from '@/stores/taskStore';
+import { useTaskStore } from '~/stores/taskStorec';
 
 const props = defineProps<{
     formData: {

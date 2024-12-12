@@ -19,6 +19,10 @@
         class="fixed inset-0 flex items-center justify-center bg-gray-800 bg-opacity-50 z-50">
         <p class="text-title-color text-2xl">Guardando...</p>
     </div>
+    <div v-if="infoResponseApi.isSuccess"
+        class="fixed inset-0 flex items-center justify-center bg-gray-800 bg-opacity-50 z-50">
+        <p class="text-title-color text-2xl">Guardado correctamente</p>
+    </div>
 
     <MoleculeActionButtons @handleSave="handleSave()" @handleCancel="handleCancel"
         :isActive="infoResponseApi.isActive" />
@@ -33,8 +37,10 @@ import { useTaskStore } from '~/stores/task.store';
 import { ref, computed, watch } from 'vue';
 import { apiRoutes } from '~/services/routes.api';
 import axiosInstance from '~/services/axios.config';
-
+import { useRoute } from 'vue-router';
 // Store and state management
+
+const route = useRoute();
 const toast = useToast()
 const taskStore = useTaskStore();
 const infoResponseApi = ref({
@@ -45,11 +51,13 @@ const infoResponseApi = ref({
     error: null,
     data: null,
 });
+
 const selectedOption = computed(() => taskStore.getTask('selectedOption'));
 const taskInstructions = computed(() => taskStore.getTask('instructions'));
 
 // Data object for form fields
 const data = ref({
+    class_id: route.params.classId,
     video: null as File | null,
     script: '',
     cover: null as File | null,
@@ -73,9 +81,9 @@ watch(data, (newValue) => {
 }, { deep: true });
 
 // Handle file name cleanup
-const handleCoverImage = (imageFile: File) => {
-    const newFileName = imageFile.name.replace(/\s+/g, '_');
-    const newFile = new File([imageFile], newFileName, { type: imageFile.type });
+const multimedia = (file: File) => {
+    const newFileName = file.name.replace(/\s+/g, '_');
+    const newFile = new File([file], newFileName, { type: file.type });
     return newFile;
 };
 
@@ -115,7 +123,6 @@ const handleSave = async () => {
 
             // Handle video file
             if (data.value.video instanceof File) {
-                console.log('Video file:', data.value.video);
                 const newFileName = data.value.video.name.replace(/\s+/g, '_');
                 const newVideoFile = new File([data.value.video], newFileName, {
                     type: data.value.video.type
@@ -138,9 +145,9 @@ const handleSave = async () => {
             formData.append('script', data.value.script);
             formData.append('title', data.value.title);
             formData.append('instructions', data.value.instructions);
-
+            formData.append('class_id', String(data.value.class_id));
+            console.log('Form data:', data.value);
             // Trigger the mutation
-
             mutation.mutate(formData);
 
         } catch (error) {
@@ -148,6 +155,5 @@ const handleSave = async () => {
             throw error;
         }
     }
-
 };
 </script>
