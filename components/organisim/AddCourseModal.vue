@@ -125,7 +125,7 @@ const handleSave = async () => {
             bullet_points: JSON.stringify(Array.from(bulletPoints.value)),
             cover: formData.value.cover
         };
-        
+        console.log(requestData);
         const apiService = new ApiClassService();
         const response = await apiService.createClass(requestData);
         console.log(response);
@@ -139,6 +139,7 @@ const handleSave = async () => {
             bullet_points: JSON.stringify(Array.from(bulletPoints.value)),
             cover: formData.value.cover
         };
+        console.log(requestData);
 
         const apiService = new ApiService();
         await apiService.createCourse(requestData);

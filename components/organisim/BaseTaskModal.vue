@@ -32,8 +32,10 @@
 
 <script setup lang="ts">
 import { ref } from 'vue';
+import { useTaskStore } from '~/stores/task.store';
 import EventBus from '~/composables/useEvenBus';
 // Maneja los datos de los inputs
+const taskStore = useTaskStore();
 const formData = ref({
     title: '',
     instructions: '',
@@ -42,6 +44,7 @@ const formData = ref({
 // Observa los cambios en formData y registra en consola
 watch(formData, (newValue) => {
     emit('update:modelValue', newValue);
+    taskStore.addTask('instructions', newValue);
     EventBus.emit('instructions', newValue);
 }, { deep: true });
 

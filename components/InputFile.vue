@@ -83,7 +83,8 @@ const handleChange = (event) => {
             url: URL.createObjectURL(file), 
             fileType: file.type.split('/')[0] 
         });
-        emit('update:modelValue', file); // Emit the file instead of the URL
+        emit('update:modelValue', previewUrl.value);
+        emit('file-selected', file); // Emit the file instead of the URL
 
     }
 };

@@ -23,12 +23,12 @@
 
                 <component :is="getCurrentComponent()" />
 
-                <div class="flex items-center gap-2 py-4 text-sm">
+                <!-- <div class="flex items-center gap-2 py-4 text-sm">
                     <p>Include the stats</p>
                     <AtomosToggle />
-                </div>
-                <MoleculeActionButtons @handleSave="handleSave()" @handleCancel="$emit('close')" />
-
+                </div> -->
+                <!--                 <MoleculeActionButtons @handleSave="handleSave()" @handleCancel="$emit('close')" />
+ -->
             </BaseTaskModal>
         </div>
         <div v-if="isError" class="error-message">
@@ -57,22 +57,29 @@ import TextBlock from '~/components/organisim/TextBlock.vue';
 import MultimediaBlock from '~/components/organisim/MultimediaBlock.vue';
 import InteractiveActivities from '~/components/organisim/InteractiveActivities.vue';
 import OrganisimLayoutBlock from '~/components/organisim/LayoutBlock.vue';
-import { useTasksStore } from '~/stores/tasks.store';
+import { useTaskStore } from '~/stores/task.store';
 import { useMultipleChoice } from '~/services/multiplechoice.api';
 import { ApiMultimediaBlockVideoService } from '~/services/multimediablockvideos.api';
 
 const { save, isLoading, isError, isSuccess, get } = useMultipleChoice();
-const { isOpen, openModal, closeModal } = useModal();
+const { isOpen, closeModal, openModal } = useModal();
 const { beforeEnter, enter, leave } = useAnimation();
 
-
+const taskStore = useTaskStore();
 const currentModal = ref({ label: '', name: '' });
 const formData = ref({ title: '', instructions: '' });
 const showEditNavigation = ref(false);
 const multipleTasksData = ref({});
 const multimediaBlockVideoData = ref({});
 
+const closeModalHandler = computed(() => taskStore.getTask('modal'));
+watch(closeModalHandler, () => {
+    closeModal();
+})
+
 // Escuchar el evento y pasar los valores recibidos
+
+
 const openModalHandler = (label: string, name: string) => {
     currentModal.value = { label, name };
 
@@ -95,6 +102,7 @@ const openModalHandler = (label: string, name: string) => {
     openModal();  // Asegúrate de abrir el modal
 };
 
+
 const getCurrentComponent = () => {
     switch (currentModal.value.label) {
         case 'Layout block': return OrganisimLayoutBlock;
@@ -108,27 +116,21 @@ const getCurrentComponent = () => {
 
 
 const handleSave = async () => {
-    console.log(multimediaBlockVideoData.value);
     try {
         if (currentModal.value.label === 'Layout block') {
             await save(multipleTasksData.value);
-            console.log(isSuccess.value);
             closeModal();
         }
 
         if (currentModal.value.label === 'Multimedia block') {
-            console.log(toRaw(multimediaBlockVideoData.value));
             const apiService = new ApiMultimediaBlockVideoService();
             const response = await apiService.createMultimediaBlockVideo(multimediaBlockVideoData.value);
-            console.log(response);
             closeModal();
-            // Assuming multipleTasksData.value contains the required fields
-
         }
     } catch (error) {
         console.error('Error saving data:', error);
     }
-}
+};
 </script>
 
 /* switch (title) {

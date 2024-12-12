@@ -21,6 +21,18 @@ import MultimediaBlockEmbeddedVideo from '~/components/organisim/MultimediaBlock
 import MultimediaBlockAttachment from '~/components/organisim/MultimediaBlockAttachment.vue';
 const selectedComponent = ref('video');
 import EventBus from '~/composables/useEvenBus';
+import { useTaskStore } from '~/stores/task.store';
+
+
+
+const taskStore = useTaskStore();
+const selectedOption = ref('video');
+
+onMounted(() => {
+    taskStore.addTask('selectedOption', selectedComponent.value);
+ 
+})
+
 
 /* const instructionsData = ref({
     tittle: '',
@@ -41,9 +53,10 @@ EventBus.on('instructions', (value) => {
  */
 
 const handleChange = () => {
-   
-    EventBus.emit('seletedOption', selectedComponent.value);
+
+    selectedOption.value = taskStore.getTask('multimedia');
+    taskStore.addTask('multimedia', selectedComponent.value);
+    console.log(taskStore.getTask('multimedia'));
 };
 
 </script>
-
