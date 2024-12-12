@@ -20,13 +20,13 @@ export default defineNuxtConfig({
     "@nuxt/ui",
     "@nuxtjs/tailwindcss",
     "@pinia/nuxt",
-    '@pinia-plugin-persistedstate/nuxt',
+    "@pinia-plugin-persistedstate/nuxt",
   ],
   piniaPersistedstate: {
-    storage: 'localStorage', // Puedes usar 'localStorage' o 'sessionStorage'
+    storage: "localStorage", // Puedes usar 'localStorage' o 'sessionStorage'
   },
   pinia: {
-    storesDirs: ['./stores/**', './custom-folder/stores/**'],
+    storesDirs: ["./stores/**", "./custom-folder/stores/**"],
   },
   app: {
     head: {
@@ -59,7 +59,6 @@ export default defineNuxtConfig({
     cssPath: "~/assets/css/tailwind.css",
   },
   runtimeConfig: {
-    autoImports: ['defineStore', 'storeToRefs'], // Esto normalmente no se coloca en runtimeConfig, verifica si es necesario.
+    autoImports: ["defineStore", "storeToRefs"], // Esto normalmente no se coloca en runtimeConfig, verifica si es necesario.
   },
-
 });

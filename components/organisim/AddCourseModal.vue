@@ -11,7 +11,7 @@
                 <InputFile v-model="formData.cover" @file-selected="handleCoverImage" />
                 <!-- Iterar sobre los labels para los campos del formulario -->
                 <div v-for="(item, index) in labels" :key="'label-' + index">
-                    <MoleculeInputFile :title="item.label_name" :type="item.type"
+                    <MoleculeInput :title="item.label_name" :type="item.type"
                         :modelValue="formData[transformedKey(item.label_name)]"
                         @update:modelValue="(value) => updateFormField(transformedKey(item.label_name), value)" />
 
@@ -53,6 +53,7 @@ import BulletPoint from '../molecule/BulletPoint.vue';
 import { createCourse, labels } from '~/data/cardModal';
 import type { ModalProps } from '~/interfaces/modal.interface';
 import SelectAtom from '../molecule/SelectAtom.vue';
+
 import { useFormData } from '~/hooks/userFormData';
 import { useCourseStore } from '~/stores/courseStore';
 import { useClassStore } from '~/stores/class.store';
@@ -60,7 +61,7 @@ import { ApiService } from '~/services/create.course.api';
 import transformKey from '~/utils/stringTransformations'
 import { useRoute } from 'vue-router';
 import { ApiClassService } from '~/services/create.class.api';
-import type { ClassData } from '~/interfaces/models/class.interface..model';
+
 import type { CourseForm } from '~/interfaces/modal.interface';
 
 
@@ -124,8 +125,10 @@ const handleSave = async () => {
             bullet_points: JSON.stringify(Array.from(bulletPoints.value)),
             cover: formData.value.cover
         };
+        console.log(requestData);
         const apiService = new ApiClassService();
-        await apiService.createClass(requestData);
+        const response = await apiService.createClass(requestData);
+        console.log(response);
         classStore.saveClass(formData.value as CourseForm);
     } else {
         const requestData = {
@@ -136,6 +139,7 @@ const handleSave = async () => {
             bullet_points: JSON.stringify(Array.from(bulletPoints.value)),
             cover: formData.value.cover
         };
+        console.log(requestData);
 
         const apiService = new ApiService();
         await apiService.createCourse(requestData);

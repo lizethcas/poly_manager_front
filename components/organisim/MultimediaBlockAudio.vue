@@ -8,9 +8,14 @@
 </template>
 <script setup lang="ts">
 import InputFile from '~/components/InputFile.vue';
-import EventBus from '~/composables/useEvenBus';
+
 import { ref } from 'vue';
 
+
+const formData = ref({
+    title: '',
+    instructions: ''
+});
 // Definir una referencia para el contenido del textarea
 const textContent = ref('');
 </script>

@@ -4,11 +4,6 @@ import type { ClassData } from "~/interfaces/models/class.interface..model";
 export class ApiClassService {
   async createClass(formData: FormData) {
     try {
-      // Verificar el contenido del FormData antes de enviarlo
-      for (let pair of formData.entries()) {
-        console.log(pair[0] + ': ' + pair[1]); // Debug
-      }
-
       const response = await axiosInstance.post("classes/", formData, {
         headers: {
           "Content-Type": "multipart/form-data",

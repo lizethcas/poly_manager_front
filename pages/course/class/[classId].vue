@@ -139,7 +139,7 @@ import { useRoute } from 'vue-router';
 import { useModal } from '@/composables/useModal';
 import TasksApiService from '@/services/tasks.api';
 import { useLayoutStore } from '@/stores/layout.store';
-import { useTaskStore } from '~/stores/taskStore';
+import { useTaskStore } from '~/stores/taskStorec';
 
 // Importar componentes con rutas absolutas
 import ClassNavigation from '@/components/class/ClassNavigation.vue';

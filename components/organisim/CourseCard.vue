@@ -1,4 +1,5 @@
 <template>
+  <p v-if="!courses" class="text-title-color">cargando</p>
   <div v-if="courses.length > 0" v-for="course in courses.slice().reverse()" :key="course.id"
     @click="navigateToCourse(course.id)" :class="[
       'w-full flex justify-between border-2 rounded-xl cursor-pointer mt-4 hover:scale-105 transition-all duration-300',
@@ -35,9 +36,7 @@
       <img v-if="course.cover" :src="getCoverUrl(course.cover)" alt="" class="rounded-xl object-cover w-28 h-28 m-1" />
     </div>
   </div>
-  <div v-else>
-    <p class="text-title-color">Aun no hay cursos disponibles</p>
-  </div>
+
 </template>
 
 <script lang="ts" setup>

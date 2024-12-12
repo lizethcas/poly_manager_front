@@ -6,7 +6,7 @@
     </div>
 </template>
 <script setup lang="ts">
-import InputFile from '~/components/molecule/InputFile.vue';
+import InputFile from '~/components/molecule/Input.vue';
 import { ref } from 'vue';
 
 // Definir una referencia para el contenido del textarea

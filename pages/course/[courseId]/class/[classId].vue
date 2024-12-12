@@ -1,7 +1,7 @@
 <template>
     <div class="w-full">
-        <Task v-if="tasksStore.questions.length > 0" :questions="tasksStore.questions" />
-        <div v-if="tasksStore.questions.length === 0"
+        <!-- <Task v-if="datatask.length > 0" :questions="datatask.value.questions" />
+        <div v-if="datatask.questions.length === 0"
             class="font-bold flex justify-center items-center text-center h-screen text-fuscous-gray-950 text-md ">
 
             <div>
@@ -10,8 +10,8 @@
                     class="hover:underline hover:text-tarawera-700 text-fuscous-gray-950 px-4 py-2 rounded-md">Add
                     Block</button>
             </div>
-        </div>
-        <button v-if="tasksStore.questions.length > 0" @click="showEditNavigation = true"
+        </div> -->
+        <button @click="showEditNavigation = true"
             class="hover:underline hover:text-tarawera-700 text-fuscous-gray-950 px-4 py-2 rounded-md">Add
             Block</button>
         <transition name="slide-up" @before-enter="beforeEnter" @enter="enter" @leave="leave">
@@ -20,112 +20,167 @@
         <div v-if="isOpen">
             <BaseTaskModal :is-open="isOpen" @close="closeModal" :title="currentModal.label" v-model="formData"
                 class="max-h-[80vh]  overflow-y-auto" :icon="currentModal.name">
-                <div>
-                    <OrganisimLayoutBlock v-if="currentModal.label === 'Layout block'" />
-                    <VideoBlock v-if="currentModal.label === 'Video layout'" />
-                    <TextBlock v-if="currentModal.label === 'Text block'" />
-                    <MultimediaBlock v-if="currentModal.label === 'Multimedia block'" />
-                    <InteractiveActivities v-if="currentModal.label === 'Interactive activities'" />
-                </div>
-                <div class="flex items-center gap-2 py-4 text-sm">
+
+                <component :is="getCurrentComponent()" />
+
+                <!-- <div class="flex items-center gap-2 py-4 text-sm">
                     <p>Include the stats</p>
                     <AtomosToggle />
-                </div>
-                <MoleculeActionButtons @handleSave="handleSave()" @handleCancel="$emit('close')" />
-
+                </div> -->
+                <!--                 <MoleculeActionButtons @handleSave="handleSave()" @handleCancel="$emit('close')" />
+ -->
             </BaseTaskModal>
         </div>
-
+        <div v-if="isError" class="error-message">
+            <p>An error occurred while saving data. Please try again later.</p>
+        </div>
+        <div v-if="isLoading" class="loading-message">
+            <p>Saving data...</p>
+        </div>
+        <div v-if="isSuccess" class="success-message">
+            <p>Data saved successfully.</p>
+        </div>
     </div>
 </template>
 
 <script setup lang="ts">
-import { ref, watch, onMounted } from 'vue';
+import { ref } from 'vue';
 import { useModal } from '~/composables/useModal';
 import EditClassNavigation from '~/components/organisim/EditClassNavigation.vue';
 import BaseTaskModal from '~/components/organisim/BaseTaskModal.vue';
 import { useAnimation } from '~/composables/useAnimation';
 import EventBus from '~/composables/useEvenBus';
-import type { Question } from '~/interfaces/components/props.components.interface';
+
 import Task from '~/components/organisim/task.vue';
 import VideoBlock from '~/components/organisim/VideoBlock.vue';
 import TextBlock from '~/components/organisim/TextBlock.vue';
 import MultimediaBlock from '~/components/organisim/MultimediaBlock.vue';
 import InteractiveActivities from '~/components/organisim/InteractiveActivities.vue';
-import { useTasksStore } from '~/stores/tasks.store';
+import OrganisimLayoutBlock from '~/components/organisim/LayoutBlock.vue';
+import { useTaskStore } from '~/stores/task.store';
+import { useMultipleChoice } from '~/services/multiplechoice.api';
+import { ApiMultimediaBlockVideoService } from '~/services/multimediablockvideos.api';
 
-const { isOpen, openModal, closeModal } = useModal();
+const { save, isLoading, isError, isSuccess, get } = useMultipleChoice();
+const { isOpen, closeModal, openModal } = useModal();
 const { beforeEnter, enter, leave } = useAnimation();
-const tasksStore = useTasksStore();
 
+const taskStore = useTaskStore();
 const currentModal = ref({ label: '', name: '' });
 const formData = ref({ title: '', instructions: '' });
 const showEditNavigation = ref(false);
-const combinedData = ref({});
+const multipleTasksData = ref({});
+const multimediaBlockVideoData = ref({});
+
+const closeModalHandler = computed(() => taskStore.getTask('modal'));
+watch(closeModalHandler, () => {
+    closeModal();
+})
+
 // Escuchar el evento y pasar los valores recibidos
+
+
 const openModalHandler = (label: string, name: string) => {
     currentModal.value = { label, name };
+
+    EventBus.on('multiple-tasks-data', (data) => {
+        multipleTasksData.value = data;
+
+
+    })
+    EventBus.on('questions', (questions) => {
+        questions.value = questions;
+        console.log(questions.value);
+    })
+
+    EventBus.on('multimedia-block-video', (data) => {
+        multimediaBlockVideoData.value = data;
+        console.log(data);
+    })
+
 
     openModal();  // Asegúrate de abrir el modal
 };
 
 
-const handleSave = () => {
-  
-
-    closeModal();
-
-    /* switch (title) {
-        case 'Layout block':
-            console.log(toRaw(combinedData.value));
-            tasksStore.saveTask(combinedData.value);
-            closeModal();
-            console.log(title);
-            break;
-        case 'Video layout':
-            console.log(title);
-            break;
-        case 'Text layout':
-            console.log(title);
-            break;
-        case 'Audio layout':
-            console.log(title);
-            break;
-        case 'Info block':
-            console.log(title);
-            break;
-        case 'SCORM file':
-            console.log(title);
-            break;
-        case 'Gallery layout':
-            console.log(title);
-            break;
-        case 'AI chat':
-            console.log(title);
-            break;
-        case 'Multimedia block':
-            console.log(title);
-            break;
-        case 'Interactive activities':
-            console.log(title);
-            break;
-        case 'Knowledge check':
-            console.log(title);
-            break;
-        case 'Word list':
-            console.log(title);
-            break;
-        case 'Table':
-            console.log(title);
-            break;
-        case 'Dividers':
-            console.log(title);
-            break;
-        default:
-            console.log(title);
-            break;
+const getCurrentComponent = () => {
+    switch (currentModal.value.label) {
+        case 'Layout block': return OrganisimLayoutBlock;
+        case 'Video layout': return VideoBlock;
+        case 'Text block': return TextBlock;
+        case 'Multimedia block': return MultimediaBlock;
+        case 'Interactive activities': return InteractiveActivities;
+        default: return null; // Devolver null si no hay coincidencia
     }
-} */
+};
 
-}
+
+const handleSave = async () => {
+    try {
+        if (currentModal.value.label === 'Layout block') {
+            await save(multipleTasksData.value);
+            closeModal();
+        }
+
+        if (currentModal.value.label === 'Multimedia block') {
+            const apiService = new ApiMultimediaBlockVideoService();
+            const response = await apiService.createMultimediaBlockVideo(multimediaBlockVideoData.value);
+            closeModal();
+        }
+    } catch (error) {
+        console.error('Error saving data:', error);
+    }
+};
 </script>
+
+/* switch (title) {
+case 'Layout block':
+console.log(toRaw(combinedData.value));
+tasksStore.saveTask(combinedData.value);
+closeModal();
+console.log(title);
+break;
+case 'Video layout':
+console.log(title);
+break;
+case 'Text layout':
+console.log(title);
+break;
+case 'Audio layout':
+console.log(title);
+break;
+case 'Info block':
+console.log(title);
+break;
+case 'SCORM file':
+console.log(title);
+break;
+case 'Gallery layout':
+console.log(title);
+break;
+case 'AI chat':
+console.log(title);
+break;
+case 'Multimedia block':
+console.log(title);
+break;
+case 'Interactive activities':
+console.log(title);
+break;
+case 'Knowledge check':
+console.log(title);
+break;
+case 'Word list':
+console.log(title);
+break;
+case 'Table':
+console.log(title);
+break;
+case 'Dividers':
+console.log(title);
+break;
+default:
+console.log(title);
+break;
+}
+*/

@@ -1,7 +1,9 @@
 <template>
     <div class="w-full flex justify-center gap-4">
         <UButton color="freshGreen"
-            class="w-1/3 mx-2 flex justify-center items-center text-center text-white transform hover:scale-80 hover:bg-active:scale-100 active:shadow-sm transition-all duration-300"
+            :class="[{ 'w-1/3 mx-2 flex justify-center items-center text-center text-white transform hover:scale-80 hover:bg-active:scale-100 active:shadow-sm transition-all duration-300' : isActive,
+                'w-1/3 mx-2 flex justify-center items-center text-center opacity-50 cursor-not-allowed bg-gray-200 transform hover:scale-100 transition-all duration-300' : !isActive
+             }]"  
             @click="handleSave">
             Save
         </UButton>
@@ -14,6 +16,17 @@
 </template>
 
 <script lang="ts" setup>
+
+interface Props {
+    
+    isActive: boolean;
+}
+
+const {  isActive } = defineProps<Props>()
+
+
+
+
 const emits = defineEmits(["handleSave", "handleCancel"])
 
 const handleSave = () => {

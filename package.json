@@ -16,7 +16,7 @@
     "@nuxtjs/i18n": "^9.0.0",
     "@pinia-plugin-persistedstate/nuxt": "^1.2.1",
     "@pinia/nuxt": "^0.7.0",
-    "@tanstack/vue-query": "^5.62.2",
+    "@tanstack/vue-query": "^5.62.7",
     "@types/uuid": "^10.0.0",
     "@unhead/vue": "^1.11.11",
     "axios": "^1.7.7",

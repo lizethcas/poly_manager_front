@@ -66,7 +66,7 @@ const triggerFileUpload = () => {
 // Handle file selection
 const handleChange = (event) => {
     const file = event.target.files[0];
-    console.log(file)
+ 
 
     if (file) {
         fileName.value = file.name;
@@ -76,10 +76,15 @@ const handleChange = (event) => {
         if (['image', 'video', 'audio'].includes(fileType.value)) {
             previewUrl.value = URL.createObjectURL(file);
         }
-
-        // Emit events
-        EventBus.emit('file-selected', { url: URL.createObjectURL(file), fileType: file.type.split('/')[0] });
+        console.log(URL.createObjectURL(file))
+        // Emit the actual file along with the preview URL
+        EventBus.emit('file-selected', { 
+            file: file,  // Add the actual file
+            url: URL.createObjectURL(file), 
+            fileType: file.type.split('/')[0] 
+        });
         emit('update:modelValue', previewUrl.value);
+        emit('file-selected', file); // Emit the file instead of the URL
 
     }
 };
