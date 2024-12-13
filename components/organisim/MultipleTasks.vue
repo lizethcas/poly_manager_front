@@ -99,7 +99,6 @@ const files = computed(() => taskStore.getTask('files'));
 const select = computed(() => taskStore.getTask('select'));
 const value = ref('');
 const isActive = ref(false);
-const task = ref(typeTask);
 
 const infoResponseApi = ref({
     isActive: false,
@@ -127,22 +126,66 @@ const { removeOption, removeQuestion } = useRemove(questions);
 const { getType } = useGetTypeTask();
 const { onDragStart, onDragOver, onDrop } = useDragAnDrop(questions);
 
-// Add these refs to store the instructions data
+// Modify the data structure
+interface Multimedia {
+    media_type: string;
+    file: File | null;
+}
+
 const data = ref({
     class_id: route.params.classId,
+    content_type: typeTask,
     tittle: '',
     instructions: '',
-    cover: null as File | null,
-    audio: null as File | null,
-    script: '',
-    question: [] as Question[],
     stats: false,
-
+    content_details: {
+        questions: [] as Question[]
+    },
+    multimedia: [] as Multimedia[]
 });
 
+// Update the watch for questions
+watch(questions, (newValue) => {
+    isActive.value = hasQuestionsWithAnswers();
+    infoResponseApi.value.isActive = hasQuestionsWithAnswers();
+
+    // Transform the questions based on the type
+    if (typeTask === 'true_false') {
+        data.value.content_details.questions = newValue.map(q => ({
+            statement: q.question,
+            state: q.answers[0].isCorrect === 'True' ? 1 : 
+                   q.answers[0].isCorrect === 'False' ? 2 : 3
+        }));
+    } else {
+        // For other types, format the questions appropriately
+        data.value.content_details.questions = newValue.map(q => ({
+            question: q.question,
+            answers: q.answers.map(a => ({
+                text: a.text,
+                isCorrect: a.isCorrect
+            }))
+        }));
+    }
+}, { deep: true });
+
+// Update the watchers
 watch(files, (newValue) => {
-    data.value.cover = newValue.image;
-    data.value.audio = newValue.audio;
+    data.value.multimedia = [];
+
+    if (newValue.image) {
+        data.value.multimedia.push({
+            media_type: 'image',
+            file: newValue.image
+        });
+    }
+
+    if (newValue.audio) {
+        data.value.multimedia.push({
+            media_type: 'audio',
+            file: newValue.audio,
+
+        });
+    }
 }, { deep: true });
 
 watch(taskInstructions, (newValue) => {
@@ -158,16 +201,8 @@ watch(data, (newValue) => {
     console.log('newValue', newValue);
 }, { deep: true });
 
-
-watch(questions, (newValue) => {
-    isActive.value = hasQuestionsWithAnswers();
-    infoResponseApi.value.isActive = hasQuestionsWithAnswers();
-    data.value.question = newValue;
-}, { deep: true });
-
 watch(() => typeTask, (newValue) => {
     console.log('typeTask changed:', newValue);
-    task.value = newValue;
 }, { immediate: true });
 
 
@@ -223,13 +258,20 @@ const hasQuestionsWithAnswers = () => {
 const mutation = useMutation({
     mutationFn: async (formData: FormData) => {
         infoResponseApi.value.isLoading = true;
-        const response = await axiosInstance.post(apiRoutes.orderingtasks, formData, {
-            headers: {
-                'Content-Type': 'multipart/form-data',
-            },
-        });
-        infoResponseApi.value.isLoading = false;
-        return response.data;
+        try {
+            // Make sure this matches your Django URL pattern
+            const response = await axiosInstance.post('class-contents/', formData, {
+                headers: {
+                    'Content-Type': 'multipart/form-data',
+                    'Accept': 'application/json',
+                },
+            });
+            infoResponseApi.value.isLoading = false;
+            return response.data;
+        } catch (error) {
+            console.error('API Error Details:', error.response?.data);
+            throw error;
+        }
     },
     onSuccess: (data) => {
         console.log('Response from API:', data);
@@ -237,7 +279,7 @@ const mutation = useMutation({
         taskStore.addTask('modal', { modal: false });
     },
     onError: (error) => {
-        console.error('Error saving data:', error);
+        console.error('Error saving data:', error.response?.data);
         infoResponseApi.value.isError = true;
         infoResponseApi.value.isLoading = false;
     },
@@ -245,48 +287,47 @@ const mutation = useMutation({
 
 
 const handleSave = () => {
-    if (task.value) {
-        try {
-            const formData = new FormData();
-            // Handle video file
-            if (data.value.cover instanceof File) {
-                const newFileName = data.value.cover.name.replace(/\s+/g, '_');
-                const newImageFile = new File([data.value.cover], newFileName, {
-                    type: data.value.cover.type
-                });
-                formData.append('cover', newImageFile);
-            } else {
-                console.error('cover is not a File object');
-            }
+    try {
+        const formData = new FormData();
 
-            // Handle background image
-            if (data.value.audio instanceof File) {
-                const newFileName = data.value.audio.name.replace(/\s+/g, '_');
-                const newImageFile = new File([data.value.audio], newFileName, {
-                    type: data.value.audio.type
-                });
-                formData.append('audio', newImageFile);
-            }
-
-            // Append other data
-            formData.append('script', data.value.script);
-            formData.append('title', data.value.tittle);
-            formData.append('instructions', data.value.instructions);
-            formData.append('class_id', String(data.value.class_id));
-            formData.append('question', JSON.stringify(data.value.question));
-            formData.append('stats', String(data.value.stats));
-
-            console.log('Form data:', data.value);
-            // Trigger the mutation
-            mutation.mutate(formData);
-
-        } catch (error) {
-            console.error('Error saving multimedia block:', error);
-            throw error;
+        // Handle multimedia files
+        if (data.value.multimedia.length > 0) {
+            data.value.multimedia.forEach((media, index) => {
+                if (media.file instanceof File) {
+                    formData.append(`multimedia`, media.file);
+                }
+            });
         }
-    }
 
-}
+        // Prepare content_details
+        const contentDetails = {
+            questions: data.value.content_details.questions
+        };
+
+        // Append all data
+        formData.append('class_id', String(data.value.class_id));
+        formData.append('content_type', data.value.content_type);
+        formData.append('tittle', data.value.tittle);
+        formData.append('instructions', data.value.instructions);
+        formData.append('content_details', JSON.stringify(contentDetails));
+        formData.append('stats', String(data.value.stats));
+
+        // Debug log
+        console.log('Sending data:', {
+            class_id: data.value.class_id,
+            content_type: data.value.content_type,
+            tittle: data.value.tittle,
+            instructions: data.value.instructions,
+            content_details: contentDetails,
+            stats: data.value.stats
+        });
+
+        mutation.mutate(formData);
+    } catch (error) {
+        console.error('Error preparing data:', error);
+        throw error;
+    }
+};
 const handleCancel = () => {
     taskStore.addTask('modal', { modal: false });
 

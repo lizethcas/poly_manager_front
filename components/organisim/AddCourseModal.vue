@@ -40,7 +40,7 @@
             <!-- Botones de acción -->
             <div class="flex justify-center gap-4 mt-6">
                 <div class="min-w-[120px]"></div>
-                <MoleculeActionButtons @handleSave="handleSave" @handleCancel="closeModal" />
+                <MoleculeActionButtons @handleSave="handleSave" @handleCancel="closeModal" :isActive="true" />
             </div>
         </form>
     </div>

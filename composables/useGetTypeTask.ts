@@ -3,7 +3,7 @@ export const useGetTypeTask = () => {
     switch (typeTask) {
       case "sorting":
         return "file";
-      case "correctAnswer":
+      case "multiple_choice":
         return "checkbox";
       case "true_false":
         return "select";

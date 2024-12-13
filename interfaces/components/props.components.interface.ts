@@ -38,7 +38,7 @@ export interface InputTaskProps {
 
 export interface MultipleTasksProps {
   typeTask:
-    | "correctAnswer"
+    | "multiple_choice"
     | "true_false"
     | "category"
     | "sorting"

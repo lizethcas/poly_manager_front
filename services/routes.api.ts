@@ -2,7 +2,8 @@
 import axiosInstance from "./axios.config";
 
 export const apiRoutes = {
-
+  classContent: "class-contents/",
+  courses: "courses/",
   multimediaBlockVideos: "multimediablockvideos/",
   orderingtasks: "orderingtasks/",
 };

@@ -22,9 +22,7 @@ export default defineNuxtConfig({
     "@pinia/nuxt",
     "@pinia-plugin-persistedstate/nuxt",
   ],
-  piniaPersistedstate: {
-    storage: "localStorage", // Puedes usar 'localStorage' o 'sessionStorage'
-  },
+
   pinia: {
     storesDirs: ["./stores/**", "./custom-folder/stores/**"],
   },

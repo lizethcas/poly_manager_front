@@ -9,7 +9,7 @@
         <OrganisimInteractiveTask class="mt-4" @open-task="handleOpenTask" />
         <TaskLayout :title="taskTitle">
 
-            <OrganisimMultipleTasks v-if="taskTitle === 'Multiple choice'" typeTask="correctAnswer"
+            <OrganisimMultipleTasks v-if="taskTitle === 'Multiple choice'" typeTask="multiple_choice"
                 titleTask="Question " subtitleTask="Answer options:" />
             <OrganisimMultipleTasks v-if="taskTitle === 'True or false'" typeTask="true_false" />
             <OrganisimMultipleTasks v-if="taskTitle === 'Category'" typeTask="category" titleTask="Category"
