@@ -18,20 +18,18 @@ export interface PropsInteractiveTask extends ImgAtomProps {
 
 export interface Option {
   text: string;
-  isCorrect: boolean;
+  isCorrect: boolean | string;
 }
 
 export interface Question {
   question: string;
   answers: Option[];
   typeTask?: string;
-  cover?: string | File;
-  script?: string;
 }
 
 export interface InputTaskProps {
   answer: string;
-  isCorrect: boolean;
+  isCorrect: boolean | string;
   removeOption: (qIndex: number, oIndex: number) => void;
   qIndex: number;
   oIndex: number;
@@ -41,7 +39,7 @@ export interface InputTaskProps {
 export interface MultipleTasksProps {
   typeTask:
     | "correctAnswer"
-    | "truefalse"
+    | "true_false"
     | "category"
     | "sorting"
     | "order"

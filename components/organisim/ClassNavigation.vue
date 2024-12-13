@@ -22,7 +22,7 @@ const tasks = [
     { type: 'image', label: 'Image Layout' },
     { type: 'video', label: 'Video Layout' },
     { type: 'multipleChoice', label: 'Multiple Choice' },
-    { type: 'trueFalse', label: 'True/False' },
+    { type: 'true_false', label: 'True/False' },
     { type: 'ordering', label: 'Ordering Task' },
     { type: 'categories', label: 'Categories' },
     { type: 'fillGaps', label: 'Fill in the Gaps' }

@@ -3,6 +3,7 @@
         <h1 class="text-md font-bold text-primary-color">{{ title }}</h1>
         <slot></slot>
     </div>
+    <slot name="button"></slot>
 </template>
 
 <script setup lang="ts">

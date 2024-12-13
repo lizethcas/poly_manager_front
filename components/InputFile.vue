@@ -48,10 +48,11 @@
 import ImgAtom from "./atomos/ImgAtom.vue";
 import { ref, defineProps, defineEmits } from "vue";
 import EventBus from '~/composables/useEvenBus';
+import { useTaskStore } from '~/stores/task.store';
 // Props and events
 const props = defineProps(['modelValue', 'title', 'icon']);
 const emit = defineEmits(['update:modelValue', 'file-selected']);
-
+const taskStore = useTaskStore();
 // References
 const fileInput = ref(null);
 const previewUrl = ref(null);
@@ -62,6 +63,11 @@ const fileName = ref(null);
 const triggerFileUpload = () => {
     fileInput.value.click();
 };
+
+watch(previewUrl, (newValue) => {
+    taskStore.addTask('filePreview', newValue);
+  
+}, { deep: true });
 
 // Handle file selection
 const handleChange = (event) => {

@@ -1,5 +1,11 @@
 <template>
+
+    <div v-if="infoResponseApi.isLoading"
+        class="fixed inset-0 flex items-center justify-center bg-gray-800 bg-opacity-50 z-50">
+        <p class="text-title-color text-2xl">Guardando...</p>
+    </div>
     <!-- Iteramos sobre las preguntas -->
+
     <TextAreaTask v-if="typeTask === 'text_area'" :value="value" :description="description" />
 
     <div v-else v-for="(question, qIndex) in questions" :key="qIndex" class="border-b border-gray-500 pb-4"
@@ -55,6 +61,14 @@
     </UTooltip>
 
 
+    <div class="flex items-center gap-2 py-4 text-sm">
+        <p>Include the stats</p>
+        <AtomosToggle v-model="data.stats" />
+    </div>
+    <MoleculeActionButtons @handleSave="handleSave()" @handleCancel="handleCancel"
+        :isActive="infoResponseApi.isActive" />
+
+
 </template>
 
 <script setup lang="ts">
@@ -67,17 +81,35 @@ import TextAreaTask from '../molecule/TextAreaTask.vue';
 import { useRemove } from '~/composables/useRemove';
 import { useGetTypeTask } from '~/composables/useGetTypeTask';
 import { useDragAnDrop } from '~/composables/useDragAndDrop';
+import { useTaskStore } from '~/stores/task.store';
+import { useMutation } from '@tanstack/vue-query';
+import { apiRoutes } from '~/services/routes.api';
+import axiosInstance from '~/services/axios.config';
+
 /* Interfaces */
 import type { Question, MultipleTasksProps } from '~/interfaces/components/props.components.interface';
 
 // Definir los eventos que emitirá el componente
 const emit = defineEmits(['update:value', 'save-task']);
 const { typeTask, titleTask, subtitleTask, description } = defineProps<MultipleTasksProps>();
-
-console.log('typeTask:', typeTask);
-
+const taskStore = useTaskStore();
+const route = useRoute();
+const taskInstructions = computed(() => taskStore.getTask('instructions'));
+const files = computed(() => taskStore.getTask('files'));
+const select = computed(() => taskStore.getTask('select'));
 const value = ref('');
 const isActive = ref(false);
+const task = ref(typeTask);
+
+const infoResponseApi = ref({
+    isActive: false,
+    isLoading: false,
+    isSuccess: false,
+    isError: false,
+    error: null,
+    data: null,
+});
+
 const questions = ref<Question[]>([{
     question: '',
     answers: [
@@ -87,26 +119,57 @@ const questions = ref<Question[]>([{
         },
     ],
     typeTask: titleTask,
+
 }]);
+
 
 const { removeOption, removeQuestion } = useRemove(questions);
 const { getType } = useGetTypeTask();
 const { onDragStart, onDragOver, onDrop } = useDragAnDrop(questions);
-const multipleTasksData = ref({});
 
 // Add these refs to store the instructions data
-const instructionsData = ref({
+const data = ref({
+    class_id: route.params.classId,
     tittle: '',
-    instructions: ''
+    instructions: '',
+    cover: null as File | null,
+    audio: null as File | null,
+    script: '',
+    question: [] as Question[],
+    stats: false,
+
 });
 
-// Add these refs to store file data
-const fileData = ref({
-    cover: null,
-    audio: null,
-    script: '',
-    stats: false
-});
+watch(files, (newValue) => {
+    data.value.cover = newValue.image;
+    data.value.audio = newValue.audio;
+}, { deep: true });
+
+watch(taskInstructions, (newValue) => {
+    if (newValue) {
+        Object.assign(data.value, {
+            tittle: newValue.title || '',
+            instructions: newValue.instructions || ''
+        });
+    }
+}, { deep: true });
+
+watch(data, (newValue) => {
+    console.log('newValue', newValue);
+}, { deep: true });
+
+
+watch(questions, (newValue) => {
+    isActive.value = hasQuestionsWithAnswers();
+    infoResponseApi.value.isActive = hasQuestionsWithAnswers();
+    data.value.question = newValue;
+}, { deep: true });
+
+watch(() => typeTask, (newValue) => {
+    console.log('typeTask changed:', newValue);
+    task.value = newValue;
+}, { immediate: true });
+
 
 // Este método se encarga de agregar una nueva opción a una pregunta
 const addOption = (questionIndex: number) => {
@@ -117,12 +180,14 @@ const addOption = (questionIndex: number) => {
 };
 
 // Este método se encarga de agregar una nueva pregunta
+
 const addQuestion = () => {
+
     questions.value.push({
         question: '',
         answers: [{
             text: '',
-            isCorrect: false,
+            isCorrect: '',
         }],
 
         typeTask: typeTask,
@@ -141,7 +206,11 @@ const updateOptionIsCorrect = (questionIndex: number, optionIndex: number, value
 
 // Nueva función para evaluar si el formulario tiene información
 const hasQuestionsWithAnswers = () => {
+
     return questions.value.every(question => {
+        if (typeTask === 'true_false') {
+            return question.answers.every(answer => answer.text.trim() !== '');
+        }
         // Verifica que la pregunta no esté vacía
         if (question.question.trim() === '') return false;
 
@@ -151,72 +220,77 @@ const hasQuestionsWithAnswers = () => {
 };
 
 // Observa los cambios en las preguntas para actualizar el estado de isActive
-watch(questions, () => {
-    isActive.value = hasQuestionsWithAnswers();
-}, { deep: true });
-
-// Observa los cambios en las preguntas y actualiza el valor en el store
-watch(questions, () => {
-    multipleTasksData.value = {
-        tittle: instructionsData.value.tittle,
-        instructions: instructionsData.value.instructions,
-        cover: fileData.value.cover,
-        audio: fileData.value.audio,
-        script: fileData.value.script,
-        stats: fileData.value.stats,
-
-        question: questions.value.map(q => ({
-            question_text: q.question,
-            answers: q.answers.map(a => ({
-                is_correct: a.isCorrect,
-                answer_text: a.text
-            }))
-        }))
-    };
-    EventBus.emit('multiple-tasks-data', multipleTasksData.value);
-    EventBus.on('selectedOption', (value: string) => {
-        console.log('selectedOption:', value);
-    });
-}, { deep: true });
-
-// Add this event listener outside of the watch
-EventBus.on('instructions', (value) => {
-    instructionsData.value = {
-        tittle: value.title,
-        instructions: value.instructions
-    };
+const mutation = useMutation({
+    mutationFn: async (formData: FormData) => {
+        infoResponseApi.value.isLoading = true;
+        const response = await axiosInstance.post(apiRoutes.orderingtasks, formData, {
+            headers: {
+                'Content-Type': 'multipart/form-data',
+            },
+        });
+        infoResponseApi.value.isLoading = false;
+        return response.data;
+    },
+    onSuccess: (data) => {
+        console.log('Response from API:', data);
+        infoResponseApi.value.isSuccess = true;
+        taskStore.addTask('modal', { modal: false });
+    },
+    onError: (error) => {
+        console.error('Error saving data:', error);
+        infoResponseApi.value.isError = true;
+        infoResponseApi.value.isLoading = false;
+    },
 });
 
 
+const handleSave = () => {
+    if (task.value) {
+        try {
+            const formData = new FormData();
+            // Handle video file
+            if (data.value.cover instanceof File) {
+                const newFileName = data.value.cover.name.replace(/\s+/g, '_');
+                const newImageFile = new File([data.value.cover], newFileName, {
+                    type: data.value.cover.type
+                });
+                formData.append('cover', newImageFile);
+            } else {
+                console.error('cover is not a File object');
+            }
 
+            // Handle background image
+            if (data.value.audio instanceof File) {
+                const newFileName = data.value.audio.name.replace(/\s+/g, '_');
+                const newImageFile = new File([data.value.audio], newFileName, {
+                    type: data.value.audio.type
+                });
+                formData.append('audio', newImageFile);
+            }
 
-EventBus.on('file-selected', (data: { url: string | null; fileType: string; file?: File }) => {
-    if (data.fileType === 'image') {
-        fileData.value.cover = data.file || null;
-    } else if (data.fileType === 'audio') {
-        fileData.value.audio = data.file || null;
+            // Append other data
+            formData.append('script', data.value.script);
+            formData.append('title', data.value.tittle);
+            formData.append('instructions', data.value.instructions);
+            formData.append('class_id', String(data.value.class_id));
+            formData.append('question', JSON.stringify(data.value.question));
+            formData.append('stats', String(data.value.stats));
+
+            console.log('Form data:', data.value);
+            // Trigger the mutation
+            mutation.mutate(formData);
+
+        } catch (error) {
+            console.error('Error saving multimedia block:', error);
+            throw error;
+        }
     }
 
-    // Update multipleTasksData with the File object
-    multipleTasksData.value = {
-        ...multipleTasksData.value,
-        [data.fileType === 'image' ? 'cover' : 'audio']: data.file
-    };
-});
+}
+const handleCancel = () => {
+    taskStore.addTask('modal', { modal: false });
 
-EventBus.on('text-script', (value: string) => {
-    fileData.value.script = value;
-});
+}
 
-EventBus.on('toggle-selected', (value: boolean) => {
-    fileData.value.stats = value;
-});
-
-
-
-// Add this watch near your other watch statements
-watch(() => typeTask, (newValue) => {
-    console.log('typeTask changed:', newValue);
-}, { immediate: true });
 
 </script>

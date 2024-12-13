@@ -89,8 +89,8 @@
                         @cancel="closeChildModal"
                     />
 
-                    <TrueFalseTask 
-                        v-if="currentModal === 'trueFalse'"
+                    <true_falseTask 
+                        v-if="currentModal === 'true_false'"
                         v-model:task-data="tempTaskData"
                         @save="saveTask"
                         @cancel="closeChildModal"
@@ -149,7 +149,7 @@ import LayoutTaskForm from '@/components/tasks/LayoutTaskForm.vue';
 import ImageTask from '@/components/tasks/ImageTask.vue';
 import VideoTask from '@/components/tasks/VideoTask.vue';
 import MultipleChoiceTask from '@/components/tasks/MultipleChoiceTask.vue';
-import TrueFalseTask from '@/components/tasks/TrueFalseTask.vue';
+import true_falseTask from '@/components/tasks/true_falseTask.vue';
 import OrderingTask from '@/components/tasks/OrderingTask.vue';
 import CategoriesTask from '@/components/tasks/CategoriesTask.vue';
 import FillGapsTask from '@/components/tasks/FillGapsTask.vue';
@@ -190,7 +190,7 @@ const modalTitle = computed(() => {
         image: 'Image Layout',
         video: 'Video Layout',
         multipleChoice: 'Multiple Choice Task',
-        trueFalse: 'True/False Task',
+        true_false: 'True/False Task',
         ordering: 'Ordering Task'
     };
     return titles[currentModal.value] || '';
@@ -336,7 +336,7 @@ const taskTypes = [
         description: 'Create multiple choice questions'
     },
     {
-        type: 'trueFalse',
+        type: 'true_false',
         name: 'True/False',
         description: 'Create true/false statements'
     },
@@ -404,9 +404,9 @@ const saveTask = () => {
             };
             break;
 
-        case 'trueFalse':
+        case 'true_false':
             taskToSave = {
-                type: 'trueFalse',
+                type: 'true_false',
                 taskData: {
                     instructions: tempTaskData.value.instructions,
                     questions: tempTaskData.value.questions.map(q => ({
@@ -510,7 +510,7 @@ const onLayoutSaved = (layout) => {
 const getTaskTypeName = (type: string) => {
     const taskTypes = {
         multipleChoice: 'Opción múltiple',
-        trueFalse: 'Verdadero/Falso',
+        true_false: 'Verdadero/Falso',
         ordering: 'Ordenamiento',
         categories: 'Categorías',
         fillGaps: 'Completar espacios'

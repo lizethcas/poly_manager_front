@@ -17,7 +17,7 @@ class TasksApiService {
         return response.data;
     }
 
-    async createTrueFalseTask(layoutId: number, taskData: any) {
+    async createtrue_falseTask(layoutId: number, taskData: any) {
         console.log('Creating true/false task for layout:', layoutId);
         const data = {
             layout: layoutId,

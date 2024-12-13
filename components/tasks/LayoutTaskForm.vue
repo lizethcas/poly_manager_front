@@ -111,7 +111,7 @@
                             </template>
 
                             <!-- True/False -->
-                            <template v-if="task.type === 'trueFalse'">
+                            <template v-if="task.type === 'true_false'">
                                 <p class="font-medium text-gray-900">Afirmaciones:</p>
                                 <ul class="list-disc ml-6">
                                     <li v-for="(q, idx) in task.taskData.questions" :key="idx">
@@ -206,7 +206,7 @@ const taskTypes = [
         description: 'Crear preguntas de opción múltiple'
     },
     {
-        type: 'trueFalse',
+        type: 'true_false',
         name: 'Verdadero/Falso',
         description: 'Crear afirmaciones verdadero/falso'
     },

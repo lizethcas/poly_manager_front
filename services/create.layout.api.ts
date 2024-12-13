@@ -47,7 +47,7 @@ export class ApiLayoutService {
         return response;
     }
 
-    async createTrueFalseTask(taskData: any): Promise<ApiResponse<any>> {
+    async createtrue_falseTask(taskData: any): Promise<ApiResponse<any>> {
         const response = await axiosInstance.post('true-false/', taskData);
         return response;
     }

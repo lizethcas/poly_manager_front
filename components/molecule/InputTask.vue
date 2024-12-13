@@ -11,7 +11,7 @@
             </span>
         </label>
         <SelectAtom v-if="type === 'select'" :title="'Answer'" :options="['True', 'False', 'Not stated']"
-            :label="true" />
+            :label="true" v-model="localIsCorrect" />
         <UInput :model-value="answer" @update:model-value="(val) => emit('update:answer', val)" type="text" size="xs"
             class="w-full" />
         <InputFile v-if="type === 'file'" fileType="image" icon="true" title="Image file:" />
@@ -30,9 +30,10 @@ const { answer, isCorrect, removeOption, qIndex, oIndex, type } = defineProps<In
 
 const emit = defineEmits(['update:answer', 'update:isCorrect']);
 
-const localIsCorrect = ref(isCorrect);
+const localIsCorrect = ref<boolean>(isCorrect ?? false);
 
 watch(localIsCorrect, (newValue) => {
+    console.log('Selected option:', newValue);
     emit('update:isCorrect', newValue);
 });
 

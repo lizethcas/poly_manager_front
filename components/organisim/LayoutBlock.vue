@@ -1,5 +1,5 @@
 <template>
-    <uploadImage  />
+    <uploadImage />
 
     <MoleculeInput type="text_area" title="Add script" size="lg" container-class="py-2" />
 
@@ -11,7 +11,7 @@
 
             <OrganisimMultipleTasks v-if="taskTitle === 'Multiple choice'" typeTask="correctAnswer"
                 titleTask="Question " subtitleTask="Answer options:" />
-            <OrganisimMultipleTasks v-if="taskTitle === 'True or false'" typeTask="truefalse" />
+            <OrganisimMultipleTasks v-if="taskTitle === 'True or false'" typeTask="true_false" />
             <OrganisimMultipleTasks v-if="taskTitle === 'Category'" typeTask="category" titleTask="Category"
                 subtitleTask="Items:" />
             <OrganisimMultipleTasks v-if="taskTitle === 'Sorting'" typeTask="sorting" titleTask="Category"
@@ -20,6 +20,7 @@
                 titleTask="Put in the right order " />
             <OrganisimMultipleTasks v-if="taskTitle === 'Fill in the gaps' || taskTitle === 'Drag the words'"
                 :typeTask="'text_area'" :description="getTaskDescription(taskTitle)" />
+
 
 
         </TaskLayout>
@@ -42,7 +43,6 @@ const { getTaskDescription } = useDescription();
 
 const handleOpenTask = (title: string) => {
     taskTitle.value = title
-    console.log(taskTitle.value)
 }
 
 

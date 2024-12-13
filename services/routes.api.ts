@@ -2,8 +2,9 @@
 import axiosInstance from "./axios.config";
 
 export const apiRoutes = {
-  multiplechoice: "multiplechoice/",
+
   multimediaBlockVideos: "multimediablockvideos/",
+  orderingtasks: "orderingtasks/",
 };
 
 export const get = async (route: string) => {

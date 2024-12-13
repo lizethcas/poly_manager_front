@@ -5,7 +5,7 @@ export const useGetTypeTask = () => {
         return "file";
       case "correctAnswer":
         return "checkbox";
-      case "truefalse":
+      case "true_false":
         return "select";
       case "category" || "order":
       default:
