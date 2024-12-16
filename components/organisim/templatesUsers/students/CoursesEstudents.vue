@@ -36,32 +36,9 @@ import { apiRoutes, get } from '@/services/routes.api'
 import OrganismCourseCard from '~/components/organisim/CourseCard.vue'
 import Error from '~/components/organisim/alerts/Error.vue'
 import Loading from '~/components/organisim/alerts/Loading.vue'
-
-// Define the fetch function with better error handling
-const fetchCourses = async () => {
-  try {
-    const response = await get(apiRoutes.courses)
-    console.log('Response from API:', response) // Debug log
-    if (!response) {
-      throw new Error('No se encontraron cursos')
-    }
-    return response
-  } catch (error: any) {
-    console.error('Error fetching courses:', error)
-    throw error // Throw the original error to maintain the error
-  }
-}
-
-onMounted(() => {
-  console.log('Component mounted', courses)
-})
+import { useCoursesQuery } from '~/composables/useCoursesQuery';
 
 // Use Vue Query hook
-const { data: courses, isLoading, error, refetch } = useQuery({
-  queryKey: ['courses'],
-  queryFn: fetchCourses,
-  refetchOnMount: 'always',
-  refetchOnWindowFocus: true,
-  staleTime: 0
-})
+const { data: courses, isLoading, error, refetch } = useCoursesQuery()
+
 </script>

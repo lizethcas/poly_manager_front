@@ -8,7 +8,7 @@
     <div v-if="course">
         <header class="pt-6 px-14 text-title-color mb-4 flex items-center">
             <img src="~/assets/images/back-button-round.webp" alt="regresar una pagina"
-                class="w-10 h-10 cursor-pointer items-center" @click="navigateTo('/')" />
+                class="w-10 h-10 cursor-pointer items-center" @click="navigateTo('/courses')" />
             <div class="flex items-center">
                 <img v-if="course.cover" :src="getCoverUrl(course.cover)" alt=""
                     class="mx-4 object-cover w-28 h-28 border-2 rounded-xl" />
