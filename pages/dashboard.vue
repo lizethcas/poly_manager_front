@@ -8,9 +8,9 @@
 </template>
 
 <script setup lang="ts">
-import DashboardStudent from '~/components/organisim/templates/students/DashboardStudent.vue'
-import DashboardTeacher from '~/components/organisim/templates/teachers/DashboardTeacher.vue'
-import { useUserType } from '~/composables/useUserType'
+import DashboardStudent from '~/components/organisim/templatesUsers/students/DashboardStudent.vue'
+import DashboardTeacher from '~/components/organisim/templatesUsers/teachers/DashboardTeacher.vue'
+
 import { useTaskStore } from '~/stores/task.store'; 
 const taskStore = useTaskStore()
 

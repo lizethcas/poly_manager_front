@@ -15,6 +15,7 @@
                     <div class="px-4 space-y-2">
                         <NuxtLink to="/dashboard"
                             class="flex items-center px-4 py-2 text-gray-700 hover:bg-gray-100 rounded-md"
+                            :class="{ 'bg-blue-50 text-blue-600': $route.path === '/dashboard' }"
                             @click="navigateToDashboard('student')">
                             <span class="mr-3">
                                 <i class="fas fa-home"></i>
@@ -23,6 +24,7 @@
                         </NuxtLink>
                         <NuxtLink to="/dashboard"
                             class="flex items-center px-4 py-2 text-gray-700 hover:bg-gray-100 rounded-md"
+                            :class="{ 'bg-blue-50 text-blue-600': $route.path === '/dashboard' }"
                             @click="navigateToDashboard('teacher')">
                             <span class="mr-3">
                                 <i class="fas fa-home"></i>
@@ -67,24 +69,30 @@
                             <nav class="flex space-x-8">
 
                                 <NuxtLink to="/teacher"
-                                    class="text-gray-700 hover:text-blue-600 px-3 py-2 rounded-md text-sm font-medium">
+                                    class="text-gray-700 hover:text-blue-600 px-3 py-2 rounded-md text-sm font-medium"
+                                    :class="{ 'text-blue-600': $route.path.startsWith('/teacher') }">
                                     Profesor
                                 </NuxtLink>
                                 <NuxtLink to="/student"
-                                    class="text-gray-700 hover:text-blue-600 px-3 py-2 rounded-md text-sm font-medium">
+                                    class="text-gray-700 hover:text-blue-600 px-3 py-2 rounded-md text-sm font-medium"
+                                    :class="{ 'text-blue-600': $route.path.startsWith('/student') }">
                                     estudiante
                                 </NuxtLink>
                             </nav>
                         </div>
                     </div>
+
                 </header>
 
                 <!-- Main Content -->
                 <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
+                    
                     <NuxtPage />
                 </main>
             </div>
+            
         </div>
+        
     </NuxtLayout>
 </template>
 
