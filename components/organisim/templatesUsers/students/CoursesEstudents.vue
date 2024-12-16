@@ -36,7 +36,7 @@ import { apiRoutes, get } from '@/services/routes.api'
 import OrganismCourseCard from '~/components/organisim/CourseCard.vue'
 import Error from '~/components/organisim/alerts/Error.vue'
 import Loading from '~/components/organisim/alerts/Loading.vue'
-import { useCoursesQuery } from '~/composables/useCoursesQuery';
+import { useCoursesQuery } from '~/composables/useCourseQuery';
 
 // Use Vue Query hook
 const { data: courses, isLoading, error, refetch } = useCoursesQuery()

@@ -260,7 +260,7 @@ const mutation = useMutation({
         infoResponseApi.value.isLoading = true;
         try {
             // Make sure this matches your Django URL pattern
-            const response = await axiosInstance.post('class-contents/', formData, {
+            const response = await axiosInstance.post(apiRoutes.classContents, formData, {
                 headers: {
                     'Content-Type': 'multipart/form-data',
                     'Accept': 'application/json',

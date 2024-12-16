@@ -85,7 +85,7 @@
 import { computed } from 'vue';
 import { useRoute } from 'vue-router';
 import { useGetColor } from '~/composables/useGetColor';
-import { useCoursesQuery } from '~/composables/useCoursesQuery';
+import { useCoursesQuery } from '~/composables/useCourseQuery';
 const route = useRoute();
 const { getLevelColor } = useGetColor();
 const { getCoverUrl } = useGetCover();

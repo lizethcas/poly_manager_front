@@ -25,7 +25,7 @@
 <script setup>
 import { ref, computed } from 'vue';
 import { useCapitalizerLetter } from '~/composables/useCapitalizerLetter';
-import { useMultipleChoice } from '~/services/multiplechoice.api';
+
 
 
 const { capitalizeFirstLetter } = useCapitalizerLetter();

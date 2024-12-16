@@ -26,10 +26,10 @@ const icons = [
         name: 'typcn:info',
         label: 'Info block'
     },
-    {
+   /*  {
         name: 'mage:archive-fill',
         label: 'SCORM file'
-    },
+    }, */
     {
         name: 'solar:gallery-bold',
         label: 'Gallery layout'
@@ -42,10 +42,10 @@ const icons = [
         name: 'mdi:multimedia',
         label: 'Multimedia block'
     },
-    {
+ /*    {
         name: 'game-icons:click',
         label: 'Interactive activities'
-    },
+    }, */
     {
         name: 'ph:student-fill',
         label: 'Knowledge check'
@@ -54,18 +54,18 @@ const icons = [
         name: 'ph:list-fill',
         label: 'Word list'
     },
-    {
+  /*   {
         name: 'material-symbols-light:table',
         label: 'Table'
-    },
-    {
+    }, */
+ /*    {
         name: 'bxs:ruler',
         label: 'Dividers'
-    },
+    }, */
     {
         name: 'icon-park-solid:down-c',
         label: 'Continue'
     }
-]
+]   
 
 </script>
