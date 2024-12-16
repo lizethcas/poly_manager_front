@@ -82,7 +82,7 @@ import { useRemove } from '~/composables/useRemove';
 import { useGetTypeTask } from '~/composables/useGetTypeTask';
 import { useDragAnDrop } from '~/composables/useDragAndDrop';
 import { useTaskStore } from '~/stores/task.store';
-import { useMutation } from '@tanstack/vue-query';
+import { useMutation, useQueryClient } from '@tanstack/vue-query';
 import { apiRoutes } from '~/services/routes.api';
 import axiosInstance from '~/services/axios.config';
 
@@ -255,12 +255,13 @@ const hasQuestionsWithAnswers = () => {
 };
 
 // Observa los cambios en las preguntas para actualizar el estado de isActive
+const queryClient = useQueryClient();
+
 const mutation = useMutation({
     mutationFn: async (formData: FormData) => {
         infoResponseApi.value.isLoading = true;
         try {
-            // Make sure this matches your Django URL pattern
-            const response = await axiosInstance.post(apiRoutes.classContents, formData, {
+            const response = await axiosInstance.post(apiRoutes.classContent, formData, {
                 headers: {
                     'Content-Type': 'multipart/form-data',
                     'Accept': 'application/json',
@@ -276,6 +277,8 @@ const mutation = useMutation({
     onSuccess: (data) => {
         console.log('Response from API:', data);
         infoResponseApi.value.isSuccess = true;
+        // Invalidate and refetch the class contents query
+        queryClient.invalidateQueries(['class-contents', route.params.classId]);
         taskStore.addTask('modal', { modal: false });
     },
     onError: (error) => {

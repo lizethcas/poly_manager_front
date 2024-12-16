@@ -63,24 +63,7 @@
             <div class="flex-1 ml-64">
                 <!-- Header -->
                 <header class="bg-white shadow-sm">
-                    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-                        <div class="flex justify-between items-center h-16">
-                            <!-- Navigation -->
-                            <nav class="flex space-x-8">
-
-                                <NuxtLink to="/teacher"
-                                    class="text-gray-700 hover:text-blue-600 px-3 py-2 rounded-md text-sm font-medium"
-                                    :class="{ 'text-blue-600': $route.path.startsWith('/teacher') }">
-                                    Profesor
-                                </NuxtLink>
-                                <NuxtLink to="/student"
-                                    class="text-gray-700 hover:text-blue-600 px-3 py-2 rounded-md text-sm font-medium"
-                                    :class="{ 'text-blue-600': $route.path.startsWith('/student') }">
-                                    estudiante
-                                </NuxtLink>
-                            </nav>
-                        </div>
-                    </div>
+                   
 
                 </header>
 

@@ -10,57 +10,72 @@
             <p>Error loading tasks: {{ error.message }}</p>
         </div>
 
+
         <!-- Tasks list -->
-        <div v-else-if="classTasks && classTasks.data.length > 0" class="mt-4">
-            <TaskLayout v-for="task in classTasks.data" :key="task.id" :title="task.tittle || 'Untitled Task'"
-                :description="task.instructions || ''">
-                <div class="mt-3">
-                    <!-- Display content based on content_type -->
-                    <div class="text-sm text-fuscous-gray-700">
-                       
-
-                        <!-- You can add specific components based on content_type -->
-                        <div v-if="task.content_type === 'multiple_choice'">
-                            <div v-for="(option, index) in task.content_details.questions" :key="index">
-                                <p>{{ option.text }}</p>
+        <div v-else-if="classTasks && classTasks.data.length > 0" class="mt-4 text-fuscous-gray-950">
+            <template v-for="(task, index) in classTasks.data" :key="task.id">
+                <TaskLayout :title="task.tittle || ''" :description="task.instructions || ''"
+                    :index="index" @showEditNavigation="handleShowEditNavigation(index)"  >
+                    <div class="mt-3">
+                        <!-- Display content based on content_type -->
+                        <div class="text-sm text-fuscous-gray-700">
 
 
-                                <div v-for="(answer, index) in option.answers" :key="index">
-                                    <!-- <input type="radio" :name="'task-' + task.id" :id="'option-' + index" :checked="answer.isCorrect" readonly> -->
-                                    <label :for="'option-' + index" class="ml-2" :class="{ 'text-green-500': answer.isCorrect }">{{ answer.text }}</label>
+                            <!-- You can add specific components based on content_type -->
+                            <div v-if="task.content_type === 'multiple_choice'">
+                                <div v-for="(question, index) in task.content_details.questions" :key="index">
+                                    <h4>{{ question.question }}</h4>
+                                    <div v-for="(answer, aIndex) in question.answers" :key="aIndex"
+                                        :class="{ 'flex justify-start': answer.isCorrect, 'bg-tarawera-200': answer.isCorrect }">
+                                        <p>{{ answer.text }}</p>
+                                    </div>
                                 </div>
                             </div>
-                        </div>
 
-                       <!--  <div v-else-if="task.content_type === 'true_false'">
-                            <div class="flex gap-4">
-                                <label>
-                                    <input type="radio" name="'task-'+task.id" value="true"> True
-                                </label>
-                                <label>
-                                    <input type="radio" name="'task-'+task.id" value="false"> False
-                                </label>
+                            <!--  <div v-else-if="task.content_type === 'true_false'">
+                                <div class="flex gap-4">
+                                    <label>
+                                        <input type="radio" name="'task-'+task.id" value="true"> True
+                                    </label>
+                                    <label>
+                                        <input type="radio" name="'task-'+task.id" value="false"> False
+                                    </label>
+                                </div>
                             </div>
-                        </div>
 
-                        <div v-else-if="task.content_type === 'sorting'">
-                         
-                            <p>Sorting activity</p>
-                        </div> -->
+                            <div v-else-if="task.content_type === 'sorting'">
+                             
+                                <p>Sorting activity</p>
+                            </div> -->
+                        </div>
                     </div>
-                </div>
-            </TaskLayout>
+                </TaskLayout>
+
+                <!-- Insert EditClassNavigation after the selected task -->
+                <transition name="slide-up" @before-enter="beforeEnter" @enter="enter" @leave="leave"
+                    v-bind:css="false">
+                    <EditClassNavigation v-if="showEditNavigation && selectedTaskIndex === index && !isOpen"
+                        @open-modal="openModalHandler" />
+                </transition>
+            </template>
         </div>
 
         <!-- No tasks message -->
         <div v-else class="font-bold flex justify-center items-center text-center mt-4 text-fuscous-gray-950 text-md">
             <div>
                 <p>There are no activities created for this course yet.</p>
-                <button @click="showEditNavigation = true"
+                <button @click="handleAddBlock"
                     class="hover:underline hover:text-tarawera-700 text-fuscous-gray-950 px-4 py-2 rounded-md">
                     Add Block
                 </button>
             </div>
+        </div>
+        <EditClassNavigation v-if="showEditNavigation && !isOpen" @open-modal="openModalHandler" />
+        <div v-if="isOpen">
+            <BaseTaskModal :is-open="isOpen" @close="closeModal" :title="currentModal.label" v-model="formData"
+                class="max-h-[80vh]  overflow-y-auto" :icon="currentModal.name">
+                <component :is="getCurrentComponent()" />
+            </BaseTaskModal>
         </div>
 
         <!-- Rest of your existing template code... -->
@@ -87,14 +102,17 @@ import OrganisimLayoutBlock from '~/components/organisim/LayoutBlock.vue';
 import KnowledgeCheckBlock from '~/components/organisim/KnowledgeCheckBlock.vue';
 import { useTaskStore } from '~/stores/task.store';
 import TaskLayout from '~/layouts/TaskLayout.vue';
-const { isOpen, closeModal, openModal } = useModal();
-const { beforeEnter, enter, leave } = useAnimation();
 
 const taskStore = useTaskStore();
+const route = useRoute();
+const { isOpen, closeModal, openModal } = useModal();
+const { beforeEnter, enter, leave } = useAnimation();
 const currentModal = ref({ label: '', name: '' });
 const formData = ref({ title: '', instructions: '' });
 const showEditNavigation = ref(false);
+const selectedTaskIndex = ref(-1);
 
+const classId = route.params.classId;
 const closeModalHandler = computed(() => taskStore.getTask('modal'));
 watch(closeModalHandler, () => {
     closeModal();
@@ -105,14 +123,14 @@ const openModalHandler = (label: string, name: string) => {
     openModal();  // Asegúrate de abrir el modal
 };
 
-const route = useRoute();
-const classId = route.params.classId;
+
+
 
 // Add the query to fetch tasks
 const { data: classTasks, isLoading, error } = useQuery({
     queryKey: ['class-contents', classId],
     queryFn: async () => {
-        const response = await axiosInstance.get(`${apiRoutes.classContent}`);
+        const response = await axiosInstance.get(`${apiRoutes.classContent}?class_id=${classId}`);
         return response.data;
     },
 });
@@ -134,6 +152,16 @@ const getCurrentComponent = () => {
         case 'Interactive activities': return InteractiveActivities;
         default: return null; // Devolver null si no hay coincidencia
     }
+};
+
+const handleShowEditNavigation = (index: number) => {
+    selectedTaskIndex.value = index;
+    showEditNavigation.value = true;
+};
+
+const handleAddBlock = () => {
+    selectedTaskIndex.value = -1; // Reset the selected task index
+    showEditNavigation.value = true;
 };
 
 </script>
