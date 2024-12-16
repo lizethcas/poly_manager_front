@@ -1,6 +1,6 @@
 <template>
     <!-- Contenedor de cargando que ocupa toda la página -->
-    <div v-if="!course" class="fixed inset-0 flex items-center justify-center bg-gray-800 bg-opacity-50 z-50">
+    <div v-if="isLoading" class="fixed inset-0 flex items-center justify-center bg-gray-800 bg-opacity-50 z-50">
         <p class="text-title-color text-2xl">Cargando...</p>
     </div>
 
@@ -9,7 +9,7 @@
         <header class="pt-6 px-14 text-title-color mb-4 flex items-center">
             <img src="~/assets/images/back-button-round.webp" alt="regresar una pagina"
                 class="w-10 h-10 cursor-pointer items-center" @click="navigateTo('/')" />
-            <div class="flex items-center" >
+            <div class="flex items-center">
                 <img v-if="course.cover" :src="getCoverUrl(course.cover)" alt=""
                     class="mx-4 object-cover w-28 h-28 border-2 rounded-xl" />
                 <div class="flex flex-col justify-start items-start">
@@ -82,34 +82,22 @@
 
 
 <script setup lang="ts">
-import { toRaw, computed } from 'vue';
+import { computed } from 'vue';
 import { useRoute } from 'vue-router';
-import { useCourseStore } from '~/stores/courseStore';
 import { useGetColor } from '~/composables/useGetColor';
-import type { CourseForm } from '~/interfaces/modal.interface';
-
+import { useCoursesQuery } from '~/composables/useCoursesQuery';
 const route = useRoute();
-const courseStore = useCourseStore();
 const { getLevelColor } = useGetColor();
 const { getCoverUrl } = useGetCover();
 
 const routeCourseId = route.params.courseId as string;
-const courseIdNumber = routeCourseId;
 
+// Use the shared query composable
+const { data: courses, isLoading, error } = useCoursesQuery()
 
+// Get the specific course using computed
 const course = computed(() => {
-    const foundCourse = courseStore.courses.find((course: CourseForm) => course.id === Number(courseIdNumber));
-    if (!foundCourse) {
-        console.error('Curso no encontrado');
-        return null;
-    }
-    return toRaw(foundCourse);
+    if (!courses.value) return null;
+    return courses.value.find((course) => course.id === Number(routeCourseId));
 });
-
-if (course.value) {
-    courseStore.updateCurrentForm(course.value);
-}
-
-
-
 </script>

@@ -5,7 +5,7 @@
       <UDivider class="border-gray-500 py-6" type="solid"></UDivider>
     </header>
 
-    <main class="px-14 w-4/5 text-title-color mb-24 flex flex-wrap items-center justify-evenly">
+    <main class="px-14 w-full text-title-color mb-24 flex flex-wrap items-center justify-evenly">
       <!-- Error state -->
       <Error 
         v-if="error" 
@@ -18,7 +18,7 @@
       <Loading v-if="isLoading" />
 
       <!-- Data display -->
-      <div v-if="courses">
+      <div v-if="courses" class="w-full">
         <OrganismCourseCard :courses-data="courses" />
       </div>
 
