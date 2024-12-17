@@ -57,21 +57,16 @@ import SelectAtom from '../molecule/SelectAtom.vue';
 import { useFormData } from '~/hooks/userFormData';
 import { useCourseStore } from '~/stores/courseStore';
 import { useClassStore } from '~/stores/class.store';
-import { ApiService } from '~/services/create.course.api';
 import transformKey from '~/utils/stringTransformations'
 import { useRoute } from 'vue-router';
-import { ApiClassService } from '~/services/create.class.api';
 import { useCourseMutation } from '~/composables/useCourseMutation';
-
-import type { CourseForm } from '~/interfaces/modal.interface';
-
+import { useClassMutation } from '~/composables/useClassMutation';
 
 
 const route = useRoute();
-const courseStore = useCourseStore();
-const classStore = useClassStore();
-const { bulletPoints, formData, handleEmit, updateFormField } = useFormData();
+const { bulletPoints, formData, handleEmit, updateFormField, resetForm } = useFormData();
 const courseMutation = useCourseMutation();
+const classMutation = useClassMutation();
 
 
 // Propiedades del modal
@@ -127,8 +122,7 @@ const handleSave = async () => {
                 bullet_points: JSON.stringify(Array.from(bulletPoints.value)),
                 cover: formData.value.cover
             };
-            const apiService = new ApiClassService();
-            await apiService.createClass(requestData);
+            await classMutation.mutateAsync(requestData);
         } else {
             const requestData = {
                 course_name: formData.value.course_name,
@@ -138,13 +132,12 @@ const handleSave = async () => {
                 bullet_points: JSON.stringify(Array.from(bulletPoints.value)),
                 cover: formData.value.cover
             };
-            
-            // Use the mutation instead of direct API call
             await courseMutation.mutateAsync(requestData);
         }
+        resetForm();
         closeModal();
     } catch (error) {
-        console.error('Error creating course:', error);
+        console.error('Error creating course/class:', error);
         // Handle error appropriately
     }
 };

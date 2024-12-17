@@ -1,9 +1,36 @@
 import { ref, computed } from "vue";
-import { useCourseStore } from '~/stores/courseStore';
+
+export interface FormData {
+  course_name: string;
+  description: string;
+  category: string;
+  level: string;
+  cover: File | null;
+  bullet_points: string[];
+}
 
 export function useFormData() {
-  const courseStore = useCourseStore();
   const bulletPoints = ref<string[]>([]);
+  const formState = ref<FormData>({
+    course_name: '',
+    description: '',
+    category: '',
+    level: '',
+    cover: null,
+    bullet_points: []
+  });
+
+  const resetForm = () => {
+    bulletPoints.value = [];
+    formState.value = {
+      course_name: '',
+      description: '',
+      category: '',
+      level: '',
+      cover: null,
+      bullet_points: []
+    };
+  };
 
   const handleEmit = () => {
     bulletPoints.value.push('');
@@ -11,20 +38,21 @@ export function useFormData() {
 
   const handleEmitSave = () => {
     return {
-      ...courseStore.currentForm,
+      ...formState.value,
       bullet_points: JSON.stringify(bulletPoints.value.filter(point => point.trim() !== ''))
     };
   };
 
   const updateFormField = (field: string, value: any) => {
-    courseStore.updateCurrentForm({ [field]: value });
+    formState.value[field] = value;
   };
 
   return {
     bulletPoints,
-    formData: computed(() => courseStore.currentForm),
+    formData: computed(() => formState.value),
     handleEmit,
     handleEmitSave,
-    updateFormField
+    updateFormField,
+    resetForm
   };
 }

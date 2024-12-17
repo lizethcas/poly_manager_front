@@ -1,7 +1,7 @@
-import type { Question } from "~/interfaces/components/props.components.interface";
 import type { Ref } from "vue";
+import type { ClassData } from "~/interfaces/models/class.interface..model";
 
-export function useDragAnDrop(items: Ref<Question[]>) {
+export function useDragAnDrop(items: Ref<ClassData[]>) {
   const onDragStart = (event: DragEvent, index: number) => {
     event.dataTransfer?.setData("index", index.toString());
   };

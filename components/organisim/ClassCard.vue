@@ -1,6 +1,6 @@
 <template>
-    <p v-if="!classes" class="text-title-color">cargando</p>
-    <main v-if="classes.length > 0" v-for="(classItem, index) in classes.slice().reverse()" :key="classItem.id" class="py-4"
+    <p v-if="!classes" class="text-title-color">No hay clases</p>
+    <main v-if="filteredClasses.length > 0" v-for="(classItem, index) in filteredClasses" :key="classItem.id" class="py-4"
         draggable="true" @dragstart="onDragStart($event, index)" @dragover="onDragOver($event)"
         @drop="onDrop($event, index)">
         <div class="flex items-center cursor-grab hover:cursor-grabbing">
@@ -25,71 +25,39 @@
                         @handleClick="handlePreviewClick(classItem.id, Number(routeCourseId))" />
                     <AtomosButtonAtom :type="'preview'" :size="'24px'" @handleClick="openModalHandler" />
                 </div>
-
-
-
             </div>
-
         </div>
     </main>
-    <!-- Aquí puedes acceder a `classes` y `loading` de forma reactiva -->
 </template>
 
 <script setup lang="ts">
-import { onMounted } from 'vue';
-import { toRefs } from 'vue';
-import { useClassStore } from '~/stores/class.store';
-import { useDragAnDrop } from '~/composables/useDragAndDrop';
-import { ApiService } from '~/services/create.course.api';
+import { ref, computed } from 'vue';
+import { useGetCover } from '~/composables/useGetcover';
 import type { ClassData } from '~/interfaces/models/class.interface..model';
+const route = useRoute()
 
-import { navigateTo } from '#app';
-import { classesData } from '~/data/classes.data';
+const courseId = route.params.courseId as string
+// Define props
+const props = defineProps<{
+    classes: ClassData[]
+}>();
 
-// Extraemos las propiedades reactivas del store
+// Add computed property for filtered classes
+const filteredClasses = computed(() => {
+    return props.classes.filter(classItem => classItem.course_id == courseId)
+})
+
+const classesRef = ref(props.classes);
+
 const { getCoverUrl } = useGetCover();
-const classStore = useClassStore();
-const { classes, loading } = toRefs(classStore);
 const routeCourseId = useRoute().params.courseId as string;
-const { onDragOver, onDrop, onDragStart } = useDragAnDrop(classes);
+const { onDragOver, onDrop, onDragStart } = useDragAnDrop(classesRef);
 
-onMounted(async () => {
-    classStore.loading = true; // Marcamos como cargando
-    const apiService = new ApiService();
-    try {
-        const fetchedClasses = await apiService.getCourseById(Number(routeCourseId));
-        classStore.setClasses(fetchedClasses as ClassData[]); // Actualizamos el store
-    } catch (error) {
-        console.error('Error fetching classes', error);
-    } finally {
-        classStore.loading = false; // Terminamos de cargar
-    }
-});
-/* aun no esta implementado */
-/* const onDragStart = (event: DragEvent, index: number) => {
-    event.dataTransfer?.setData('index', index.toString()); // Guardamos el índice del elemento arrastrado
-};
-
-const onDragOver = (event: DragEvent) => {
-    event.preventDefault(); // Necesario para que el drop funcione
-};
-
-const onDrop = (event: DragEvent, targetIndex: number) => {
-    const draggedIndex = Number(event.dataTransfer?.getData('index'));
-    if (draggedIndex !== targetIndex) {
-        const draggedItem = classes.value[draggedIndex];
-        classes.value.splice(draggedIndex, 1);
-        classes.value.splice(targetIndex, 0, draggedItem); // Insertamos el elemento arrastrado en la nueva posición
-    }
-}; */
-/* aun no esta implementado */
 const openModalHandler = () => {
     console.log('open modal');
-
 };
 
 const handlePreviewClick = (classId: number | undefined, courseId: number | undefined) => {
-    console.log(classId, courseId);
     if (classId && courseId) {
         navigateTo(`/course/${courseId}/class/${classId}`);
     } else {

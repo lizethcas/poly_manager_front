@@ -1,42 +1,49 @@
 <template>
   <p v-if="!coursesData" class="text-title-color">no hay cursos</p>
   <div v-if="coursesData.length > 0" v-for="course in coursesData.slice().reverse()" :key="course.id"
-    @click="navigateToCourse(course.id)" :class="[
-      'w-full m-auto flex justify-between border-2 rounded-xl cursor-pointer mt-4 hover:scale-105 transition-all duration-300',
-      getLevelColor(course.level)
-    ]">
-    <div class="flex w-1/2 mt-2">
-      <div :class="['rounded-full w-14 h-14 flex items-center  ml-4', getLevelColor(course.level)]">
-        <p :class="[
-          'text-md font-bold rounded-full px-2 py-1', // Clases comunes
-          getLevelColor(course.level, true) // Clases dinámicas solo para el fondo
-        ]" v-if="course.level">
+    @click="navigateToCourse(course.id)" 
+    class="w-full m-auto flex  bg-white border rounded-xl cursor-pointer mt-4 hover:scale-105 transition-all duration-300 p-2">
+    <!-- Course Image -->
+    <div class="rounded-xl">
+      <img v-if="course.cover" :src="getCoverUrl(course.cover)" alt="" class="rounded-xl object-cover w-20 h-20" />
+    </div>
+
+    <!-- Course Info -->
+     
+    <div class="flex flex-col ml-4 flex-grow justify-between">
+      <div class="flex items-center gap-2"> 
+        <h2 class="text-fuscous-gray-600 font-bold text-lg">{{ course.course_name }}</h2>
+        <!-- Level Badge -->
+        <span :class="[getLevelColor(course.level, true), 'text-xs font-semibold px-2 py-1 rounded-full text-fuscous-gray-950']">
           {{ course.level.split(".")[0] }}
-        </p>
+        </span>
+        <!-- Course Type -->
+        <span :class="[getLevelColor(course.level, true), 'text-xs font-semibold px-2 py-1 rounded-full text-fuscous-gray-950']">{{ course.category }}</span>
       </div>
-      <div class="flex flex-col justify-between">
-        <div class="flex flex-col">
-          <h3 v-if="course.level" class="text-md font-bold" :class="getLevelColor(course.level)">
-            {{ course.level.split(' ').length > 1
-              ? (course.level.split(' ')[2]
-                ? `${course.level.split(' ')[1]} ${course.level.split(' ')[2]}`
-                : course.level.split(' ')[1])
-              : course.level.split(' ')[1] }}
-          </h3>
-          <h2 class="text-gray-high font-bold text-md" v-if="course.course_name">{{ course.course_name }}</h2>
-        </div>
-        <div class="flex items-center w-fit justify-between mb-2 gap-2">
-          <p class="text-gray-high border-2 border-gray-light rounded-full px-2 text-xs">publisheds</p>
-          <p class="text-gray-high border-2 border-gray-light rounded-full px-2 text-xs">2</p>
-          <p class="text-gray-high border-2 border-gray-light rounded-full px-2 text-xs">45</p>
+      
+      <!-- Course Name -->
+      
+      
+      <!-- Stats -->
+      <div class="flex items-center gap-4 mt-1">
+        <span class="bg-emerald-100 text-emerald-700 text-xs px-2 py-1 rounded-full">published</span>
+        <div class="flex items-center gap-2 text-gray-600 text-xs">
+          <span class="flex items-center">
+            <i class="fas fa-user mr-1"></i> {{ course.students || 25 }} students
+          </span>
+          <span class="flex items-center">
+            <i class="fas fa-book mr-1"></i> {{ course.lessons || 45 }} lessons
+          </span>
         </div>
       </div>
     </div>
-    <div class="rounded-xl ">
-      <img v-if="course.cover" :src="getCoverUrl(course.cover)" alt="" class="rounded-xl object-cover w-28 h-28 m-1" />
+
+    <!-- Action Buttons -->
+    <div class="flex gap-2 text-xs" >
+      <button class="text-blue-500 px-4 py-1 rounded-full border border-blue-500 ">preview</button>
+      <button class="text-blue-500 px-4 py-1 rounded-full border border-blue-500 text-xs">edit</button>
     </div>
   </div>
-
 </template>
 
 <script lang="ts" setup>

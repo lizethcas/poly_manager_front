@@ -2,11 +2,19 @@
     <main class="py-10 px-14 text-title-color mb-6">
       <SearchInput />
       <div class="flex items-center my-5 text-middele-gray">
-        <p class="mr-4">total lessons {{ classes.length }}</p>
+        <p class="mr-4">total lessons {{ filteredData?.length || 0 }}</p>
         <div class="flex-grow border-t-2 border-dotted border-middele-gray"></div>
       </div>
-      <ClassCard />
-             <!-- Course overview content -->
+      
+      <!-- Show loading state -->
+      <div v-if="isLoading">Loading...</div>
+      
+      <!-- Show error state -->
+      <div v-else-if="error">Error: {{ error.message }}</div>
+      
+      <!-- Show data -->
+      <ClassCard v-else-if="data" :classes="data" />
+      
       <AddCourseButton @handleAdd="handleAdd" :text="createClass.buttonText" />
       <div v-if="isOpen" class="fixed inset-0 w-full h-full bg-gray-600 bg-opacity-50 overflow-y-auto">
         <div class="min-h-screen flex items-center justify-center">
@@ -19,15 +27,23 @@
     </main>
   </template>
   <script setup lang="ts">
-  import { toRefs } from 'vue';
   import AddCourseModal from '~/components/organisim/AddCourseModal.vue';
   import ClassCard from '~/components/organisim/ClassCard.vue';
   import { useModal } from '~/composables/useModal';
   import { createClass } from '~/data/cardModal';
-  import { useClassStore } from '~/stores/class.store';
-  
-  const classStore = useClassStore();
-  const { classes } = toRefs(classStore);
+  import { useClassesQuery } from '~/composables/useClassesQuery';
+  import { useRoute } from 'vue-router';
+  import { computed } from 'vue';
+
+  const route = useRoute();
+  const courseId = route.params.courseId;
+
+  const { data, isLoading, error } = useClassesQuery(courseId as string);
+
+  const filteredData = computed(() => {
+    return data.value?.filter((item: any) => item.course_id == courseId) || [];
+  });
+
   const { isOpen, openModal, closeModal } = useModal();
   
   const handleAdd = () => {
