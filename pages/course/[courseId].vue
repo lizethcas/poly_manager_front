@@ -86,6 +86,9 @@ import { computed } from 'vue';
 import { useRoute } from 'vue-router';
 import { useGetColor } from '~/composables/useGetColor';
 import { useCoursesQuery } from '~/composables/useCourseQuery';
+import type { CourseForm } from '~/interfaces/modal.interface';
+
+
 const route = useRoute();
 const { getLevelColor } = useGetColor();
 const { getCoverUrl } = useGetCover();
@@ -98,7 +101,7 @@ const { data: courses, isLoading, error } = useCoursesQuery()
 // Get the specific course using computed
 const course = computed(() => {
     if (!courses.value) return null;
-    return courses.value.find((course) => course.id === Number(routeCourseId));
+    return courses.value.find((course: CourseForm) => course.id === Number(routeCourseId));
 });
 
 const handleBackNavigation = () => {

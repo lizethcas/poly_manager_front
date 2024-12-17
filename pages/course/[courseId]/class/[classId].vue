@@ -14,25 +14,30 @@
         <!-- Tasks list -->
         <div v-else-if="classTasks && classTasks.data.length > 0" class="mt-4 text-fuscous-gray-950">
             <template v-for="(task, index) in classTasks.data" :key="task.id">
-                <TaskLayout :title="task.tittle || ''" :description="task.instructions || ''"
-                    :index="index" @showEditNavigation="handleShowEditNavigation(index)"  >
-                    <div class="mt-3">
-                        <!-- Display content based on content_type -->
-                        <div class="text-sm text-fuscous-gray-700">
 
-
-                            <!-- You can add specific components based on content_type -->
-                            <div v-if="task.content_type === 'multiple_choice'">
-                                <div v-for="(question, index) in task.content_details.questions" :key="index">
-                                    <h4>{{ question.question }}</h4>
-                                    <div v-for="(answer, aIndex) in question.answers" :key="aIndex"
-                                        :class="{ 'flex justify-start': answer.isCorrect, 'bg-tarawera-200': answer.isCorrect }">
-                                        <p>{{ answer.text }}</p>
-                                    </div>
+                <div class="mt-3 cursor-pointer shadow-md shadow-fuscous-gray-300 rounded-lg p-4 my-4" @click="handleShowEditNavigation(index)">
+                    <div v-if="task.tittle !== ''">
+                        <div class="flex justify-start gap-2">
+                            <p class="bg-tarawera-200 text-tarawera-800 px-2 py-1 rounded-md">{{ taskNumber }}.{{ index
+                                + 1 }}</p>
+                            <h3 class="text-lg font-bold">{{ capitalizeFirstLetter(task.tittle) }}</h3>
+                        </div>
+                        <p class="">{{ task.instructions }}</p>
+                    </div>
+                    <!-- Display content based on content_type -->
+                    <div class="text-sm text-fuscous-gray-700">
+                        <!-- You can add specific components based on content_type -->
+                        <div v-if="task.content_type === 'multiple_choice'">
+                            <div v-for="(question, index) in task.content_details.questions" :key="index" class="mt-4">
+                                <h4 class="font-bold">{{ question.question }}</h4>
+                                <div v-for="(answer, aIndex) in question.answers" :key="aIndex"
+                                    :class="{ 'flex justify-start': answer.isCorrect, 'bg-tarawera-200': answer.isCorrect }">
+                                    <p>{{ answer.text }}</p>
                                 </div>
                             </div>
+                        </div>
 
-                            <!--  <div v-else-if="task.content_type === 'true_false'">
+                        <!--  <div v-else-if="task.content_type === 'true_false'">
                                 <div class="flex gap-4">
                                     <label>
                                         <input type="radio" name="'task-'+task.id" value="true"> True
@@ -47,9 +52,9 @@
                              
                                 <p>Sorting activity</p>
                             </div> -->
-                        </div>
                     </div>
-                </TaskLayout>
+                </div>
+
 
                 <!-- Insert EditClassNavigation after the selected task -->
                 <transition name="slide-up" @before-enter="beforeEnter" @enter="enter" @leave="leave"
@@ -68,9 +73,10 @@
                     class="hover:underline hover:text-tarawera-700 text-fuscous-gray-950 px-4 py-2 rounded-md">
                     Add Block
                 </button>
+                <EditClassNavigation v-if="showEditNavigation && !isOpen" @open-modal="openModalHandler" />
             </div>
         </div>
-        <EditClassNavigation v-if="showEditNavigation && !isOpen" @open-modal="openModalHandler" />
+
         <div v-if="isOpen">
             <BaseTaskModal :is-open="isOpen" @close="closeModal" :title="currentModal.label" v-model="formData"
                 class="max-h-[80vh]  overflow-y-auto" :icon="currentModal.name">
@@ -88,10 +94,11 @@ import { useModal } from '~/composables/useModal';
 import EditClassNavigation from '~/components/organisim/EditClassNavigation.vue';
 import BaseTaskModal from '~/components/organisim/BaseTaskModal.vue';
 import { useAnimation } from '~/composables/useAnimation';
-import { useQuery } from '@tanstack/vue-query';
+import { useQuery, useMutation, useQueryClient } from '@tanstack/vue-query';
 import { apiRoutes } from '~/services/routes.api';
 import axiosInstance from '~/services/axios.config';
 import { useRoute } from 'vue-router';
+import { useCapitalizerLetter } from '~/composables/useCapitalizerLetter';
 
 import Task from '~/components/organisim/task.vue';
 import VideoBlock from '~/components/organisim/VideoBlock.vue';
@@ -101,16 +108,17 @@ import InteractiveActivities from '~/components/organisim/InteractiveActivities.
 import OrganisimLayoutBlock from '~/components/organisim/LayoutBlock.vue';
 import KnowledgeCheckBlock from '~/components/organisim/KnowledgeCheckBlock.vue';
 import { useTaskStore } from '~/stores/task.store';
-import TaskLayout from '~/layouts/TaskLayout.vue';
 
 const taskStore = useTaskStore();
 const route = useRoute();
+const { capitalizeFirstLetter } = useCapitalizerLetter();
 const { isOpen, closeModal, openModal } = useModal();
 const { beforeEnter, enter, leave } = useAnimation();
 const currentModal = ref({ label: '', name: '' });
 const formData = ref({ title: '', instructions: '' });
 const showEditNavigation = ref(false);
 const selectedTaskIndex = ref(-1);
+const taskNumber = ref(1);
 
 const classId = route.params.classId;
 const closeModalHandler = computed(() => taskStore.getTask('modal'));
@@ -123,9 +131,6 @@ const openModalHandler = (label: string, name: string) => {
     openModal();  // Asegúrate de abrir el modal
 };
 
-
-
-
 // Add the query to fetch tasks
 const { data: classTasks, isLoading, error } = useQuery({
     queryKey: ['class-contents', classId],
@@ -137,8 +142,14 @@ const { data: classTasks, isLoading, error } = useQuery({
 
 // You can watch the query results
 watch(classTasks, (newTasks) => {
-    if (newTasks) {
-        console.log('Class tasks:', newTasks.data);
+    if (newTasks && newTasks.data) {
+        const insertionIndex = taskStore.insertionIndex;
+        if (insertionIndex !== -1 && newTasks.data) {
+            // Insert the new task at the specific position
+            newTasks.data.splice(insertionIndex + 1, 0, newTasks);
+            // Reset the insertion index
+            taskStore.setInsertionIndex(-1);
+        }
     }
 });
 
@@ -157,12 +168,35 @@ const getCurrentComponent = () => {
 const handleShowEditNavigation = (index: number) => {
     selectedTaskIndex.value = index;
     showEditNavigation.value = true;
+    taskStore.setInsertionIndex(index); // Store the index where we want to insert
 };
 
 const handleAddBlock = () => {
     selectedTaskIndex.value = -1; // Reset the selected task index
     showEditNavigation.value = true;
 };
+
+const queryClient = useQueryClient(); // Get the queryClient instance
+
+const mutation = useMutation({
+    // ... other configuration
+    onSuccess: (data) => {
+        const insertionIndex = taskStore.insertionIndex;
+        if (insertionIndex !== -1) {
+            // Get current tasks
+            const currentTasks = classTasks.value.data;
+            // Insert new task at the correct position
+            currentTasks.splice(insertionIndex + 1, 0, data);
+            // Update the query cache with the new array
+            queryClient.setQueryData(['class-contents', route.params.classId], {
+                ...classTasks.value,
+                data: currentTasks
+            });
+        }
+        taskStore.addTask('modal', { modal: false });
+        taskStore.setInsertionIndex(-1); // Reset the insertion index
+    },
+});
 
 </script>
 

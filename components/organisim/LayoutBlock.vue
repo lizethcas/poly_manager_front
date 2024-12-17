@@ -7,7 +7,7 @@
     <NuxtLayout>
         <h3 class="text-s font-bold text-tarawera-700 my-4">Interactive task:</h3>
         <OrganisimInteractiveTask class="mt-4" @open-task="handleOpenTask" />
-        <TaskLayout :title="taskTitle">
+        <TaskLayout :title="taskTitle" >
 
             <OrganisimMultipleTasks v-if="taskTitle === 'Multiple choice'" typeTask="multiple_choice"
                 titleTask="Question " subtitleTask="Answer options:" />
