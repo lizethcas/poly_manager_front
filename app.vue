@@ -5,7 +5,7 @@
             <div class="w-64 bg-white shadow-sm fixed h-full">
                 <!-- Logo section -->
                 <div class="px-6 py-4 border-b">
-                    <NuxtLink to="/" class="flex items-center">
+                    <NuxtLink  class="flex items-center">
                         <span class="text-blue-600 font-bold text-xl">PolyAcademy</span>
                     </NuxtLink>
                 </div>
@@ -47,7 +47,7 @@
                             </span>
                             Courses teacher
                         </NuxtLink>
-                        <NuxtLink to="/students"
+                        <NuxtLink 
                             class="flex items-center px-4 py-2 text-gray-700 hover:bg-gray-100 rounded-md">
                             <span class="mr-3">
                                 <i class="fas fa-users"></i>

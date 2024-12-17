@@ -11,7 +11,7 @@
 
             <OrganisimMultipleTasks v-if="taskTitle === 'Multiple choice'" typeTask="multiple_choice"
                 titleTask="Question " subtitleTask="Answer options:" />
-            <OrganisimMultipleTasks v-if="taskTitle === 'True or false'" typeTask="true_false" />
+            <OrganisimMultipleTasks v-if="taskTitle === 'True or false'" typeTask="true_false" titleTask="Question" />
             <OrganisimMultipleTasks v-if="taskTitle === 'Category'" typeTask="category" titleTask="Category"
                 subtitleTask="Items:" />
             <OrganisimMultipleTasks v-if="taskTitle === 'Sorting'" typeTask="sorting" titleTask="Category"

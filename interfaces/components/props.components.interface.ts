@@ -18,13 +18,18 @@ export interface PropsInteractiveTask extends ImgAtomProps {
 
 export interface Option {
   text: string;
-  isCorrect: boolean | string;
+  statement?: string;
+ 
+  isCorrect?: boolean | string | null;
 }
 
 export interface Question {
   question: string;
   answers: Option[];
+  statement?: string;
   typeTask?: string;
+  text?: string;
+   stated?: string;
 }
 
 export interface InputTaskProps {
@@ -47,4 +52,5 @@ export interface MultipleTasksProps {
   titleTask?: string;
   subtitleTask?: string;
   description?: string;
+  inputTitleTask?: boolean;
 }

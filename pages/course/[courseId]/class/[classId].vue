@@ -15,7 +15,8 @@
         <div v-else-if="classTasks && classTasks.data.length > 0" class="mt-4 text-fuscous-gray-950">
             <template v-for="(task, index) in classTasks.data" :key="task.id">
 
-                <div class="mt-3 cursor-pointer shadow-md shadow-fuscous-gray-300 rounded-lg p-4 my-4" @click="handleShowEditNavigation(index)">
+                <div class="mt-3 cursor-pointer shadow-md shadow-fuscous-gray-300 rounded-lg p-4 my-4"
+                    @click="handleShowEditNavigation(index)">
                     <div v-if="task.tittle !== ''">
                         <div class="flex justify-start gap-2">
                             <p class="bg-tarawera-200 text-tarawera-800 px-2 py-1 rounded-md">{{ taskNumber }}.{{ index
@@ -37,19 +38,19 @@
                             </div>
                         </div>
 
-                        <!--  <div v-else-if="task.content_type === 'true_false'">
+                        <div v-else-if="task.content_type === 'true_false'">
+                            <div class="mt-4" v-for="(question, index) in task.content_details.questions" :key="index">
+                                <h4 class="font-bold mb-3 ">{{ question.statement }}</h4>
                                 <div class="flex gap-4">
-                                    <label>
-                                        <input type="radio" name="'task-'+task.id" value="true"> True
-                                    </label>
-                                    <label>
-                                        <input type="radio" name="'task-'+task.id" value="false"> False
-                                    </label>
+                                    <p class="px-4 py-2 rounded-md" :class="{ 'bg-tarawera-200': question.stated === 'True' }">True</p>
+                                    <p class="px-4 py-2 rounded-md" :class="{ 'bg-tarawera-200': question.stated === 'False' }">False</p>
+                                    <p class="px-4 py-2 rounded-md" :class="{ 'bg-tarawera-200': question.stated === 'Not stated' }">Not stated</p>
                                 </div>
-                            </div>
 
-                            <div v-else-if="task.content_type === 'sorting'">
-                             
+                            </div>
+                        </div>
+
+                        <!--  <div v-else-if="task.content_type === 'sorting'">
                                 <p>Sorting activity</p>
                             </div> -->
                     </div>
@@ -176,9 +177,9 @@ const handleAddBlock = () => {
     showEditNavigation.value = true;
 };
 
-const queryClient = useQueryClient(); // Get the queryClient instance
+/* const queryClient = useQueryClient(); */ // Get the queryClient instance
 
-const mutation = useMutation({
+/* const mutation = useMutation({
     // ... other configuration
     onSuccess: (data) => {
         const insertionIndex = taskStore.insertionIndex;
@@ -196,7 +197,7 @@ const mutation = useMutation({
         taskStore.addTask('modal', { modal: false });
         taskStore.setInsertionIndex(-1); // Reset the insertion index
     },
-});
+}); */
 
 </script>
 

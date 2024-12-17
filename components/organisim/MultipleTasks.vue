@@ -12,11 +12,13 @@
         :draggable="true" @dragstart="onDragStart($event, qIndex)" @dragover="onDragOver"
         @drop="onDrop($event, qIndex)">
         <div class="mt-4">
-            <div v-if="titleTask">
-                <h3 class="text-tarawera-700 font-bold">{{ titleTask }} {{ qIndex + 1 }}</h3>
+            <h3 class="text-tarawera-700 font-bold">{{ titleTask }} {{ qIndex + 1 }}</h3>
+            <div v-if="inputTitleTask">
+
                 <div class="flex items-center gap-2 p-2">
                     <Icon name="mingcute:dots-fill" size="24" class="text-gray-500 cursor-grab" />
                     <UInput v-model="question.question" type="text" size="xs" class="w-full mt-1" />
+
                     <div class="bg-gray-200 rounded-md p-1 flex items-center justify-center">
                         <Icon name="material-symbols:close" size="18" class="text-gray-500 cursor-pointer"
                             @click="removeQuestion(qIndex)" />
@@ -35,7 +37,7 @@
                         :typeTask="typeTask" @update:isCorrect="(val) => updateOptionIsCorrect(qIndex, oIndex, val)"
                         @update:answer="(val) => updateOptionAnswer(qIndex, oIndex, val)" />
 
-                    <button
+                    <button v-if="typeTask !== 'true_false'"
                         class="bg-fuscous-gray-100  text-fuscous-gray-600 text-xs rounded-md flex items-center gap-2 px-2 py-1 mt-2"
                         @click="addOption(qIndex)">
                         <Icon name="icon-park-solid:add" size="14" class="bg-fuscous-gray-500 " />
@@ -73,7 +75,6 @@
 
 <script setup lang="ts">
 import { ref, watch } from 'vue';
-import EventBus from '~/composables/useEvenBus';
 /* Components */
 import InputTask from '../molecule/InputTask.vue';
 import TextAreaTask from '../molecule/TextAreaTask.vue';
@@ -91,7 +92,7 @@ import type { Question, MultipleTasksProps } from '~/interfaces/components/props
 
 // Definir los eventos que emitirá el componente
 const emit = defineEmits(['update:value', 'save-task']);
-const { typeTask, titleTask, subtitleTask, description } = defineProps<MultipleTasksProps>();
+const { typeTask, titleTask, subtitleTask, description, inputTitleTask } = defineProps<MultipleTasksProps>();
 const taskStore = useTaskStore();
 const route = useRoute();
 const taskInstructions = computed(() => taskStore.getTask('instructions'));
@@ -111,6 +112,8 @@ const infoResponseApi = ref({
 
 const questions = ref<Question[]>([{
     question: '',
+    statement: '',
+    stated: 'true',
     answers: [
         {
             text: '',
@@ -143,21 +146,21 @@ const data = ref({
     },
     multimedia: [] as Multimedia[]
 });
-
+watch(select, (newValue) => {
+    console.log('select', newValue);
+}, { deep: true });
 // Update the watch for questions
 watch(questions, (newValue) => {
     isActive.value = hasQuestionsWithAnswers();
     infoResponseApi.value.isActive = hasQuestionsWithAnswers();
 
-    // Transform the questions based on the type
     if (typeTask === 'true_false') {
         data.value.content_details.questions = newValue.map(q => ({
-            statement: q.question,
-            state: q.answers[0].isCorrect === 'True' ? 1 : 
-                   q.answers[0].isCorrect === 'False' ? 2 : 3
+            statement: q.statement || q.answers[0]?.text || '',
+            stated: q.stated || q.answers[0]?.text || '',
         }));
+
     } else {
-        // For other types, format the questions appropriately
         data.value.content_details.questions = newValue.map(q => ({
             question: q.question,
             answers: q.answers.map(a => ({
@@ -231,25 +234,36 @@ const addQuestion = () => {
 
 // Este método se encarga de actualizar la respuesta de una opción
 const updateOptionAnswer = (questionIndex: number, optionIndex: number, value: string) => {
-    questions.value[questionIndex].answers[optionIndex].text = value;
+    if (typeTask === 'true_false') {
+        questions.value[questionIndex].statement = value;
+    } else {
+        questions.value[questionIndex].answers[optionIndex].text = value;
+    }
 };
 
 // Este método se encarga de actualizar si una opción es correcta o no
-const updateOptionIsCorrect = (questionIndex: number, optionIndex: number, value: boolean) => {
-    questions.value[questionIndex].answers[optionIndex].isCorrect = value;
+const updateOptionIsCorrect = (questionIndex: number, optionIndex: number, value: string | boolean) => {
+    if (typeTask === 'true_false') {
+        const stateMap = {
+            'True': true,
+            'False': false,
+            'Not stated': false
+        };
+        questions.value[questionIndex].stated = stateMap[value as string];
+    } else {
+        questions.value[questionIndex].answers[optionIndex].isCorrect = value as boolean;
+    }
 };
 
 // Nueva función para evaluar si el formulario tiene información
 const hasQuestionsWithAnswers = () => {
-
     return questions.value.every(question => {
         if (typeTask === 'true_false') {
-            return question.answers.every(answer => answer.text.trim() !== '');
+            // For true_false, only check if statement exists
+            return question.statement?.trim() !== '';
         }
-        // Verifica que la pregunta no esté vacía
+        // For other types, keep existing validation
         if (question.question.trim() === '') return false;
-
-        // Verifica que todas las respuestas tengan texto
         return question.answers.every(answer => answer.text.trim() !== '');
     });
 };

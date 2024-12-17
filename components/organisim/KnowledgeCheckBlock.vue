@@ -4,16 +4,16 @@
         <OrganisimInteractiveTask class="mt-4" @open-task="handleOpenTask" />
         <TaskLayout :title="taskTitle">
             <OrganisimMultipleTasks v-if="taskTitle === 'Multiple choice'" typeTask="multiple_choice"
-                titleTask="Question " subtitleTask="Answer options:" />
-            <OrganisimMultipleTasks v-if="taskTitle === 'True or false'" typeTask="true_false" />
+                titleTask="Question " subtitleTask="Answer options:" :inputTitleTask="true" />
+            <OrganisimMultipleTasks v-if="taskTitle === 'True or false'" typeTask="true_false" titleTask="Question" />
             <OrganisimMultipleTasks v-if="taskTitle === 'Category'" typeTask="category" titleTask="Category"
-                subtitleTask="Items:" />
+                subtitleTask="Items:" :inputTitleTask="true" />
             <OrganisimMultipleTasks v-if="taskTitle === 'Sorting'" typeTask="sorting" titleTask="Category"
-                subtitleTask="Items:" />
+                subtitleTask="Items:" :inputTitleTask="true" />
             <OrganisimMultipleTasks v-if="taskTitle === 'Put in order'" typeTask="order"
-                titleTask="Put in the right order " />
+                titleTask="Put in the right order " :inputTitleTask="true" />
             <OrganisimMultipleTasks v-if="taskTitle === 'Fill in the gaps' || taskTitle === 'Drag the words'"
-                :typeTask="'text_area'" :description="getTaskDescription(taskTitle)" />
+                :typeTask="'text_area'" :description="getTaskDescription(taskTitle)" :inputTitleTask="true" />
         </TaskLayout>
     </NuxtLayout>
 </template>

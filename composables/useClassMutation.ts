@@ -6,10 +6,9 @@ export const useClassMutation = () => {
   const queryClient = useQueryClient();
 
   const createClassMutation = async (classData: any) => {
-    const response = await axiosInstance.post(apiRoutes.classes.create, classData, {
+    const response = await axiosInstance.post(apiRoutes.classes.getByCourseId(classData.course_id), classData, {
       headers: {
         "Content-Type": "multipart/form-data",
-        Accept: "application/json",
       },
     });
     return response.data;
