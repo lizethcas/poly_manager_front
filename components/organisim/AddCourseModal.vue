@@ -61,6 +61,7 @@ import { ApiService } from '~/services/create.course.api';
 import transformKey from '~/utils/stringTransformations'
 import { useRoute } from 'vue-router';
 import { ApiClassService } from '~/services/create.class.api';
+import { useCourseMutation } from '~/composables/useCourseMutation';
 
 import type { CourseForm } from '~/interfaces/modal.interface';
 
@@ -70,6 +71,7 @@ const route = useRoute();
 const courseStore = useCourseStore();
 const classStore = useClassStore();
 const { bulletPoints, formData, handleEmit, updateFormField } = useFormData();
+const courseMutation = useCourseMutation();
 
 
 // Propiedades del modal
@@ -116,38 +118,35 @@ const handleSave = async () => {
 
     const formType = route.name === 'course-courseId' ? 'class' : 'course';
 
-
-    if (formType === 'class') {
-        const requestData = {
-            class_name: formData.value.course_name,
-            description: formData.value.description,
-            course_id: route.params.courseId,
-            bullet_points: JSON.stringify(Array.from(bulletPoints.value)),
-            cover: formData.value.cover
-        };
-        console.log(requestData);
-        const apiService = new ApiClassService();
-        const response = await apiService.createClass(requestData);
-        console.log(response);
-        classStore.saveClass(formData.value as CourseForm);
-    } else {
-        const requestData = {
-            course_name: formData.value.course_name,
-            description: formData.value.description,
-            category: formData.value.category || defaultCategory,
-            level: formData.value.level || defaultLevel,
-            bullet_points: JSON.stringify(Array.from(bulletPoints.value)),
-            cover: formData.value.cover
-        };
-        console.log(requestData);
-
-        const apiService = new ApiService();
-        await apiService.createCourse(requestData);
-        courseStore.setCourses();
+    try {
+        if (formType === 'class') {
+            const requestData = {
+                class_name: formData.value.course_name,
+                description: formData.value.description,
+                course_id: route.params.courseId,
+                bullet_points: JSON.stringify(Array.from(bulletPoints.value)),
+                cover: formData.value.cover
+            };
+            const apiService = new ApiClassService();
+            await apiService.createClass(requestData);
+        } else {
+            const requestData = {
+                course_name: formData.value.course_name,
+                description: formData.value.description,
+                category: formData.value.category || defaultCategory,
+                level: formData.value.level || defaultLevel,
+                bullet_points: JSON.stringify(Array.from(bulletPoints.value)),
+                cover: formData.value.cover
+            };
+            
+            // Use the mutation instead of direct API call
+            await courseMutation.mutateAsync(requestData);
+        }
+        closeModal();
+    } catch (error) {
+        console.error('Error creating course:', error);
+        // Handle error appropriately
     }
-
-
-    closeModal();
 };
 
 const handleCoverImage = (imageFile: File) => {
