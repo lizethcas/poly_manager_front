@@ -4,7 +4,6 @@
       v-if="taskTitle === 'Multiple choice'"
       typeTask="multiple_choice"
       titleTask="Question "
-      subtitleTask="Answer options:"
     />
     <OrganisimMultipleTasks
       v-if="taskTitle === 'True or false'"
@@ -15,13 +14,11 @@
       v-if="taskTitle === 'Categories'"
       typeTask="category"
       titleTask="Category"
-      subtitleTask="Items:"
     />
     <OrganisimMultipleTasks
       v-if="taskTitle === 'Sorting'"
       typeTask="sorting"
       titleTask="Sorting"
-      subtitleTask="Items:"
     />
     <OrganisimMultipleTasks
       v-if="taskTitle === 'Put in order'"
@@ -44,6 +41,7 @@ import { useDescription } from "~/composables/useDescription";
 interface Props {
   taskTitle: string;
 }
+
 defineProps<Props>();
 const { getTaskDescription } = useDescription();
 </script>

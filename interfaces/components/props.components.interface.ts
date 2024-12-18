@@ -19,13 +19,15 @@ export interface PropsInteractiveTask extends ImgAtomProps {
 export interface Option {
   text: string;
   statement?: string;
- 
+  indice?: number;
   isCorrect?: boolean | string | null;
 }
 
 export interface Question {
+
   question: string;
   answers: Option[];
+
   statement?: string;
   typeTask?: string;
   text?: string;

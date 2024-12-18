@@ -1,4 +1,4 @@
-/* export const useGetTypeTask = () => {
+export const useGetTypeTask = () => {
   const getType = (typeTask: string) => {
     switch (typeTask) {
       case "sorting":
@@ -17,4 +17,3 @@
   };
   return { getType };
 };
- */

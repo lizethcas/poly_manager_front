@@ -25,6 +25,7 @@
         >
           <div v-if="task.tittle !== ''">
             <div class="flex justify-start gap-2">
+              
               <p class="bg-tarawera-200 text-tarawera-800 px-2 py-1 rounded-md">
                 {{ getTaskNumber(index) }}
               </p>
@@ -36,7 +37,7 @@
           </div>
           <!-- Display content based on content_type -->
           <div class="text-sm text-fuscous-gray-700">
-            <div
+            <div class="flex gap-2 "
               v-if="
                 task.content_type === 'multiple_choice' ||
                 task.content_type === 'category'
@@ -50,7 +51,7 @@
               />
             </div>
 
-            <div v-else-if="task.content_type === 'true_false'">
+            <div v-else-if="task.content_type === 'true_false'" >
               <TrueFalse
                 v-for="(question, index) in task.content_details.questions"
                 :key="index"
@@ -90,7 +91,7 @@
     <!-- No tasks message -->
     <div
       v-else
-      class="font-bold flex justify-center items-center text-center mt-4 text-fuscous-gray-950 text-md"
+      class="font-bold  items-center text-center mt-4 text-fuscous-gray-950 text-md "
     >
       <div>
         <p>There are no activities created for this course yet.</p>
@@ -132,7 +133,7 @@ import { useModal } from "~/composables/useModal";
 import EditClassNavigation from "~/components/organisim/EditClassNavigation.vue";
 import BaseTaskModal from "~/components/organisim/BaseTaskModal.vue";
 import { useAnimation } from "~/composables/useAnimation";
-import { useQuery } from "@tanstack/vue-query";
+import { useQueryClient, useQuery } from "@tanstack/vue-query";
 import { apiRoutes } from "~/services/routes.api";
 import axiosInstance from "~/services/axios.config";
 import { useRoute } from "vue-router";
@@ -160,6 +161,7 @@ const formData = ref({ title: "", instructions: "" });
 const showEditNavigation = ref(false);
 const selectedTaskIndex = ref(-1);
 const selectedTask = ref(null);
+const queryClient = useQueryClient();
 
 const classId = route.params.classId;
 const closeModalHandler = computed(() => taskStore.getTask("modal"));
@@ -190,11 +192,21 @@ const {
 
 // You can watch the query results
 watch(classTasks, (newTasks) => {
-  if (newTasks && newTasks.data) {
+  if (newTasks?.data) {
+    // Cerrar el modal después de guardar exitosamente
+    closeModal();
+    showEditNavigation.value = false;
+    
+    const currentData = [...newTasks.data]; // Crear una copia del array
+    
     const insertionIndex = taskStore.insertionIndex;
-    if (insertionIndex !== -1 && newTasks.data) {
-      // Insert the new task at the specific position
-      newTasks.data.splice(insertionIndex + 1, 0, newTasks);
+    if (insertionIndex !== -1) {
+      // Actualizar los datos a través del queryClient
+      queryClient.setQueryData(['class-contents', classId], {
+        ...newTasks,
+        data: currentData
+      });
+      
       // Reset the insertion index
       taskStore.setInsertionIndex(-1);
     }
@@ -242,59 +254,26 @@ const handleSelectTask = (task: any) => {
   
 };
 
-/* const queryClient = useQueryClient(); */ // Get the queryClient instance
-
-/* const mutation = useMutation({
-    // ... other configuration
-    onSuccess: (data) => {
-        const insertionIndex = taskStore.insertionIndex;
-        if (insertionIndex !== -1) {
-            // Get current tasks
-            const currentTasks = classTasks.value.data;
-            // Insert new task at the correct position
-            currentTasks.splice(insertionIndex + 1, 0, data);
-            // Update the query cache with the new array
-            queryClient.setQueryData(['class-contents', route.params.classId], {
-                ...classTasks.value,
-                data: currentTasks
-            });
-        }
-        taskStore.addTask('modal', { modal: false });
-        taskStore.setInsertionIndex(-1); // Reset the insertion index
-    },
-}); */
-
 const getTaskNumber = (currentIndex: number) => {
-  // Find the current section number (tasks with titles)
-  let sectionCount = 1;
-  let subCount = 1;
-  let lastTitleIndex = -1;
+  let mainNumber = 1;  // This will always be 1 for now
+  let subNumber = 0;
 
+  // Count only tasks with titles up to the current index
   for (let i = 0; i <= currentIndex; i++) {
     if (classTasks.value.data[i].tittle !== "") {
-      if (lastTitleIndex === -1) {
-        // First titled task starts a new section
-        lastTitleIndex = i;
-        subCount = 1;
-      } else {
-        // Check if there are any empty titles between last titled task and current
-        let hasEmptyTitlesBetween = false;
-        for (let j = lastTitleIndex + 1; j < i; j++) {
-          if (classTasks.value.data[j].tittle === "") {
-            hasEmptyTitlesBetween = true;
-            break;
-          }
-        }
-        if (hasEmptyTitlesBetween) {
-          // If there are empty titles between last titled task and current, it's a new sub-task
-          subCount++;
-          lastTitleIndex = i;
-        }
+      subNumber++;
+      if (i === currentIndex) {
+        return `${mainNumber}.${subNumber}`;
       }
     }
   }
 
-  return `${sectionCount}.${subCount}`;
+  // If the current task has no title, don't return a number
+  if (classTasks.value.data[currentIndex].tittle === "") {
+    return "";
+  }
+
+  return `${mainNumber}.${subNumber}`;
 };
 </script>
 

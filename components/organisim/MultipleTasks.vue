@@ -1,10 +1,10 @@
 <template>
-  <div
-    v-if="infoResponseApi.isLoading"
-    class="fixed inset-0 flex items-center justify-center bg-gray-800 bg-opacity-50"
-  >
-    <p class="text-title-color text-2xl">Guardando...</p>
-  </div>
+  <UModal v-if="infoResponseApi.isLoading">
+    <div class="flex flex-col items-center justify-center p-4">
+      <USpinner size="lg" />
+      <p class="mt-2 text-lg text-gray-700">Guardando...</p>
+    </div>
+  </UModal>
   <!-- Iteramos sobre las preguntas -->
 
   <TextAreaTask
@@ -31,7 +31,7 @@
       <div>
         <div
           class="flex items-center gap-2 p-2"
-          v-if="typeTask !== 'true_false'"
+          v-if="typeTask !== 'true_false' && typeTask !== 'ordering'"
         >
           <Icon
             name="mingcute:dots-fill"
@@ -69,6 +69,7 @@
             :qIndex="qIndex"
             :oIndex="oIndex"
             :isCorrect="option.isCorrect"
+            :type="getType(typeTask)"
             :answer="option.text"
             :removeOption="(qIndex, oIndex) => removeOption(qIndex, oIndex)"
             @update:isCorrect="
@@ -144,10 +145,8 @@ import TextAreaTask from "../molecule/TextAreaTask.vue";
 import { useRemove } from "~/composables/useRemove";
 import { useDragAnDrop } from "~/composables/useDragAndDrop";
 import { useTaskStore } from "~/stores/task.store";
-import { useMutation, useQueryClient } from "@tanstack/vue-query";
-import { apiRoutes } from "~/services/routes.api";
-import axiosInstance from "~/services/axios.config";
-
+import { useClassContentMutation } from '~/composables/useClassContentMutation'
+import { useGetTypeTask } from "~/composables/useGetTypeTask";
 /* Interfaces */
 import type {
   Question,
@@ -165,16 +164,19 @@ const files = computed(() => taskStore.getTask("files"));
 const select = computed(() => taskStore.getTask("select"));
 const value = ref("");
 const isActive = ref(false);
+const { getType } = useGetTypeTask();
 
+const { mutation, isLoading, isSuccess, isError } = useClassContentMutation()
 
+// Update infoResponseApi ref to use the mutation states
 const infoResponseApi = ref({
   isActive: false,
-  isLoading: false,
-  isSuccess: false,
-  isError: false,
+  isLoading: computed(() => isLoading.value),
+  isSuccess: computed(() => isSuccess.value),
+  isError: computed(() => isError.value),
   error: null,
   data: null,
-});
+})
 
 interface Passage {
   text: string;
@@ -187,11 +189,18 @@ interface category {
   text_items: { text: string }[];
 }
 
+interface Ordering {
+  text: string;
+  indice: number;
+}
+
 const questions = ref<Question[]>([
   {
     question: "",
     statement: "",
-    stated: "true",
+    stated: "True",
+    text: "",
+    indice: 0,
     answers: [
       {
         text: "",
@@ -213,7 +222,7 @@ interface Multimedia {
 
 const data = ref({
   class_id: route.params.classId,
-  content_type: taskTitle.value == "Fill" ? "fill_gaps" : typeTask,
+  content_type: typeTask == "text_area" ? "fill_gaps" : typeTask,
   tittle: "",
   instructions: "",
   stats: false,
@@ -221,6 +230,7 @@ const data = ref({
     questions: [] as Question[],
     passages: [] as Passage[],
     categories: [] as category[],
+    ordering: [] as Ordering[],
   },
   multimedia: [] as Multimedia[],
 });
@@ -239,9 +249,16 @@ watch(
   (newValue) => {
     isActive.value = hasQuestionsWithAnswers();
     infoResponseApi.value.isActive = hasQuestionsWithAnswers();
+    if (typeTask === "ordering") {
+      data.value.content_details.ordering = newValue.map((q, index) => ({
+        text: q.question,
+        indice: index + 1
+      }));
+    }
+
     if (typeTask === "category") {
       data.value.content_details.categories = newValue.map((q) => ({
-        question: q.question,
+        question: q.text,
         text_items: q.answers.map((a) => ({ text: a.text })),
       }));
     }
@@ -249,7 +266,7 @@ watch(
     if (typeTask === "true_false") {
       data.value.content_details.questions = newValue.map((q) => ({
         statement: q.statement || q.answers[0]?.text || "",
-        stated: q.stated || q.answers[0]?.text || "",
+        stated: q.stated || q.answers[0]?.isCorrect || "",
       }));
     } else {
       data.value.content_details.questions = newValue.map((q) => ({
@@ -328,8 +345,9 @@ const handleUpdateValue = (newValue: string) => {
   value.value = newValue;
   isActive.value = newValue.trim() !== "";
   infoResponseApi.value.isActive = newValue.trim() !== "";
+  console.log("newValue", newValue);
 
-  if (taskTitle.value == "Fill") {
+  if (typeTask == "text_area") {
     // Split the text by newlines to handle each question
     const lines = newValue.split("\n");
     const passages = lines.map((line, index) => {
@@ -385,7 +403,10 @@ const updateOptionAnswer = (
   optionIndex: number,
   value: string
 ) => {
-  if (typeTask === "true_false") {
+  if (typeTask === "ordering") {
+    console.log(value);
+    questions.value[questionIndex].text = value;
+  } else if (typeTask === "true_false") {
     questions.value[questionIndex].statement = value;
   } else {
     questions.value[questionIndex].answers[optionIndex].text = value;
@@ -399,12 +420,7 @@ const updateOptionIsCorrect = (
   value: string | boolean
 ) => {
   if (typeTask === "true_false") {
-    const stateMap = {
-      True: true,
-      False: false,
-      "Not stated": false,
-    };
-    questions.value[questionIndex].stated = stateMap[value as string];
+    questions.value[questionIndex].stated = value as string;
   } else {
     questions.value[questionIndex].answers[optionIndex].isCorrect =
       value as boolean;
@@ -415,52 +431,18 @@ const updateOptionIsCorrect = (
 const hasQuestionsWithAnswers = () => {
   return questions.value.every((question) => {
     if (typeTask === "true_false") {
+      console.log("aqui");
       // For true_false, only check if statement exists
       return question.statement?.trim() !== "";
+    }
+    if (typeTask === "ordering") {
+      return question.text?.trim() !== "";
     }
     // For other types, keep existing validation
     if (question.question.trim() === "") return false;
     return question.answers.every((answer) => answer.text.trim() !== "");
   });
 };
-
-// Observa los cambios en las preguntas para actualizar el estado de isActive
-const queryClient = useQueryClient();
-
-const mutation = useMutation({
-  mutationFn: async (formData: FormData) => {
-    infoResponseApi.value.isLoading = true;
-    try {
-      const response = await axiosInstance.post(
-        apiRoutes.classContent,
-        formData,
-        {
-          headers: {
-            "Content-Type": "multipart/form-data",
-            Accept: "application/json",
-          },
-        }
-      );
-      infoResponseApi.value.isLoading = false;
-      return response.data;
-    } catch (error) {
-      console.error("API Error Details:", error.response?.data);
-      throw error;
-    }
-  },
-  onSuccess: (data) => {
-    console.log("Response from API:", data);
-    infoResponseApi.value.isSuccess = true;
-    // Invalidate and refetch the class contents query
-    queryClient.invalidateQueries(["class-contents", route.params.classId]);
-    taskStore.addTask("modal", { modal: false });
-  },
-  onError: (error) => {
-    console.error("Error saving data:", error.response?.data);
-    infoResponseApi.value.isError = true;
-    infoResponseApi.value.isLoading = false;
-  },
-});
 
 const handleSave = () => {
   try {

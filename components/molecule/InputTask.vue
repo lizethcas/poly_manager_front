@@ -39,6 +39,7 @@ const localIsCorrect = ref<boolean | string>(isCorrect ?? false);
 watch(localIsCorrect, (newValue) => {
     console.log('Selected option:', newValue);
     emit('update:isCorrect', newValue);
+
 });
 
 </script>
