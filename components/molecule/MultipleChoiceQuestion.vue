@@ -7,7 +7,7 @@
       <p>{{ answer.text }}</p>
     </div>
   </div>
-</template>
+</template> 
 
 <script setup lang="ts">
 interface Answer {

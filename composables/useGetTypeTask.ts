@@ -1,4 +1,4 @@
-export const useGetTypeTask = () => {
+/* export const useGetTypeTask = () => {
   const getType = (typeTask: string) => {
     switch (typeTask) {
       case "sorting":
@@ -7,10 +7,14 @@ export const useGetTypeTask = () => {
         return "checkbox";
       case "true_false":
         return "select";
-      case "category" || "order":
+      case "category":
+        return "text";
+      case "ordering":
+        return "text";
       default:
-        return undefined; // Si no coincide con ningún caso, puedes devolver undefined o algún valor por defecto
+        return undefined;
     }
   };
   return { getType };
 };
+ */

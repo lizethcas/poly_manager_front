@@ -1,19 +1,25 @@
 <template>
-    <div class="flex flex-nowrap w-full items-center justify-between gap-2">
-        <div v-for="task in interactiveTaskData" 
-             :key="task.alt"
-             @click="$emit('open-task', task.title)"
-             class="flex items-center justify-between p-2 max-w-[13%] w-full shrink-0 bg-fuscous-gray-100 rounded-lg cursor-pointer hover:scale-105 transition-all duration-300">
-            <img :src="task.image" :alt="task.alt" class="w-10 h-8" />
-            <p class="text-[0.6rem] text-center w-10">{{ task.title }}</p>
-        </div>
-    </div>
+ 
+  <ul class="space-y-2">
+    <li
+      v-for="task in menuItems"
+      :key="task.type"
+      @click="$emit('select-task', task)"
+      class="flex items-center gap-2 p-2 hover:bg-gray-200 rounded cursor-pointer text-sm font-bold text-gray-700 mb-2"
+    >
+      {{ task.name }}
+    </li>
+  </ul>
 </template>
 
 <script setup lang="ts">
-import { interactiveTaskData } from '~/data/interactiveTask'
-
-defineEmits(['open-task'])
-
+// Define the task options structure
+interface TaskMenuItem {
+  name: string;
+  type: string;
+  title: string;
+}
+// Define props to receive task options from parent
+defineProps<{ menuItems: TaskMenuItem[] }>();
 
 </script>

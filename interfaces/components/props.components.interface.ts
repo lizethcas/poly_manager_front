@@ -47,7 +47,7 @@ export interface MultipleTasksProps {
     | "true_false"
     | "category"
     | "sorting"
-    | "order"
+    | "ordering"
     | "text_area";
   titleTask?: string;
   subtitleTask?: string;

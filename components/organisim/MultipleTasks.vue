@@ -1,7 +1,7 @@
 <template>
   <div
     v-if="infoResponseApi.isLoading"
-    class="fixed inset-0 flex items-center justify-center bg-gray-800 bg-opacity-50 z-50"
+    class="fixed inset-0 flex items-center justify-center bg-gray-800 bg-opacity-50"
   >
     <p class="text-title-color text-2xl">Guardando...</p>
   </div>
@@ -28,8 +28,11 @@
       <h3 class="text-tarawera-700 font-bold">
         {{ titleTask }} {{ qIndex + 1 }}
       </h3>
-      <div v-if="inputTitleTask">
-        <div class="flex items-center gap-2 p-2">
+      <div>
+        <div
+          class="flex items-center gap-2 p-2"
+          v-if="typeTask !== 'true_false'"
+        >
           <Icon
             name="mingcute:dots-fill"
             size="24"
@@ -39,6 +42,7 @@
             v-model="question.question"
             type="text"
             size="xs"
+            placeholder="Enter your question"
             class="w-full mt-1"
           />
 
@@ -67,12 +71,11 @@
             :isCorrect="option.isCorrect"
             :answer="option.text"
             :removeOption="(qIndex, oIndex) => removeOption(qIndex, oIndex)"
-            :type="getType(typeTask)"
-            :typeTask="typeTask"
             @update:isCorrect="
               (val) => updateOptionIsCorrect(qIndex, oIndex, val)
             "
             @update:answer="(val) => updateOptionAnswer(qIndex, oIndex, val)"
+            placeholder="Enter your answer"
           />
 
           <button
@@ -139,7 +142,6 @@ import InputTask from "../molecule/InputTask.vue";
 import TextAreaTask from "../molecule/TextAreaTask.vue";
 /* Composables */
 import { useRemove } from "~/composables/useRemove";
-import { useGetTypeTask } from "~/composables/useGetTypeTask";
 import { useDragAnDrop } from "~/composables/useDragAndDrop";
 import { useTaskStore } from "~/stores/task.store";
 import { useMutation, useQueryClient } from "@tanstack/vue-query";
@@ -154,8 +156,7 @@ import type {
 
 // Definir los eventos que emitirá el componente
 const emit = defineEmits(["update:value", "save-task"]);
-const { typeTask, titleTask, subtitleTask, description, inputTitleTask } =
-  defineProps<MultipleTasksProps>();
+const { typeTask, titleTask, description } = defineProps<MultipleTasksProps>();
 const taskStore = useTaskStore();
 const route = useRoute();
 const taskInstructions = computed(() => taskStore.getTask("instructions"));
@@ -164,6 +165,7 @@ const files = computed(() => taskStore.getTask("files"));
 const select = computed(() => taskStore.getTask("select"));
 const value = ref("");
 const isActive = ref(false);
+
 
 const infoResponseApi = ref({
   isActive: false,
@@ -201,7 +203,6 @@ const questions = ref<Question[]>([
 ]);
 
 const { removeOption, removeQuestion } = useRemove(questions);
-const { getType } = useGetTypeTask();
 const { onDragStart, onDragOver, onDrop } = useDragAnDrop(questions);
 
 // Modify the data structure
@@ -478,8 +479,6 @@ const handleSave = () => {
     const contentDetails =
       data.value.content_type === "fill_gaps"
         ? { passages: data.value.content_details.passages }
-        : data.value.content_type === "category"
-        ? { categories: data.value.content_details.categories }
         : { questions: data.value.content_details.questions };
 
     // Append all data
