@@ -19,40 +19,39 @@
                     @click="handleShowEditNavigation(index)">
                     <div v-if="task.tittle !== ''">
                         <div class="flex justify-start gap-2">
-                            <p class="bg-tarawera-200 text-tarawera-800 px-2 py-1 rounded-md">{{ taskNumber }}.{{ index
-                                + 1 }}</p>
+                            <p class="bg-tarawera-200 text-tarawera-800 px-2 py-1 rounded-md">{{ getTaskNumber(index) }}</p>
                             <h3 class="text-lg font-bold">{{ capitalizeFirstLetter(task.tittle) }}</h3>
                         </div>
                         <p class="">{{ task.instructions }}</p>
                     </div>
                     <!-- Display content based on content_type -->
                     <div class="text-sm text-fuscous-gray-700">
-                        <!-- You can add specific components based on content_type -->
-                        <div v-if="task.content_type === 'multiple_choice'">
-                            <div v-for="(question, index) in task.content_details.questions" :key="index" class="mt-4">
-                                <h4 class="font-bold">{{ question.question }}</h4>
-                                <div v-for="(answer, aIndex) in question.answers" :key="aIndex"
-                                    :class="{ 'flex justify-start': answer.isCorrect, 'bg-tarawera-200': answer.isCorrect }">
-                                    <p>{{ answer.text }}</p>
-                                </div>
-                            </div>
+                        <div v-if="task.content_type === 'multiple_choice' || task.content_type === 'category'">
+                            <MultipleChoiceQuestion 
+                                v-for="(question, index) in task.content_details.questions || task.content_details.categories" 
+                                :key="index"
+                                :question="question"
+                            />
                         </div>
 
                         <div v-else-if="task.content_type === 'true_false'">
-                            <div class="mt-4" v-for="(question, index) in task.content_details.questions" :key="index">
-                                <h4 class="font-bold mb-3 ">{{ question.statement }}</h4>
-                                <div class="flex gap-4">
-                                    <p class="px-4 py-2 rounded-md" :class="{ 'bg-tarawera-200': question.stated === 'True' }">True</p>
-                                    <p class="px-4 py-2 rounded-md" :class="{ 'bg-tarawera-200': question.stated === 'False' }">False</p>
-                                    <p class="px-4 py-2 rounded-md" :class="{ 'bg-tarawera-200': question.stated === 'Not stated' }">Not stated</p>
-                                </div>
-
-                            </div>
+                            <TrueFalse
+                                v-for="(question, index) in task.content_details.questions" 
+                                :key="index"
+                                :question="question"
+                            />
                         </div>
 
-                        <!--  <div v-else-if="task.content_type === 'sorting'">
-                                <p>Sorting activity</p>
-                            </div> -->
+                        <div v-else-if="task.content_type === 'fill_gaps'">
+                            <Fill
+                                v-for="(passage, index) in task.content_details.passages" 
+                                :key="index"
+                                :text="passage.text"
+                                :keywords="passage.keywords"
+                                :help_text="passage.help_text"
+                                class="my-4"
+                            />
+                        </div>
                     </div>
                 </div>
 
@@ -95,7 +94,7 @@ import { useModal } from '~/composables/useModal';
 import EditClassNavigation from '~/components/organisim/EditClassNavigation.vue';
 import BaseTaskModal from '~/components/organisim/BaseTaskModal.vue';
 import { useAnimation } from '~/composables/useAnimation';
-import { useQuery, useMutation, useQueryClient } from '@tanstack/vue-query';
+import { useQuery } from '@tanstack/vue-query';
 import { apiRoutes } from '~/services/routes.api';
 import axiosInstance from '~/services/axios.config';
 import { useRoute } from 'vue-router';
@@ -109,6 +108,9 @@ import InteractiveActivities from '~/components/organisim/InteractiveActivities.
 import OrganisimLayoutBlock from '~/components/organisim/LayoutBlock.vue';
 import KnowledgeCheckBlock from '~/components/organisim/KnowledgeCheckBlock.vue';
 import { useTaskStore } from '~/stores/task.store';
+import MultipleChoiceQuestion from '~/components/molecule/MultipleChoiceQuestion.vue';
+import TrueFalse from '~/components/molecule/TrueFalse.vue';
+import Fill from '~/components/molecule/Fill.vue';
 
 const taskStore = useTaskStore();
 const route = useRoute();
@@ -119,10 +121,10 @@ const currentModal = ref({ label: '', name: '' });
 const formData = ref({ title: '', instructions: '' });
 const showEditNavigation = ref(false);
 const selectedTaskIndex = ref(-1);
-const taskNumber = ref(1);
 
 const classId = route.params.classId;
 const closeModalHandler = computed(() => taskStore.getTask('modal'));
+const titleTask = computed(() => taskStore.getTask('titleTask'));
 watch(closeModalHandler, () => {
     closeModal();
 })
@@ -198,6 +200,39 @@ const handleAddBlock = () => {
         taskStore.setInsertionIndex(-1); // Reset the insertion index
     },
 }); */
+
+const getTaskNumber = (currentIndex: number) => {
+    // Find the current section number (tasks with titles)
+    let sectionCount = 1;
+    let subCount = 1;
+    let lastTitleIndex = -1;
+
+    for (let i = 0; i <= currentIndex; i++) {
+        if (classTasks.value.data[i].tittle !== '') {
+            if (lastTitleIndex === -1) {
+                // First titled task starts a new section
+                lastTitleIndex = i;
+                subCount = 1;
+            } else {
+                // Check if there are any empty titles between last titled task and current
+                let hasEmptyTitlesBetween = false;
+                for (let j = lastTitleIndex + 1; j < i; j++) {
+                    if (classTasks.value.data[j].tittle === '') {
+                        hasEmptyTitlesBetween = true;
+                        break;
+                    }
+                }
+                if (hasEmptyTitlesBetween) {
+                    // If there are empty titles between last titled task and current, it's a new sub-task
+                    subCount++;
+                    lastTitleIndex = i;
+                }
+            }
+        }
+    }
+
+    return `${sectionCount}.${subCount}`;
+};
 
 </script>
 

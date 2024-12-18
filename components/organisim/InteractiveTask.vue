@@ -14,4 +14,6 @@
 import { interactiveTaskData } from '~/data/interactiveTask'
 
 defineEmits(['open-task'])
+
+
 </script>

@@ -34,16 +34,16 @@ import MoleculeInput from '~/components/molecule/Input.vue';
 import OrganisimMultipleTasks from '~/components/organisim/MultipleTasks.vue';
 import TaskLayout from '~/layouts/TaskLayout.vue';
 import { useDescription } from '~/composables/useDescription';
+import { useTaskStore } from '~/stores/task.store';
 const taskTitle = ref<string>('Multiple choice')
 defineEmits(['close', 'submit', 'update:modelValue']);
 
 const { getTaskDescription } = useDescription();
-
+const taskStore = useTaskStore();
 
 
 const handleOpenTask = (title: string) => {
     taskTitle.value = title
 }
-
 
 </script>

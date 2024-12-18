@@ -1,129 +1,204 @@
 <template>
+  <div
+    v-if="infoResponseApi.isLoading"
+    class="fixed inset-0 flex items-center justify-center bg-gray-800 bg-opacity-50 z-50"
+  >
+    <p class="text-title-color text-2xl">Guardando...</p>
+  </div>
+  <!-- Iteramos sobre las preguntas -->
 
-    <div v-if="infoResponseApi.isLoading"
-        class="fixed inset-0 flex items-center justify-center bg-gray-800 bg-opacity-50 z-50">
-        <p class="text-title-color text-2xl">Guardando...</p>
-    </div>
-    <!-- Iteramos sobre las preguntas -->
+  <TextAreaTask
+    v-if="typeTask === 'text_area'"
+    :value="value"
+    :description="description"
+    @update:value="handleUpdateValue"
+  />
 
-    <TextAreaTask v-if="typeTask === 'text_area'" :value="value" :description="description" />
+  <div
+    v-else
+    v-for="(question, qIndex) in questions"
+    :key="qIndex"
+    class="border-b border-gray-500 pb-4"
+    :draggable="true"
+    @dragstart="onDragStart($event, qIndex)"
+    @dragover="onDragOver"
+    @drop="onDrop($event, qIndex)"
+  >
+    <div class="mt-4">
+      <h3 class="text-tarawera-700 font-bold">
+        {{ titleTask }} {{ qIndex + 1 }}
+      </h3>
+      <div v-if="inputTitleTask">
+        <div class="flex items-center gap-2 p-2">
+          <Icon
+            name="mingcute:dots-fill"
+            size="24"
+            class="text-gray-500 cursor-grab"
+          />
+          <UInput
+            v-model="question.question"
+            type="text"
+            size="xs"
+            class="w-full mt-1"
+          />
 
-    <div v-else v-for="(question, qIndex) in questions" :key="qIndex" class="border-b border-gray-500 pb-4"
-        :draggable="true" @dragstart="onDragStart($event, qIndex)" @dragover="onDragOver"
-        @drop="onDrop($event, qIndex)">
-        <div class="mt-4">
-            <h3 class="text-tarawera-700 font-bold">{{ titleTask }} {{ qIndex + 1 }}</h3>
-            <div v-if="inputTitleTask">
-
-                <div class="flex items-center gap-2 p-2">
-                    <Icon name="mingcute:dots-fill" size="24" class="text-gray-500 cursor-grab" />
-                    <UInput v-model="question.question" type="text" size="xs" class="w-full mt-1" />
-
-                    <div class="bg-gray-200 rounded-md p-1 flex items-center justify-center">
-                        <Icon name="material-symbols:close" size="18" class="text-gray-500 cursor-pointer"
-                            @click="removeQuestion(qIndex)" />
-                    </div>
-                </div>
-            </div>
-
-            <!-- Renderiza las opciones de cada pregunta -->
-            <div class="flex justify-end w-full">
-                <div class="w-[95%] items-end">
-                    <h3 class="text-fuscous-gray-600 font-bold text-sm">{{ subtitleTask }}</h3>
-                    <!-- Componente InputTask renderiza las opciones -->
-                    <InputTask v-for="(option, oIndex) in question.answers" :key="`${qIndex}-${oIndex}`"
-                        :qIndex="qIndex" :oIndex="oIndex" :isCorrect="option.isCorrect" :answer="option.text"
-                        :removeOption="(qIndex, oIndex) => removeOption(qIndex, oIndex)" :type="getType(typeTask)"
-                        :typeTask="typeTask" @update:isCorrect="(val) => updateOptionIsCorrect(qIndex, oIndex, val)"
-                        @update:answer="(val) => updateOptionAnswer(qIndex, oIndex, val)" />
-
-                    <button v-if="typeTask !== 'true_false'"
-                        class="bg-fuscous-gray-100  text-fuscous-gray-600 text-xs rounded-md flex items-center gap-2 px-2 py-1 mt-2"
-                        @click="addOption(qIndex)">
-                        <Icon name="icon-park-solid:add" size="14" class="bg-fuscous-gray-500 " />
-                        Add option
-                    </button>
-                </div>
-            </div>
+          <div
+            class="bg-gray-200 rounded-md p-1 flex items-center justify-center"
+          >
+            <Icon
+              name="material-symbols:close"
+              size="18"
+              class="text-gray-500 cursor-pointer"
+              @click="removeQuestion(qIndex)"
+            />
+          </div>
         </div>
+      </div>
+
+      <!-- Renderiza las opciones de cada pregunta -->
+      <div class="flex justify-end w-full">
+        <div class="w-[95%] items-end">
+          <!-- Componente InputTask renderiza las opciones -->
+          <InputTask
+            v-for="(option, oIndex) in question.answers"
+            :key="`${qIndex}-${oIndex}`"
+            :qIndex="qIndex"
+            :oIndex="oIndex"
+            :isCorrect="option.isCorrect"
+            :answer="option.text"
+            :removeOption="(qIndex, oIndex) => removeOption(qIndex, oIndex)"
+            :type="getType(typeTask)"
+            :typeTask="typeTask"
+            @update:isCorrect="
+              (val) => updateOptionIsCorrect(qIndex, oIndex, val)
+            "
+            @update:answer="(val) => updateOptionAnswer(qIndex, oIndex, val)"
+          />
+
+          <button
+            v-if="typeTask !== 'true_false'"
+            class="bg-fuscous-gray-100 text-fuscous-gray-600 text-xs rounded-md flex items-center gap-2 px-2 py-1 mt-2"
+            @click="addOption(qIndex)"
+          >
+            <Icon
+              name="icon-park-solid:add"
+              size="14"
+              class="bg-fuscous-gray-500"
+            />
+            Add option
+          </button>
+        </div>
+      </div>
     </div>
+  </div>
 
-    <!-- Este botón se encarga de agregar una nueva pregunta -->
-    <UTooltip :text="isActive ? '' : 'all questions and answers are required'" :ui="{
-        container: ' text-fuscous-gray-600 text-xs rounded-md flex items-center gap-2 px-2 py-1 mt-2',
-    }">
-        <button v-if="titleTask" :class="{
-            'bg-fuscous-gray-100  text-fuscous-gray-600 text-xs rounded-md flex items-center gap-2 px-2 py-1 mt-2': true,
-            'bg-fuscous-gray-100 text-fuscous-gray-600': isActive,
-            'bg-fuscous-gray-100 text-fuscous-gray-200 cursor-not-allowed': !isActive
-        }" @click="addQuestion" :disabled="!isActive">
-            <Icon :disabled="!isActive" name="icon-park-solid:add" size="14" class="bg-fuscous-gray-500 " />Add
-            question
-        </button>
-    </UTooltip>
+  <!-- Este botón se encarga de agregar una nueva pregunta -->
+  <UTooltip
+    v-if="typeTask !== 'text_area'"
+    :text="isActive ? '' : 'all questions and answers are required'"
+    :ui="{
+      container:
+        ' text-fuscous-gray-600 text-xs rounded-md flex items-center gap-2 px-2 py-1 mt-2',
+    }"
+  >
+    <button
+      v-if="titleTask"
+      :class="{
+        'bg-fuscous-gray-100  text-fuscous-gray-600 text-xs rounded-md flex items-center gap-2 px-2 py-1 mt-2': true,
+        'bg-fuscous-gray-100 text-fuscous-gray-600': isActive,
+        'bg-fuscous-gray-100 text-fuscous-gray-200 cursor-not-allowed':
+          !isActive,
+      }"
+      @click="addQuestion"
+      :disabled="!isActive"
+    >
+      <Icon
+        :disabled="!isActive"
+        name="icon-park-solid:add"
+        size="14"
+        class="bg-fuscous-gray-500"
+      />Add question
+    </button>
+  </UTooltip>
 
-
-    <div class="flex items-center gap-2 py-4 text-sm">
-        <p>Include the stats</p>
-        <AtomosToggle v-model="data.stats" />
-    </div>
-    <MoleculeActionButtons @handleSave="handleSave()" @handleCancel="handleCancel"
-        :isActive="infoResponseApi.isActive" />
-
-
+  <div class="flex items-center gap-2 py-4 text-sm">
+    <p>Include the stats</p>
+    <AtomosToggle v-model="data.stats" />
+  </div>
+  <MoleculeActionButtons
+    @handleSave="handleSave()"
+    @handleCancel="handleCancel"
+    :isActive="infoResponseApi.isActive"
+  />
 </template>
 
 <script setup lang="ts">
-import { ref, watch } from 'vue';
+import { ref, watch } from "vue";
 /* Components */
-import InputTask from '../molecule/InputTask.vue';
-import TextAreaTask from '../molecule/TextAreaTask.vue';
+import InputTask from "../molecule/InputTask.vue";
+import TextAreaTask from "../molecule/TextAreaTask.vue";
 /* Composables */
-import { useRemove } from '~/composables/useRemove';
-import { useGetTypeTask } from '~/composables/useGetTypeTask';
-import { useDragAnDrop } from '~/composables/useDragAndDrop';
-import { useTaskStore } from '~/stores/task.store';
-import { useMutation, useQueryClient } from '@tanstack/vue-query';
-import { apiRoutes } from '~/services/routes.api';
-import axiosInstance from '~/services/axios.config';
+import { useRemove } from "~/composables/useRemove";
+import { useGetTypeTask } from "~/composables/useGetTypeTask";
+import { useDragAnDrop } from "~/composables/useDragAndDrop";
+import { useTaskStore } from "~/stores/task.store";
+import { useMutation, useQueryClient } from "@tanstack/vue-query";
+import { apiRoutes } from "~/services/routes.api";
+import axiosInstance from "~/services/axios.config";
 
 /* Interfaces */
-import type { Question, MultipleTasksProps } from '~/interfaces/components/props.components.interface';
+import type {
+  Question,
+  MultipleTasksProps,
+} from "~/interfaces/components/props.components.interface";
 
 // Definir los eventos que emitirá el componente
-const emit = defineEmits(['update:value', 'save-task']);
-const { typeTask, titleTask, subtitleTask, description, inputTitleTask } = defineProps<MultipleTasksProps>();
+const emit = defineEmits(["update:value", "save-task"]);
+const { typeTask, titleTask, subtitleTask, description, inputTitleTask } =
+  defineProps<MultipleTasksProps>();
 const taskStore = useTaskStore();
 const route = useRoute();
-const taskInstructions = computed(() => taskStore.getTask('instructions'));
-const files = computed(() => taskStore.getTask('files'));
-const select = computed(() => taskStore.getTask('select'));
-const value = ref('');
+const taskInstructions = computed(() => taskStore.getTask("instructions"));
+const taskTitle = computed(() => taskStore.getTask("titleTask"));
+const files = computed(() => taskStore.getTask("files"));
+const select = computed(() => taskStore.getTask("select"));
+const value = ref("");
 const isActive = ref(false);
 
 const infoResponseApi = ref({
-    isActive: false,
-    isLoading: false,
-    isSuccess: false,
-    isError: false,
-    error: null,
-    data: null,
+  isActive: false,
+  isLoading: false,
+  isSuccess: false,
+  isError: false,
+  error: null,
+  data: null,
 });
 
-const questions = ref<Question[]>([{
-    question: '',
-    statement: '',
-    stated: 'true',
+interface Passage {
+  text: string;
+  keywords: string[];
+  help_text: boolean;
+}
+
+interface category {
+  question: string;
+  text_items: { text: string }[];
+}
+
+const questions = ref<Question[]>([
+  {
+    question: "",
+    statement: "",
+    stated: "true",
     answers: [
-        {
-            text: '',
-            isCorrect: false,
-        },
+      {
+        text: "",
+        isCorrect: false,
+      },
     ],
     typeTask: titleTask,
-
-}]);
-
+  },
+]);
 
 const { removeOption, removeQuestion } = useRemove(questions);
 const { getType } = useGetTypeTask();
@@ -131,224 +206,307 @@ const { onDragStart, onDragOver, onDrop } = useDragAnDrop(questions);
 
 // Modify the data structure
 interface Multimedia {
-    media_type: string;
-    file: File | null;
+  media_type: string;
+  file: File | null;
 }
 
 const data = ref({
-    class_id: route.params.classId,
-    content_type: typeTask,
-    tittle: '',
-    instructions: '',
-    stats: false,
-    content_details: {
-        questions: [] as Question[]
-    },
-    multimedia: [] as Multimedia[]
+  class_id: route.params.classId,
+  content_type: taskTitle.value == "Fill" ? "fill_gaps" : typeTask,
+  tittle: "",
+  instructions: "",
+  stats: false,
+  content_details: {
+    questions: [] as Question[],
+    passages: [] as Passage[],
+    categories: [] as category[],
+  },
+  multimedia: [] as Multimedia[],
 });
-watch(select, (newValue) => {
-    console.log('select', newValue);
-}, { deep: true });
+
+watch(
+  select,
+  (newValue) => {
+    console.log("select", newValue);
+  },
+  { deep: true }
+);
+
 // Update the watch for questions
-watch(questions, (newValue) => {
+watch(
+  questions,
+  (newValue) => {
     isActive.value = hasQuestionsWithAnswers();
     infoResponseApi.value.isActive = hasQuestionsWithAnswers();
-
-    if (typeTask === 'true_false') {
-        data.value.content_details.questions = newValue.map(q => ({
-            statement: q.statement || q.answers[0]?.text || '',
-            stated: q.stated || q.answers[0]?.text || '',
-        }));
-
-    } else {
-        data.value.content_details.questions = newValue.map(q => ({
-            question: q.question,
-            answers: q.answers.map(a => ({
-                text: a.text,
-                isCorrect: a.isCorrect
-            }))
-        }));
+    if (typeTask === "category") {
+      data.value.content_details.categories = newValue.map((q) => ({
+        question: q.question,
+        text_items: q.answers.map((a) => ({ text: a.text })),
+      }));
     }
-}, { deep: true });
+
+    if (typeTask === "true_false") {
+      data.value.content_details.questions = newValue.map((q) => ({
+        statement: q.statement || q.answers[0]?.text || "",
+        stated: q.stated || q.answers[0]?.text || "",
+      }));
+    } else {
+      data.value.content_details.questions = newValue.map((q) => ({
+        question: q.question,
+        answers: q.answers.map((a) => ({
+          text: a.text,
+          isCorrect: a.isCorrect,
+        })),
+      }));
+    }
+  },
+  { deep: true }
+);
 
 // Update the watchers
-watch(files, (newValue) => {
+watch(
+  files,
+  (newValue) => {
     data.value.multimedia = [];
 
     if (newValue.image) {
-        data.value.multimedia.push({
-            media_type: 'image',
-            file: newValue.image
-        });
+      data.value.multimedia.push({
+        media_type: "image",
+        file: newValue.image,
+      });
     }
 
     if (newValue.audio) {
-        data.value.multimedia.push({
-            media_type: 'audio',
-            file: newValue.audio,
-
-        });
+      data.value.multimedia.push({
+        media_type: "audio",
+        file: newValue.audio,
+      });
     }
-}, { deep: true });
+  },
+  { deep: true }
+);
 
-watch(taskInstructions, (newValue) => {
+watch(
+  taskInstructions,
+  (newValue) => {
     if (newValue) {
-        Object.assign(data.value, {
-            tittle: newValue.title || '',
-            instructions: newValue.instructions || ''
-        });
+      Object.assign(data.value, {
+        tittle: newValue.title || "",
+        instructions: newValue.instructions || "",
+      });
     }
-}, { deep: true });
+  },
+  { deep: true }
+);
 
-watch(data, (newValue) => {
-    console.log('newValue', newValue);
-}, { deep: true });
+watch(
+  data,
+  (newValue) => {
+    console.log("newValue", newValue);
+  },
+  { deep: true }
+);
 
-watch(() => typeTask, (newValue) => {
-    console.log('typeTask changed:', newValue);
-}, { immediate: true });
-
+watch(
+  () => typeTask,
+  (newValue) => {
+    console.log("typeTask changed:", newValue);
+  },
+  { immediate: true }
+);
 
 // Este método se encarga de agregar una nueva opción a una pregunta
 const addOption = (questionIndex: number) => {
-    questions.value[questionIndex].answers.push({
-        text: '',
-        isCorrect: false,
+  questions.value[questionIndex].answers.push({
+    text: "",
+    isCorrect: false,
+  });
+};
+
+const handleUpdateValue = (newValue: string) => {
+  value.value = newValue;
+  isActive.value = newValue.trim() !== "";
+  infoResponseApi.value.isActive = newValue.trim() !== "";
+
+  if (taskTitle.value == "Fill") {
+    // Split the text by newlines to handle each question
+    const lines = newValue.split("\n");
+    const passages = lines.map((line, index) => {
+      // Extract content within square brackets
+      const matches = line.match(/\[(.*?)\]/g);
+      let processedText = line;
+      const keywords: string[] = [];
+
+      if (matches) {
+        matches.forEach((match, matchIndex) => {
+          // Remove brackets and extract options
+          const options = match.slice(1, -1).split("/");
+          // Clean up options and add to keywords
+          options.forEach((opt) => {
+            const cleanOption = opt.replace("*", "").trim();
+            if (cleanOption) keywords.push(cleanOption);
+          });
+          // Replace bracket content with placeholder
+          processedText = processedText.replace(match, `__${matchIndex + 1}__`);
+        });
+      }
+
+      return {
+        text: processedText,
+        keywords: keywords,
+        help_text: false,
+      };
     });
+
+    data.value.content_details.passages = passages;
+  }
 };
 
 // Este método se encarga de agregar una nueva pregunta
 
 const addQuestion = () => {
+  questions.value.push({
+    question: "",
+    answers: [
+      {
+        text: "",
+        isCorrect: "",
+      },
+    ],
 
-    questions.value.push({
-        question: '',
-        answers: [{
-            text: '',
-            isCorrect: '',
-        }],
-
-        typeTask: typeTask,
-    });
+    typeTask: typeTask,
+  });
 };
 
 // Este método se encarga de actualizar la respuesta de una opción
-const updateOptionAnswer = (questionIndex: number, optionIndex: number, value: string) => {
-    if (typeTask === 'true_false') {
-        questions.value[questionIndex].statement = value;
-    } else {
-        questions.value[questionIndex].answers[optionIndex].text = value;
-    }
+const updateOptionAnswer = (
+  questionIndex: number,
+  optionIndex: number,
+  value: string
+) => {
+  if (typeTask === "true_false") {
+    questions.value[questionIndex].statement = value;
+  } else {
+    questions.value[questionIndex].answers[optionIndex].text = value;
+  }
 };
 
 // Este método se encarga de actualizar si una opción es correcta o no
-const updateOptionIsCorrect = (questionIndex: number, optionIndex: number, value: string | boolean) => {
-    if (typeTask === 'true_false') {
-        const stateMap = {
-            'True': true,
-            'False': false,
-            'Not stated': false
-        };
-        questions.value[questionIndex].stated = stateMap[value as string];
-    } else {
-        questions.value[questionIndex].answers[optionIndex].isCorrect = value as boolean;
-    }
+const updateOptionIsCorrect = (
+  questionIndex: number,
+  optionIndex: number,
+  value: string | boolean
+) => {
+  if (typeTask === "true_false") {
+    const stateMap = {
+      True: true,
+      False: false,
+      "Not stated": false,
+    };
+    questions.value[questionIndex].stated = stateMap[value as string];
+  } else {
+    questions.value[questionIndex].answers[optionIndex].isCorrect =
+      value as boolean;
+  }
 };
 
 // Nueva función para evaluar si el formulario tiene información
 const hasQuestionsWithAnswers = () => {
-    return questions.value.every(question => {
-        if (typeTask === 'true_false') {
-            // For true_false, only check if statement exists
-            return question.statement?.trim() !== '';
-        }
-        // For other types, keep existing validation
-        if (question.question.trim() === '') return false;
-        return question.answers.every(answer => answer.text.trim() !== '');
-    });
+  return questions.value.every((question) => {
+    if (typeTask === "true_false") {
+      // For true_false, only check if statement exists
+      return question.statement?.trim() !== "";
+    }
+    // For other types, keep existing validation
+    if (question.question.trim() === "") return false;
+    return question.answers.every((answer) => answer.text.trim() !== "");
+  });
 };
 
 // Observa los cambios en las preguntas para actualizar el estado de isActive
 const queryClient = useQueryClient();
 
 const mutation = useMutation({
-    mutationFn: async (formData: FormData) => {
-        infoResponseApi.value.isLoading = true;
-        try {
-            const response = await axiosInstance.post(apiRoutes.classContent, formData, {
-                headers: {
-                    'Content-Type': 'multipart/form-data',
-                    'Accept': 'application/json',
-                },
-            });
-            infoResponseApi.value.isLoading = false;
-            return response.data;
-        } catch (error) {
-            console.error('API Error Details:', error.response?.data);
-            throw error;
+  mutationFn: async (formData: FormData) => {
+    infoResponseApi.value.isLoading = true;
+    try {
+      const response = await axiosInstance.post(
+        apiRoutes.classContent,
+        formData,
+        {
+          headers: {
+            "Content-Type": "multipart/form-data",
+            Accept: "application/json",
+          },
         }
-    },
-    onSuccess: (data) => {
-        console.log('Response from API:', data);
-        infoResponseApi.value.isSuccess = true;
-        // Invalidate and refetch the class contents query
-        queryClient.invalidateQueries(['class-contents', route.params.classId]);
-        taskStore.addTask('modal', { modal: false });
-    },
-    onError: (error) => {
-        console.error('Error saving data:', error.response?.data);
-        infoResponseApi.value.isError = true;
-        infoResponseApi.value.isLoading = false;
-    },
+      );
+      infoResponseApi.value.isLoading = false;
+      return response.data;
+    } catch (error) {
+      console.error("API Error Details:", error.response?.data);
+      throw error;
+    }
+  },
+  onSuccess: (data) => {
+    console.log("Response from API:", data);
+    infoResponseApi.value.isSuccess = true;
+    // Invalidate and refetch the class contents query
+    queryClient.invalidateQueries(["class-contents", route.params.classId]);
+    taskStore.addTask("modal", { modal: false });
+  },
+  onError: (error) => {
+    console.error("Error saving data:", error.response?.data);
+    infoResponseApi.value.isError = true;
+    infoResponseApi.value.isLoading = false;
+  },
 });
 
-
 const handleSave = () => {
-    try {
-        const formData = new FormData();
+  try {
+    const formData = new FormData();
 
-        // Handle multimedia files
-        if (data.value.multimedia.length > 0) {
-            data.value.multimedia.forEach((media, index) => {
-                if (media.file instanceof File) {
-                    formData.append(`multimedia`, media.file);
-                }
-            });
+    // Handle multimedia files
+    if (data.value.multimedia.length > 0) {
+      data.value.multimedia.forEach((media, index) => {
+        if (media.file instanceof File) {
+          formData.append(`multimedia`, media.file);
         }
-
-        // Prepare content_details
-        const contentDetails = {
-            questions: data.value.content_details.questions
-        };
-
-        // Append all data
-        formData.append('class_id', String(data.value.class_id));
-        formData.append('content_type', data.value.content_type);
-        formData.append('tittle', data.value.tittle);
-        formData.append('instructions', data.value.instructions);
-        formData.append('content_details', JSON.stringify(contentDetails));
-        formData.append('stats', String(data.value.stats));
-
-        // Debug log
-        console.log('Sending data:', {
-            class_id: data.value.class_id,
-            content_type: data.value.content_type,
-            tittle: data.value.tittle,
-            instructions: data.value.instructions,
-            content_details: contentDetails,
-            stats: data.value.stats
-        });
-
-        mutation.mutate(formData);
-    } catch (error) {
-        console.error('Error preparing data:', error);
-        throw error;
+      });
     }
+
+    // Prepare content_details based on content type
+    const contentDetails =
+      data.value.content_type === "fill_gaps"
+        ? { passages: data.value.content_details.passages }
+        : data.value.content_type === "category"
+        ? { categories: data.value.content_details.categories }
+        : { questions: data.value.content_details.questions };
+
+    // Append all data
+    formData.append("class_id", String(data.value.class_id));
+    formData.append("content_type", data.value.content_type);
+    formData.append("tittle", data.value.tittle);
+    formData.append("instructions", data.value.instructions);
+    formData.append("content_details", JSON.stringify(contentDetails));
+    formData.append("stats", String(data.value.stats));
+
+    // Debug log
+    console.log("Sending data:", {
+      class_id: data.value.class_id,
+      content_type: data.value.content_type,
+      tittle: data.value.tittle,
+      instructions: data.value.instructions,
+      content_details: contentDetails,
+      stats: data.value.stats,
+    });
+
+    mutation.mutate(formData);
+  } catch (error) {
+    console.error("Error preparing data:", error);
+    throw error;
+  }
 };
 const handleCancel = () => {
-    taskStore.addTask('modal', { modal: false });
-
-}
-
-
+  taskStore.addTask("modal", { modal: false });
+};
 </script>
