@@ -25,7 +25,6 @@
         >
           <div v-if="task.tittle !== ''">
             <div class="flex justify-start gap-2">
-              
               <p class="bg-tarawera-200 text-tarawera-800 px-2 py-1 rounded-md">
                 {{ getTaskNumber(index) }}
               </p>
@@ -37,7 +36,8 @@
           </div>
           <!-- Display content based on content_type -->
           <div class="text-sm text-fuscous-gray-700">
-            <div class="flex gap-2 "
+            <div
+              class="flex gap-2"
               v-if="
                 task.content_type === 'multiple_choice' ||
                 task.content_type === 'category'
@@ -51,8 +51,8 @@
               />
             </div>
 
-            <div v-else-if="task.content_type === 'true_false'" >
-              <TrueFalse
+            <div v-else-if="task.content_type === 'true_false'">
+              <MoleculeMultipleTaskTrueFalse
                 v-for="(question, index) in task.content_details.questions"
                 :key="index"
                 :question="question"
@@ -60,7 +60,7 @@
             </div>
 
             <div v-else-if="task.content_type === 'fill_gaps'">
-              <Fill
+              <MoleculeMultipleTaskFill
                 v-for="(passage, index) in task.content_details.passages"
                 :key="index"
                 :text="passage.text"
@@ -69,6 +69,11 @@
                 class="my-4"
               />
             </div>
+
+            <MoleculeMultipleTaskWordBank
+              v-else-if="task.content_type === 'word_bank'"
+              :data="task.content_details.word_bank"
+            />
           </div>
         </div>
 
@@ -91,7 +96,7 @@
     <!-- No tasks message -->
     <div
       v-else
-      class="font-bold  items-center text-center mt-4 text-fuscous-gray-950 text-md "
+      class="font-bold items-center text-center mt-4 text-fuscous-gray-950 text-md"
     >
       <div>
         <p>There are no activities created for this course yet.</p>
@@ -119,7 +124,9 @@
         @select-task="handleSelectTask"
         :menuItems="dataMenu(currentModal.label)"
       >
-        <component :is="getCurrentComponent()" :selectedTask="selectedTask" />
+      <div class="pb-10">
+        <component :is="getCurrentComponent()" :selectedTask="selectedTask"  />
+      </div>
       </BaseTaskModal>
     </div>
 
@@ -140,16 +147,14 @@ import { useRoute } from "vue-router";
 import { useCapitalizerLetter } from "~/composables/useCapitalizerLetter";
 import { interactiveTaskOptions } from "~/data/interactiveTask";
 
-import Task from "~/components/organisim/task.vue";
 import VideoBlock from "~/components/organisim/VideoBlock.vue";
 import TextBlock from "~/components/organisim/TextBlock.vue";
 import MultimediaBlock from "~/components/organisim/MultimediaBlock.vue";
 import OrganisimLayoutBlock from "~/components/organisim/LayoutBlock.vue";
 import KnowledgeCheckBlock from "~/components/organisim/KnowledgeCheckBlock.vue";
 import { useTaskStore } from "~/stores/task.store";
-import MultipleChoiceQuestion from "~/components/molecule/MultipleChoiceQuestion.vue";
-import TrueFalse from "~/components/molecule/TrueFalse.vue";
-import Fill from "~/components/molecule/Fill.vue";
+import MultipleChoiceQuestion from "~/components/molecule/multipleTask/MultipleChoiceQuestion.vue";
+import MoleculeMultipleTaskFill from "~/components/molecule/multipleTask/Fill.vue";
 
 const taskStore = useTaskStore();
 const route = useRoute();
@@ -186,6 +191,7 @@ const {
     const response = await axiosInstance.get(
       `${apiRoutes.classContent}?class_id=${classId}`
     );
+    console.log("response", response.data);
     return response.data;
   },
 });
@@ -196,17 +202,17 @@ watch(classTasks, (newTasks) => {
     // Cerrar el modal después de guardar exitosamente
     closeModal();
     showEditNavigation.value = false;
-    
+
     const currentData = [...newTasks.data]; // Crear una copia del array
-    
+
     const insertionIndex = taskStore.insertionIndex;
     if (insertionIndex !== -1) {
       // Actualizar los datos a través del queryClient
-      queryClient.setQueryData(['class-contents', classId], {
+      queryClient.setQueryData(["class-contents", classId], {
         ...newTasks,
-        data: currentData
+        data: currentData,
       });
-      
+
       // Reset the insertion index
       taskStore.setInsertionIndex(-1);
     }
@@ -251,11 +257,10 @@ const dataMenu = (label: string) => {
 
 const handleSelectTask = (task: any) => {
   selectedTask.value = task;
-  
 };
 
 const getTaskNumber = (currentIndex: number) => {
-  let mainNumber = 1;  // This will always be 1 for now
+  let mainNumber = 1; // This will always be 1 for now
   let subNumber = 0;
 
   // Count only tasks with titles up to the current index

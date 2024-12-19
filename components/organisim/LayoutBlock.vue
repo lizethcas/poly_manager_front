@@ -17,6 +17,8 @@
 import uploadImage from "~/components/organisim/UploadImage.vue";
 import MoleculeInput from "~/components/molecule/Input.vue";
 import TaskSelector from "~/components/organisim/TaskSelector.vue";
+import { useTaskStore } from "~/stores/task.store";
+
 
 interface Props {
   selectedTask?: {
@@ -25,6 +27,7 @@ interface Props {
   };
 }
 
+const taskStore = useTaskStore();
 const props = defineProps<Props>();
 const taskTitle = ref<string>("Layout");
 defineEmits(["close", "submit", "update:modelValue"]);
@@ -34,7 +37,8 @@ watch(
   (newTask) => {
     if (newTask?.name) {
       taskTitle.value = newTask.name;
-      console.log("New task title:", taskTitle.value);
+      taskStore.addTask('taskTitle', newTask.type);
+      console.log(taskStore.getTask(taskTitle.value));
     }
   },
   { immediate: true }

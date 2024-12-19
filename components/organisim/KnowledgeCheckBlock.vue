@@ -18,9 +18,8 @@ interface Props {
 
 const props = defineProps<Props>();
 const taskTitle = ref<string>("Multiple choice");
-defineEmits(["close", "submit", "update:modelValue"]);
-
 const taskStore = useTaskStore();
+defineEmits(["close", "submit", "update:modelValue"]);
 
 // Watch for changes in selectedTask prop
 watch(
@@ -28,7 +27,8 @@ watch(
   (newTask) => {
     if (newTask?.name) {
       taskTitle.value = newTask.name;
-      console.log("New task title:", taskTitle.value);
+      taskStore.addTask('taskTitle', newTask.type);
+      console.log(taskStore.getTask(taskTitle.value));
     }
   },
   { immediate: true }

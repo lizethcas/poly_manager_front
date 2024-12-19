@@ -4,22 +4,16 @@
     class="fixed top-0 left-0 w-full min-h-full bg-gray-600 bg-opacity-50 flex justify-center items-center"
   >
     <div
-      class="bg-white p-6 rounded-lg shadow-lg w-[95vw] h-[95vh] overflow-y-auto flex gap-4"
+      class="bg-white pr-6 rounded-lg shadow-lg w-[95vw] h-[95vh] overflow-y-auto flex gap-4"
     >
       <!-- Lateral Menu -->
-      <div class="w-48 bg-gray-100 p-4 rounded-lg h-fit">
-        <InteractiveTask
-          :menuItems="menuItems"
-          @select-task="handleTaskSelection"
-        />
-      </div>
 
       <!-- Main Content -->
-      <div class="flex-1">
+      <div class="flex-1 mt-6">
         <!-- Modal Header -->
-        <div class="flex justify-between items-center mb-4 border-b-[1px] pb-2">
-          <div class="flex items-center gap-2">
-            <Icon :name="icon" size="30" class="text-primary-color" />
+        <div class="flex justify-between items-center mb-4 border-b-[1px] sticky top-0 bg-white z-10">
+          <div class="flex items-center gap-2 m-2">
+            <Icon :name="icon" size="30" class="text-primary-color " />
             <h2 class="text-m font-bold text-primary-color">{{ title }}</h2>
           </div>
           <img
@@ -29,25 +23,34 @@
             @click="$emit('close')"
           />
         </div>
+        <div class="flex gap-4">
+          <div class="w-48 bg-gray-100 p-4 rounded-lg h-fit sticky top-1">
+            <InteractiveTask
+              :menuItems="menuItems"
+              @select-task="handleTaskSelection"
+            />
+          </div>
+          <div class="flex-1">
+            <!-- Common Fields -->
+            <div class="space-y-4 mb-6">
+              <MoleculeInput
+                :title="'Title'"
+                type="text"
+                class="text-md"
+                v-model="formData.title"
+              />
+              <MoleculeInput
+                :title="'Instructions'"
+                type="text_area"
+                class="text-md"
+                v-model="formData.instructions"
+              />
+            </div>
+            <slot></slot>
+          </div>
 
-        <!-- Common Fields -->
-        <div class="space-y-4 mb-6">
-          <MoleculeInput
-            :title="'Title'"
-            type="text"
-            class="text-md"
-            v-model="formData.title"
-          />
-          <MoleculeInput
-            :title="'Instructions'"
-            type="text_area"
-            class="text-md"
-            v-model="formData.instructions"
-          />
+          <!-- Slot for specific content -->
         </div>
-
-        <!-- Slot for specific content -->
-        <slot></slot>
 
         <!-- Submit Button -->
       </div>

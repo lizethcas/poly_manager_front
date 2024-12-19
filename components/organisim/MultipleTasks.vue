@@ -163,9 +163,10 @@ const route = useRoute();
 const taskInstructions = computed(() => taskStore.getTask("instructions"));
 const files = computed(() => taskStore.getTask("files"));
 const select = computed(() => taskStore.getTask("select"));
+const taskTitle = computed(() => taskStore.getTask('taskTitle'));
 const value = ref("");
-const extraWords = ref("");
 const isActive = ref(false);
+const newWordBank = ref("");
 const { getType } = useGetTypeTask();
 
 const { mutation, isLoading, isSuccess, isError } = useClassContentMutation();
@@ -196,6 +197,17 @@ interface Ordering {
   indice: number;
 }
 
+interface WordBank {
+  text: string;
+  keywords: KeyWordBank[];
+  extraWords: string[];
+}
+
+interface KeyWordBank {
+  word: string;
+  position: number;
+}
+
 const questions = ref<Question[]>([
   {
     question: "",
@@ -224,7 +236,7 @@ interface Multimedia {
 
 const data = ref({
   class_id: route.params.classId,
-  content_type: typeTask == "text_area" ? "fill_gaps" : typeTask,
+  content_type: taskTitle.value,
   tittle: "",
   instructions: "",
   stats: false,
@@ -233,6 +245,7 @@ const data = ref({
     passages: [] as Passage[],
     categories: [] as category[],
     ordering: [] as Ordering[],
+    word_bank: [] as WordBank[],
   },
   multimedia: [] as Multimedia[],
 });
@@ -344,19 +357,49 @@ const addOption = (questionIndex: number) => {
 };
 
 const handleExtraInput = (value: string) => {
-  extraWords.value = value;
-  console.log("extraWords", value);
-  // You can store the value in a ref if needed
-  
+  // Split the input string by '/' and trim each word
+  const extraWords = value.split('/').map(word => word.trim()).filter(word => word);
+  newWordBank.value = extraWords.join('/');
+  // Update the word bank data structure with the new extra words
+  if (data.value.content_details.word_bank.length > 0) {
+    data.value.content_details.word_bank[0].extraWords = extraWords;
+  }
 };
 
 const handleUpdateValue = (newValue: string) => {
   value.value = newValue;
   isActive.value = newValue.trim() !== "";
   infoResponseApi.value.isActive = newValue.trim() !== "";
-  console.log("newValue", newValue);
 
-  if (typeTask == "text_area") {
+  if (taskTitle.value == "word_bank") {
+    // Extract words in brackets and their positions
+    const matches = newValue.match(/\[(.*?)\]/g);
+    let processedText = newValue;
+    const keywords: KeyWordBank[] = [];
+
+    if (matches) {
+      matches.forEach((match, index) => {
+        // Remove brackets and get the word
+        const word = match.slice(1, -1).trim();
+        // Add to keywords array with position
+        keywords.push({
+          word: word,
+          position: index + 1
+        });
+        // Replace bracket content with placeholder
+        processedText = processedText.replace(match, `__${index + 1}__`);
+      });
+    }
+
+    // Update the word bank in content details
+    data.value.content_details.word_bank = [{
+      text: processedText,
+      keywords: keywords,
+      extraWords: newWordBank.value ? newWordBank.value.split(',').map(word => word.trim()) : []
+    }];
+  }
+
+  if (taskTitle.value == "fill_gaps") {
     // Split the text by newlines to handle each question
     const lines = newValue.split("\n");
     const passages = lines.map((line, index) => {
@@ -467,10 +510,14 @@ const handleSave = () => {
     }
 
     // Prepare content_details based on content type
-    const contentDetails =
-      data.value.content_type === "fill_gaps"
-        ? { passages: data.value.content_details.passages }
-        : { questions: data.value.content_details.questions };
+    let contentDetails;
+    if (data.value.content_type === "fill_gaps") {
+      contentDetails = { passages: data.value.content_details.passages };
+    } else if (data.value.content_type === "word_bank") {
+      contentDetails = { word_bank: data.value.content_details.word_bank };
+    } else {
+      contentDetails = { questions: data.value.content_details.questions };
+    }
 
     // Append all data
     formData.append("class_id", String(data.value.class_id));
