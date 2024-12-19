@@ -26,7 +26,7 @@
       titleTask="Put in the right order"
     />
     <OrganisimMultipleTasks
-      v-if="taskTitle === 'Fill in the gaps' || taskTitle === 'Drag the words'"
+      v-if="taskTitle === 'Fill in the gaps' || taskTitle === 'Word bank'"
       :typeTask="'text_area'"
       :description="getTaskDescription(taskTitle)"
     />
@@ -38,9 +38,12 @@ import TaskLayout from "~/layouts/TaskLayout.vue";
 import OrganisimMultipleTasks from "~/components/organisim/MultipleTasks.vue";
 import { useDescription } from "~/composables/useDescription";
 
+
 interface Props {
   taskTitle: string;
 }
+
+
 
 defineProps<Props>();
 const { getTaskDescription } = useDescription();

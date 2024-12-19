@@ -9,31 +9,66 @@
       />
     </div>
     <p class="text-xs p-2 text-fuscous-gray-950">
-      Use brackets for gaps: []. Separate a hint from the correct answer by
-      */: [a hint*/the answer]. Use multiple / for multiple correct answers: [a
-      hint/correct answer 1/correct answer 2]. Leave the space before the first
-      / empty for multiple correct answers without a hint: [/correct answer
-      1/correct answer 2].
+      {{ data.instructions }}
     </p>
-    <p class="bg-tarawera-100 text-xs p-2 text-fuscous-gray-950">
-      {{ description }}
-    </p>
+    <div class="bg-tarawera-100 text-xs p-2 text-fuscous-gray-950 flex gap-2">
+      <div
+        v-for="(item, index) in data.description"
+        :key="index"
+        class=" bg-white rounded-md p-2"
+      >
+        {{ item }}
+      </div>
+    </div>
+
+ 
     <UTextarea
       v-model="localValue"
       class="text-xs mt-2"
       @update:model-value="handleInput"
     />
+
+    <div v-if="data.extra" class="mt-2">
+      <p class="text-sm font-bold  text-primary-color">
+        {{ data.extra.subtitle }}
+      </p>
+      <p class="text-xs text-fuscous-gray-950">
+        {{ data.extra.description }}
+      </p>
+      <input 
+        type="text" 
+        class="text-xs mt-2 w-full border border-gray-300 rounded-md p-2 focus:outline-none focus:ring-2 focus:ring-tarawera-500" 
+        @input="emit('update:extraValue', $event)"
+      />
+    </div>
   </div>
 </template>
 
+
 <script setup lang="ts">
-interface Props {
-  value: string;
+
+interface Extra {
+  subtitle: string;
   description: string;
 }
 
+interface Example {
+  description?: string;
+  example?: string;
+}
+
+interface Props {
+  data: {
+    description: string[];
+    instructions?: string;
+    extra?: Extra;
+    example?: Example;
+  };
+  value: string;
+}
+
 const props = defineProps<Props>();
-const emit = defineEmits(["update:value"]);
+const emit = defineEmits(["update:value", "update:extraValue"]);
 
 // Create local value to handle v-model correctly
 const localValue = ref(props.value);
@@ -41,5 +76,12 @@ const localValue = ref(props.value);
 const handleInput = (newValue: string) => {
   emit("update:value", newValue);
 };
+
+const handleExtraInput = (event: Event) => {
+  const target = event.target as HTMLInputElement;
+  emit("update:extraValue", target.value);
+};
+
+
 </script>
 

@@ -43,6 +43,16 @@ export interface InputTaskProps {
   type?: "checkbox" | "input" | "select" | "file";
 }
 
+export interface Extra {
+  subtitle: string;
+  description: string;
+}
+
+export interface Example {
+  description: string;
+  example: string;
+}
+
 export interface MultipleTasksProps {
   typeTask:
     | "multiple_choice"
@@ -53,6 +63,11 @@ export interface MultipleTasksProps {
     | "text_area";
   titleTask?: string;
   subtitleTask?: string;
-  description?: string;
+  description?: {
+    description: string[];
+    instructions?: string;
+    extra?: Extra;
+    example?: Example;
+  };
   inputTitleTask?: boolean;
 }

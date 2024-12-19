@@ -1,17 +1,19 @@
 <template>
-  <UModal v-if="infoResponseApi.isLoading">
-    <div class="flex flex-col items-center justify-center p-4">
-      <USpinner size="lg" />
-      <p class="mt-2 text-lg text-gray-700">Guardando...</p>
-    </div>
-  </UModal>
+  <!-- <div
+    class="flex flex-col items-center justify-center p-4"
+    v-if="infoResponseApi.isLoading"
+  >
+    <p class="mt-2 text-lg text-gray-700">Guardando...</p>
+  </div> -->
+
   <!-- Iteramos sobre las preguntas -->
 
   <TextAreaTask
     v-if="typeTask === 'text_area'"
     :value="value"
-    :description="description"
+    :data="description"
     @update:value="handleUpdateValue"
+    @update:extraValue="handleExtraInput"
   />
 
   <div
@@ -145,7 +147,7 @@ import TextAreaTask from "../molecule/TextAreaTask.vue";
 import { useRemove } from "~/composables/useRemove";
 import { useDragAnDrop } from "~/composables/useDragAndDrop";
 import { useTaskStore } from "~/stores/task.store";
-import { useClassContentMutation } from '~/composables/useClassContentMutation'
+import { useClassContentMutation } from "~/composables/useClassContentMutation";
 import { useGetTypeTask } from "~/composables/useGetTypeTask";
 /* Interfaces */
 import type {
@@ -159,14 +161,14 @@ const { typeTask, titleTask, description } = defineProps<MultipleTasksProps>();
 const taskStore = useTaskStore();
 const route = useRoute();
 const taskInstructions = computed(() => taskStore.getTask("instructions"));
-const taskTitle = computed(() => taskStore.getTask("titleTask"));
 const files = computed(() => taskStore.getTask("files"));
 const select = computed(() => taskStore.getTask("select"));
 const value = ref("");
+const extraWords = ref("");
 const isActive = ref(false);
 const { getType } = useGetTypeTask();
 
-const { mutation, isLoading, isSuccess, isError } = useClassContentMutation()
+const { mutation, isLoading, isSuccess, isError } = useClassContentMutation();
 
 // Update infoResponseApi ref to use the mutation states
 const infoResponseApi = ref({
@@ -176,7 +178,7 @@ const infoResponseApi = ref({
   isError: computed(() => isError.value),
   error: null,
   data: null,
-})
+});
 
 interface Passage {
   text: string;
@@ -252,7 +254,7 @@ watch(
     if (typeTask === "ordering") {
       data.value.content_details.ordering = newValue.map((q, index) => ({
         text: q.question,
-        indice: index + 1
+        indice: index + 1,
       }));
     }
 
@@ -339,6 +341,13 @@ const addOption = (questionIndex: number) => {
     text: "",
     isCorrect: false,
   });
+};
+
+const handleExtraInput = (value: string) => {
+  extraWords.value = value;
+  console.log("extraWords", value);
+  // You can store the value in a ref if needed
+  
 };
 
 const handleUpdateValue = (newValue: string) => {
