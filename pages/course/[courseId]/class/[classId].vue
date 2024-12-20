@@ -29,7 +29,7 @@
                 {{ getTaskNumber(index) }}
               </p>
               <h3 class="text-lg font-bold">
-                {{ capitalizeFirstLetter(task.tittle) }}
+                {{ capitalizeFirstLetter(task.tittle || '') }}
               </h3>
             </div>
             <p class="">{{ task.instructions }}</p>
@@ -251,8 +251,7 @@ const handleAddBlock = () => {
 const handleSelectTask = (task: any) => {
   taskStore.addTask("taskTitle", task.type);
   selectedTask.value = task;
-  console.log('Selected task:', task);
-  console.log('Task type:', task.type);
+  console.log(task.value);
 };
 
 const getTaskNumber = (currentIndex: number) => {
