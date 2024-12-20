@@ -179,29 +179,34 @@ watch(
   { deep: true }
 );
 
-const handleSave = () => {
-  const formData = new FormData();
+const handleSave = async () => {
+  try {
+    const requestData = {
+      class_model: videoData.value.class_id,
+      content_type: videoData.value.content_type,
+      tittle: videoData.value.tittle,
+      instructions: videoData.value.instructions,
+      multimedia: videoData.value.multimedia.map(item => ({
+        media_type: item.media_type,
+        file: item.file,
+        transcription: item.transcription || ''
+      }))
+    };
 
-  // Append basic task data
-  formData.append("class_id", String(videoData.value.class_id));
-  formData.append("content_type", videoData.value.content_type);
-  formData.append("tittle", videoData.value.tittle);
-  formData.append("instructions", videoData.value.instructions);
-  formData.append("stats", videoData.value.stats.toString());
-
-  // Append multimedia files
-  videoData.value.multimedia.forEach((item, index) => {
-    if (item.file) {
-      formData.append(`multimedia[${index}][media_type]`, item.media_type);
-      formData.append(`multimedia[${index}][file]`, item.file);
+    const result = await mutation.mutateAsync(requestData);
+    
+    // Actualizar el estado con las URLs recibidas del backend
+    if (result.multimedia) {
+      videoData.value.multimedia = result.multimedia.map(item => ({
+        ...item,
+        file_url: item.file // Asumiendo que el backend devuelve la URL en el campo file
+      }));
     }
-  });
 
-  // Log the FormData contents
-  console.log("Video Data Object:", videoData.value);
-  console.log("FormData entries:");
-
-  mutation.mutate(formData);
+    // Limpiar el formulario o realizar otras acciones necesarias
+  } catch (error) {
+    console.error('Error saving content:', error);
+  }
 };
 
 const handleCancel = () => {

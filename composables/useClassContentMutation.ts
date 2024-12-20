@@ -8,20 +8,43 @@ export function useClassContentMutation() {
   const route = useRoute()
 
   const mutation = useMutation({
-    mutationFn: async (formData: FormData) => {
-      try {
-        const response = await axiosInstance.post(apiRoutes.classContent, formData, {
+    mutationFn: async (data: any) => {
+      const formData = new FormData();
+      
+      // Agregar datos básicos
+      formData.append('class_model', data.class_model);
+      formData.append('content_type', data.content_type);
+      formData.append('tittle', data.tittle);
+      formData.append('instructions', data.instructions);
+      
+      // Manejar archivos multimedia
+      data.multimedia.forEach((item: any, index: number) => {
+        if (item.file) {
+          // Crear nombre de archivo sin espacios
+          const newFileName = item.file.name.replace(/\s+/g, '_');
+          const newFile = new File([item.file], newFileName, { type: item.file.type });
+          
+          formData.append(`multimedia[${index}][media_type]`, item.media_type);
+          formData.append(`multimedia[${index}][file]`, newFile);
+          
+          if (item.transcription) {
+            formData.append(`multimedia[${index}][transcription]`, item.transcription);
+          }
+        }
+      });
+
+      const response = await axiosInstance.post(
+        apiRoutes.classContent,
+        formData,
+        {
           headers: {
-            'Content-Type': 'multipart/form-data',
-            Accept: 'application/json',
+            "Content-Type": "multipart/form-data",
+            Accept: "application/json",
           },
-        })
-        console.log("response", response.data);
-        return response.data
-      } catch (error) {
-        console.error('API Error Details:', error.response?.data)
-        throw error
-      }
+        }
+      );
+      console.log("response", response.data);
+      return response.data;
     },
     onSuccess: () => {
       // Invalidate and refetch the class contents query
