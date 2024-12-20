@@ -6,12 +6,14 @@ export const useCourseMutation = () => {
   const queryClient = useQueryClient();
 
   const createCourseMutation = async (courseData: any) => {
+    console.log('Course data:', courseData)
     const response = await axiosInstance.post(apiRoutes.courses, courseData, {
       headers: {
         "Content-Type": "multipart/form-data",
         Accept: "application/json",
       },
     });
+    console.log('Course created:', response.data)
     return response.data;
   };
 

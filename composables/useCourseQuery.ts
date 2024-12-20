@@ -8,6 +8,7 @@ export const useCoursesQuery = () => {
       if (!response) {
         throw new Error('No courses found')
       }
+      console.log('Courses fetched:', response)
       return response
     } catch (error: any) {
       console.error('Error fetching courses:', error)

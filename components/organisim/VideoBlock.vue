@@ -1,21 +1,210 @@
 <template>
-    <div>
-        <h3 class="text-s font-bold text-tarawera-700 my-4">Main Video:</h3>
-        <InputFile type="video"  />
-        <MoleculeInput type="text_area" title="Add script" size="lg" container-class="py-2" />
+  <div>
+    <h3
+      class="text-s font-bold text-tarawera-700 my-4"
+      v-show="taskTitle === 'video'"
+    >
+      Main Video:
+    </h3>
+    <h3
+      class="text-s font-bold text-tarawera-700 my-4"
+      v-show="taskTitle === 'audio'"
+    >
+      Audio track:
+    </h3>
+    <InputFile
+      v-show="taskTitle === 'video'"
+      fileType="video"
+      icon="true"
+      @file-selected="handleVideoFile"
+    />
+    <InputFile
+      v-show="taskTitle === 'audio'"
+      fileType="audio"
+      icon="true"
+      @file-selected="handleVideoFile"
+    />
+    <MoleculeInput
+      type="text_area"
+      title="Add subtitles:"
+      size="lg"
+      container-class="py-2"
+      @update:modelValue="handleSubtitles"
+    />
+    <template v-if="taskTitle === 'video'">
+      <h3 class="text-s font-bold text-tarawera-700 my-4">Background image:</h3>
+      <InputFile
+        fileType="image"
+        icon="true"
+        @file-selected="handleImageFile"
+      />
+    </template>
+    <div class="flex items-center gap-2 py-4 text-sm">
+      <p>Include the stats</p>
+      <AtomosToggle v-model="videoData.stats" />
     </div>
+    <MoleculeActionButtons
+      @handleSave="handleSave()"
+      @handleCancel="handleCancel"
+      :isActive="infoResponseApi.isActive"
+    />
+  </div>
 </template>
 <script setup lang="ts">
-import InputFile from '~/components/InputFile.vue';
-import Input from '~/components/molecule/Input.vue';
-import EventBus from '~/composables/useEvenBus';
-onMounted(() => {
-    EventBus.on('file-selected', handleVideoSelected);
+import InputFile from "~/components/InputFile.vue";
+import { createBaseTaskData } from "~/interfaces/task.interface";
+import { useTaskStore } from "~/stores/task.store";
+import { ref } from "vue";
+
+interface Multimedia {
+  media_type: string;
+  file: File | null;
+  transcription?: string;
+}
+
+const taskStore = useTaskStore();
+const taskInstructions = computed(() => taskStore.getTask("instructions"));
+const taskTitle = ref<string>("video");
+const { mutation, isLoading, isSuccess, isError } = useClassContentMutation();
+const route = useRoute();
+const tempTranscription = ref("");
+const infoResponseApi = ref({
+  isActive: false,
+  isLoading: computed(() => isLoading.value),
+  isSuccess: computed(() => isSuccess.value),
+  isError: computed(() => isError.value),
+  error: null,
+  data: null,
 });
 
-const handleVideoSelected = (videoUrl: string) => {
-    console.log('Video selected:', videoUrl);
+const videoData = ref({
+  ...createBaseTaskData(
+    Array.isArray(route.params.classId) 
+      ? route.params.classId[0] 
+      : route.params.classId,
+    taskTitle.value
+  ),
+  multimedia: [] as Multimedia[],
+});
+
+watch(
+  taskInstructions,
+  (newValue) => {
+    if (newValue) {
+      videoData.value = {
+        ...videoData.value,
+        tittle: newValue.title || "",
+        instructions: newValue.instructions || "",
+      };
+    }
+  },
+  { deep: true, immediate: true }
+);
+
+watch(
+  () => videoData.value,
+  (newValue) => {
+    console.log("videoData changed:", newValue);
+  },
+  { deep: true }
+);
+
+watch(taskTitle, (newValue) => {
+  console.log("taskTitle changed:", newValue);
+  taskTitle.value = newValue;
+  console.log("taskTitle changed:", taskTitle.value);
+});
+
+
+const handleVideoFile = (file: File) => {
+  if (taskTitle.value === "video") {    
+    if (!file.type.startsWith("video/")) {
+      console.error("El archivo seleccionado no es un video");
+      return;
+    }
+  }
+  if (taskTitle.value === "audio") {
+    if (!file.type.startsWith("audio/")) {
+      console.error("El archivo seleccionado no es un audio");
+      return;
+    }
+  }
+
+  videoData.value.multimedia.push({
+    media_type: taskTitle.value,
+    file: file,
+    transcription: tempTranscription.value, // Usar la transcripción temporal si existe
+  });
+  infoResponseApi.value.isActive = true;
+  console.log("Video added:", videoData.value.multimedia);
+};
+
+const handleImageFile = (file: File) => {
+  videoData.value.multimedia.push({
+    media_type: "image",
+    file: file,
+  });
+};
+
+const handleSubtitles = (value: string) => {
+  // Guardar siempre el valor en la transcripción temporal
+  tempTranscription.value = value;
+
+  // Si hay un video, actualizar su transcripción
+  if (videoData.value.multimedia.length > 0) {
+    const videoIndex = videoData.value.multimedia.findIndex(
+      (item) => item.media_type === "video"
+    );
+    if (videoIndex !== -1) {
+      videoData.value.multimedia = [
+        ...videoData.value.multimedia.map((item, index) => {
+          if (index === videoIndex) {
+            return {
+              ...item,
+              transcription: value,
+            };
+          }
+          return item;
+        }),
+      ];
+    }
+  }
+};
+
+watch(
+  () => videoData.value.multimedia,
+  (newValue) => {
+    console.log("Multimedia updated:", newValue);
+  },
+  { deep: true }
+);
+
+const handleSave = () => {
+  const formData = new FormData();
+
+  // Append basic task data
+  formData.append("class_id", String(videoData.value.class_id));
+  formData.append("content_type", videoData.value.content_type);
+  formData.append("tittle", videoData.value.tittle);
+  formData.append("instructions", videoData.value.instructions);
+  formData.append("stats", videoData.value.stats.toString());
+
+  // Append multimedia files
+  videoData.value.multimedia.forEach((item, index) => {
+    if (item.file) {
+      formData.append(`multimedia[${index}][media_type]`, item.media_type);
+      formData.append(`multimedia[${index}][file]`, item.file);
+    }
+  });
+
+  // Log the FormData contents
+  console.log("Video Data Object:", videoData.value);
+  console.log("FormData entries:");
+
+  mutation.mutate(formData);
+};
+
+const handleCancel = () => {
+  console.log("Cancel");
 };
 </script>
-
-

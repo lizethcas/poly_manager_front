@@ -6,7 +6,7 @@
 
     <!-- El contenido del curso una vez cargado -->
     <div v-if="course">
-        <header class="pt-6 px-14 text-title-color mb-4 flex items-center">
+        <header class=" text-title-color mb-4 flex items-center">
             <img src="~/assets/images/back-button-round.webp" alt="regresar una pagina"
                 class="w-10 h-10 cursor-pointer items-center" @click="handleBackNavigation" />
             <div class="flex items-center">

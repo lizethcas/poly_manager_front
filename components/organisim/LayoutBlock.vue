@@ -29,8 +29,8 @@ interface Props {
 
 const taskStore = useTaskStore();
 const props = defineProps<Props>();
-const taskTitle = ref<string>("Layout");
-defineEmits(["close", "submit", "update:modelValue"]);
+const taskTitle = ref<string>("Multiple choice");
+defineEmits(["update:modelValue"]);
 
 watch(
   () => props.selectedTask,
@@ -38,7 +38,8 @@ watch(
     if (newTask?.name) {
       taskTitle.value = newTask.name;
       taskStore.addTask('taskTitle', newTask.type);
-      console.log(taskStore.getTask(taskTitle.value));
+    } else {
+      taskStore.addTask('taskTitle', 'multiple_choice');
     }
   },
   { immediate: true }

@@ -154,6 +154,7 @@ import type {
   Question,
   MultipleTasksProps,
 } from "~/interfaces/components/props.components.interface";
+import { createBaseTaskData } from '~/interfaces/task.interface';
 
 // Definir los eventos que emitirá el componente
 const emit = defineEmits(["update:value", "save-task"]);
@@ -235,11 +236,7 @@ interface Multimedia {
 }
 
 const data = ref({
-  class_id: route.params.classId,
-  content_type: taskTitle.value,
-  tittle: "",
-  instructions: "",
-  stats: false,
+  ...createBaseTaskData(route.params.classId, typeTask),
   content_details: {
     questions: [] as Question[],
     passages: [] as Passage[],
@@ -481,6 +478,7 @@ const updateOptionIsCorrect = (
 
 // Nueva función para evaluar si el formulario tiene información
 const hasQuestionsWithAnswers = () => {
+
   return questions.value.every((question) => {
     if (typeTask === "true_false") {
       console.log("aqui");
@@ -543,6 +541,7 @@ const handleSave = () => {
     throw error;
   }
 };
+
 const handleCancel = () => {
   taskStore.addTask("modal", { modal: false });
 };

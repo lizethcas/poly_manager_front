@@ -22,4 +22,9 @@ interface TaskMenuItem {
 // Define props to receive task options from parent
 defineProps<{ menuItems: TaskMenuItem[] }>();
 
+// Define emits
+defineEmits<{
+  (e: 'select-task', task: TaskMenuItem): void
+}>();
+
 </script>

@@ -43,7 +43,7 @@
                 task.content_type === 'category'
               "
             >
-              <MultipleChoiceQuestion
+              <MoleculeMultipleChoiceQuestion
                 v-for="(question, index) in task.content_details.questions ||
                 task.content_details.categories"
                 :key="index"
@@ -124,9 +124,9 @@
         @select-task="handleSelectTask"
         :menuItems="dataMenu(currentModal.label)"
       >
-      <div class="pb-10">
-        <component :is="getCurrentComponent()" :selectedTask="selectedTask"  />
-      </div>
+        <div class="pb-10">
+          <component :is="getCurrentComponent()" :selectedTask="selectedTask" />
+        </div>
       </BaseTaskModal>
     </div>
 
@@ -145,15 +145,15 @@ import { apiRoutes } from "~/services/routes.api";
 import axiosInstance from "~/services/axios.config";
 import { useRoute } from "vue-router";
 import { useCapitalizerLetter } from "~/composables/useCapitalizerLetter";
-import { interactiveTaskOptions } from "~/data/interactiveTask";
+import { useDataMenu } from "~/composables/useDataMenu";
 
 import VideoBlock from "~/components/organisim/VideoBlock.vue";
-import TextBlock from "~/components/organisim/TextBlock.vue";
+import TextBlock from "~/components/organisim/blocks/TextBlock.vue";
+
 import MultimediaBlock from "~/components/organisim/MultimediaBlock.vue";
 import OrganisimLayoutBlock from "~/components/organisim/LayoutBlock.vue";
 import KnowledgeCheckBlock from "~/components/organisim/KnowledgeCheckBlock.vue";
 import { useTaskStore } from "~/stores/task.store";
-import MultipleChoiceQuestion from "~/components/molecule/multipleTask/MultipleChoiceQuestion.vue";
 import MoleculeMultipleTaskFill from "~/components/molecule/multipleTask/Fill.vue";
 
 const taskStore = useTaskStore();
@@ -167,6 +167,7 @@ const showEditNavigation = ref(false);
 const selectedTaskIndex = ref(-1);
 const selectedTask = ref(null);
 const queryClient = useQueryClient();
+const { getDataMenu } = useDataMenu();
 
 const classId = route.params.classId;
 const closeModalHandler = computed(() => taskStore.getTask("modal"));
@@ -179,7 +180,7 @@ const openModalHandler = (label: string, name: string) => {
   currentModal.value = { label, name };
   openModal(); // Asegúrate de abrir el modal
 };
-
+const dataMenu = (label: string) => getDataMenu(label);
 // Add the query to fetch tasks
 const {
   data: classTasks,
@@ -246,17 +247,12 @@ const handleAddBlock = () => {
   selectedTaskIndex.value = -1; // Reset the selected task index
   showEditNavigation.value = true;
 };
-const dataMenu = (label: string) => {
-  // Only return menu options for Layout block and Knowledge check
-  if (label === "Knowledge check" || label === "Layout block") {
-    return interactiveTaskOptions;
-  }
-  // Return null or empty array for other cases to hide the menu
-  return [];
-};
 
 const handleSelectTask = (task: any) => {
+  taskStore.addTask("taskTitle", task.type);
   selectedTask.value = task;
+  console.log('Selected task:', task);
+  console.log('Task type:', task.type);
 };
 
 const getTaskNumber = (currentIndex: number) => {
@@ -281,15 +277,3 @@ const getTaskNumber = (currentIndex: number) => {
   return `${mainNumber}.${subNumber}`;
 };
 </script>
-
-/* switch (title) { case 'Layout block': console.log(toRaw(combinedData.value));
-tasksStore.saveTask(combinedData.value); closeModal(); console.log(title);
-break; case 'Video layout': console.log(title); break; case 'Text layout':
-console.log(title); break; case 'Audio layout': console.log(title); break; case
-'Info block': console.log(title); break; case 'SCORM file': console.log(title);
-break; case 'Gallery layout': console.log(title); break; case 'AI chat':
-console.log(title); break; case 'Multimedia block': console.log(title); break;
-case 'Interactive activities': console.log(title); break; case 'Knowledge
-check': console.log(title); break; case 'Word list': console.log(title); break;
-case 'Table': console.log(title); break; case 'Dividers': console.log(title);
-break; default: console.log(title); break; } */

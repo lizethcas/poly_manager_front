@@ -13,13 +13,16 @@
 
             <!-- Label and preview -->
             <label v-if="!icon" for="file-upload" class="min-w-[120px] text-middele-gray">File:</label>
-            <div class="w-16 h-16 rounded overflow-hidden">
+            <div :class="[
+                'rounded overflow-hidden',
+                fileType === 'video' ? 'w-64 h-36' : fileType === 'audio' ? 'w-3/6' : 'w-16 h-16'
+            ]">
                 <slot></slot>
                 <!-- Image preview -->
                 <ImgAtom v-if="fileType === 'image' && previewUrl" :image="previewUrl" alt="Preview" />
                 <!-- Video preview -->
                 <video v-if="fileType === 'video' && previewUrl" :src="previewUrl" controls
-                    class="justify-between w-full h-full"></video>
+                    class="w-full h-full object-cover"></video>
                 <!-- Audio preview -->
                 <audio v-if="fileType === 'audio' && previewUrl" :src="previewUrl" controls class="w-full"></audio>
                 <!-- File name for other types -->
@@ -39,7 +42,7 @@
         </div>
 
         <!-- Hidden input -->
-        <input id="file-upload" type="file" class="hidden" ref="fileInput" @change="handleChange" accept=".pdf,.doc,.docx" />
+        <input id="file-upload" type="file" class="hidden" ref="fileInput" @change="handleChange"  />
 
     </div>
 </template>
@@ -82,7 +85,6 @@ const handleChange = (event) => {
         if (['image', 'video', 'audio'].includes(fileType.value)) {
             previewUrl.value = URL.createObjectURL(file);
         }
-        console.log(URL.createObjectURL(file))
         // Emit the actual file along with the preview URL
         EventBus.emit('file-selected', { 
             file: file,  // Add the actual file

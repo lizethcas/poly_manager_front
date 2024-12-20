@@ -1,5 +1,5 @@
 <template>
-    <div class="p-7 max-w-3xl m-auto w-full bg-white rounded-lg  h-[80vh] overflow-y-auto">
+    <div class="p-5 max-w-7xl m-auto w-full bg-white rounded-lg  h-[90vh] overflow-y-auto">
         <div class="flex justify-between">
             <h2 class="font-bold text-m">{{ title }}</h2>
             <img src="../../assets/images/close.webp" alt="close create course" class="w-5 h-5 cursor-pointer"
@@ -13,7 +13,7 @@
                 <div v-for="(item, index) in labels" :key="'label-' + index">
                     <MoleculeInput :title="item.label_name" :type="item.type"
                         :modelValue="formData[transformedKey(item.label_name)]"
-                        @update:modelValue="(value) => updateFormField(transformedKey(item.label_name), value)" />
+                        @update:modelValue="(value) => updateFormField(transformedKey(item.label_name), value)" size="lg" />
 
                     <!-- Mostrar elementos adicionales si es necesario -->
                     <div v-if="showExtraElements && index === 1">
@@ -55,8 +55,6 @@ import type { ModalProps } from '~/interfaces/modal.interface';
 import SelectAtom from '../molecule/SelectAtom.vue';
 
 import { useFormData } from '~/hooks/userFormData';
-import { useCourseStore } from '~/stores/courseStore';
-import { useClassStore } from '~/stores/class.store';
 import transformKey from '~/utils/stringTransformations'
 import { useRoute } from 'vue-router';
 import { useCourseMutation } from '~/composables/useCourseMutation';

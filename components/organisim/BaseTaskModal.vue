@@ -42,6 +42,7 @@
               <MoleculeInput
                 :title="'Instructions'"
                 type="text_area"
+                size="lg"
                 class="text-md"
                 v-model="formData.instructions"
               />
@@ -74,8 +75,8 @@ defineProps({
 });
 
 interface TaskMenuItem {
-  name: string;
-  type: string;
+  name: string | undefined;
+  type: string | undefined;
 }
 
 const taskStore = useTaskStore();
