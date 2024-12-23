@@ -37,7 +37,8 @@
           levelName: course.levelName,
           title: course.title,
           description: course.description,
-          lessonCount: course.lessonCount
+          lessonCount: course.lessonCount,
+          id: course.id
         }"
       />
     </div>
