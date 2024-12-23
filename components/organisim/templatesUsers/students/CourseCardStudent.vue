@@ -97,6 +97,7 @@ import { useRoute } from "vue-router";
 const route = useRoute();
 
 
+
 const navigateToCourse = (courseId: number) => {
   console.log(courseId);
   navigateTo(`/course-students/${courseId}`);

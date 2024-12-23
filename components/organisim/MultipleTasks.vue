@@ -1,10 +1,10 @@
 <template>
-  <!-- <div
+  <div
     class="flex flex-col items-center justify-center p-4"
     v-if="infoResponseApi.isLoading"
   >
     <p class="mt-2 text-lg text-gray-700">Guardando...</p>
-  </div> -->
+  </div>
 
   <!-- Iteramos sobre las preguntas -->
 
@@ -154,7 +154,7 @@ import type {
   Question,
   MultipleTasksProps,
 } from "~/interfaces/components/props.components.interface";
-import { createBaseTaskData } from '~/interfaces/task.interface';
+import { createBaseTaskData } from "~/interfaces/task.interface";
 
 // Definir los eventos que emitirá el componente
 const emit = defineEmits(["update:value", "save-task"]);
@@ -164,20 +164,25 @@ const route = useRoute();
 const taskInstructions = computed(() => taskStore.getTask("instructions"));
 const files = computed(() => taskStore.getTask("files"));
 const select = computed(() => taskStore.getTask("select"));
-const taskTitle = computed(() => taskStore.getTask('taskTitle'));
+const taskTitle = computed(() => taskStore.getTask("taskTitle"));
 const value = ref("");
 const isActive = ref(false);
 const newWordBank = ref("");
 const { getType } = useGetTypeTask();
 
-const { mutation, isLoading, isSuccess, isError } = useClassContentMutation();
+const { 
+  mutateAsync,
+  isLoading: isMutating,
+  isSuccess,
+  isError 
+} = useClassContentMutation();
 
 // Update infoResponseApi ref to use the mutation states
 const infoResponseApi = ref({
   isActive: false,
-  isLoading: computed(() => isLoading.value),
-  isSuccess: computed(() => isSuccess.value),
-  isError: computed(() => isError.value),
+  isLoading: computed(() => isMutating),
+  isSuccess: computed(() => isSuccess),
+  isError: computed(() => isError),
   error: null,
   data: null,
 });
@@ -230,10 +235,6 @@ const { removeOption, removeQuestion } = useRemove(questions);
 const { onDragStart, onDragOver, onDrop } = useDragAnDrop(questions);
 
 // Modify the data structure
-interface Multimedia {
-  media_type: string;
-  file: File | null;
-}
 
 const data = ref({
   ...createBaseTaskData(route.params.classId, typeTask),
@@ -244,7 +245,10 @@ const data = ref({
     ordering: [] as Ordering[],
     word_bank: [] as WordBank[],
   },
-  multimedia: [] as Multimedia[],
+  image: null as File | null,
+  audio: null as File | null,
+  video_transcription: null as string | null,
+  audio_transcription: "",
 });
 
 watch(
@@ -297,20 +301,11 @@ watch(
 watch(
   files,
   (newValue) => {
-    data.value.multimedia = [];
-
-    if (newValue.image) {
-      data.value.multimedia.push({
-        media_type: "image",
-        file: newValue.image,
-      });
-    }
-
     if (newValue.audio) {
-      data.value.multimedia.push({
-        media_type: "audio",
-        file: newValue.audio,
-      });
+      data.value.audio = newValue.audio;
+    }
+    if (newValue.image) {
+      data.value.image = newValue.image;
     }
   },
   { deep: true }
@@ -355,8 +350,11 @@ const addOption = (questionIndex: number) => {
 
 const handleExtraInput = (value: string) => {
   // Split the input string by '/' and trim each word
-  const extraWords = value.split('/').map(word => word.trim()).filter(word => word);
-  newWordBank.value = extraWords.join('/');
+  const extraWords = value
+    .split("/")
+    .map((word) => word.trim())
+    .filter((word) => word);
+  newWordBank.value = extraWords.join("/");
   // Update the word bank data structure with the new extra words
   if (data.value.content_details.word_bank.length > 0) {
     data.value.content_details.word_bank[0].extraWords = extraWords;
@@ -381,7 +379,7 @@ const handleUpdateValue = (newValue: string) => {
         // Add to keywords array with position
         keywords.push({
           word: word,
-          position: index + 1
+          position: index + 1,
         });
         // Replace bracket content with placeholder
         processedText = processedText.replace(match, `__${index + 1}__`);
@@ -389,11 +387,15 @@ const handleUpdateValue = (newValue: string) => {
     }
 
     // Update the word bank in content details
-    data.value.content_details.word_bank = [{
-      text: processedText,
-      keywords: keywords,
-      extraWords: newWordBank.value ? newWordBank.value.split(',').map(word => word.trim()) : []
-    }];
+    data.value.content_details.word_bank = [
+      {
+        text: processedText,
+        keywords: keywords,
+        extraWords: newWordBank.value
+          ? newWordBank.value.split(",").map((word) => word.trim())
+          : [],
+      },
+    ];
   }
 
   if (taskTitle.value == "fill_gaps") {
@@ -478,7 +480,6 @@ const updateOptionIsCorrect = (
 
 // Nueva función para evaluar si el formulario tiene información
 const hasQuestionsWithAnswers = () => {
-
   return questions.value.every((question) => {
     if (typeTask === "true_false") {
       console.log("aqui");
@@ -494,19 +495,9 @@ const hasQuestionsWithAnswers = () => {
   });
 };
 
-const handleSave = () => {
+const handleSave = async () => {
   try {
     const formData = new FormData();
-
-    // Handle multimedia files
-    if (data.value.multimedia.length > 0) {
-      data.value.multimedia.forEach((media, index) => {
-        if (media.file instanceof File) {
-          formData.append(`multimedia`, media.file);
-        }
-      });
-    }
-
     // Prepare content_details based on content type
     let contentDetails;
     if (data.value.content_type === "fill_gaps") {
@@ -515,6 +506,14 @@ const handleSave = () => {
       contentDetails = { word_bank: data.value.content_details.word_bank };
     } else {
       contentDetails = { questions: data.value.content_details.questions };
+    }
+
+    if (data.value.image) {
+      formData.append("image", data.value.image);
+    }
+    if (data.value.audio) {
+      formData.append("audio", data.value.audio);
+      formData.append("audio_transcription", data.value.audio_transcription);
     }
 
     // Append all data
@@ -535,7 +534,7 @@ const handleSave = () => {
       stats: data.value.stats,
     });
 
-    mutation.mutate(formData);
+    await mutateAsync(formData);
   } catch (error) {
     console.error("Error preparing data:", error);
     throw error;

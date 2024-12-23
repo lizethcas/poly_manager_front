@@ -34,10 +34,10 @@ const icons = [
         name: 'solar:gallery-bold',
         label: 'Gallery layout'
     },
-    {
+/*     {
         name: 'mingcute:ai-fill',
         label: 'AI chat'
-    },
+    }, */
     {
         name: 'mdi:multimedia',
         label: 'Multimedia block'
@@ -50,10 +50,10 @@ const icons = [
         name: 'ph:student-fill',
         label: 'Knowledge check'
     },
-    {
+  /*   {
         name: 'ph:list-fill',
         label: 'Word list'
-    },
+    }, */
   /*   {
         name: 'material-symbols-light:table',
         label: 'Table'

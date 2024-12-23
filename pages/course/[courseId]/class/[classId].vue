@@ -20,16 +20,20 @@
     >
       <template v-for="(task, index) in classTasks.data" :key="task.id">
         <div
-          class="mt-3 cursor-pointer shadow-md shadow-fuscous-gray-300 rounded-lg p-4 my-4"
+          :class="[
+            task.content_type === 'video'
+              ? 'cursor-pointer'
+              : 'mt-3 cursor-pointer shadow-md shadow-fuscous-gray-300 rounded-lg p-4 my-4',
+          ]"
           @click="handleShowEditNavigation(index)"
         >
           <div v-if="task.tittle !== ''">
-            <div class="flex justify-start gap-2">
+            <div class="flex justify-start gap-2 my-2">
               <p class="bg-tarawera-200 text-tarawera-800 px-2 py-1 rounded-md">
                 {{ getTaskNumber(index) }}
               </p>
               <h3 class="text-lg font-bold">
-                {{ formatTitle(task.tittle) }}
+                {{ capitalizeFirstLetter(task.tittle) }}
               </h3>
             </div>
             <p class="">{{ task.instructions }}</p>
@@ -43,12 +47,7 @@
                 task.content_type === 'category'
               "
             >
-              <MoleculeMultipleChoiceQuestion
-                v-for="(question, index) in task.content_details.questions ||
-                task.content_details.categories"
-                :key="index"
-                :question="question"
-              />
+              <MoleculeMultipleChoiceQuestion :data="task" />
             </div>
 
             <div v-else-if="task.content_type === 'true_false'">
@@ -74,6 +73,9 @@
               v-else-if="task.content_type === 'word_bank'"
               :data="task.content_details.word_bank"
             />
+
+            <VideoTask v-else-if="task.content_type === 'video'" :task="task" />
+            <AudioTask v-else-if="task.content_type === 'audio'" :task="task" />
           </div>
         </div>
 
@@ -139,6 +141,8 @@ import { ref, watch } from "vue";
 import { useModal } from "~/composables/useModal";
 import EditClassNavigation from "~/components/organisim/EditClassNavigation.vue";
 import BaseTaskModal from "~/components/organisim/BaseTaskModal.vue";
+import AudioTask from "~/components/organisim/templatesUsers/students/taskStudents/Audio.vue";
+import VideoTask from "~/components/organisim/templatesUsers/students/taskStudents/Video.vue";
 import { useAnimation } from "~/composables/useAnimation";
 import { useQueryClient, useQuery } from "@tanstack/vue-query";
 import { apiRoutes } from "~/services/routes.api";
@@ -150,7 +154,7 @@ import { useDataMenu } from "~/composables/useDataMenu";
 import VideoBlock from "~/components/organisim/VideoBlock.vue";
 import TextBlock from "~/components/organisim/blocks/TextBlock.vue";
 
-import MultimediaBlock from "~/components/organisim/MultimediaBlock.vue";
+import MultimediaBlock from "~/components/organisim/blocks/MultimediaBlock.vue";
 import OrganisimLayoutBlock from "~/components/organisim/LayoutBlock.vue";
 import KnowledgeCheckBlock from "~/components/organisim/KnowledgeCheckBlock.vue";
 import { useTaskStore } from "~/stores/task.store";
@@ -278,7 +282,7 @@ const getTaskNumber = (currentIndex: number) => {
 
 // Add a safe title formatter
 const formatTitle = (title: string | undefined) => {
-  if (!title) return '';
+  if (!title) return "";
   return capitalizeFirstLetter(title);
 };
 </script>

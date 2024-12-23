@@ -21,12 +21,6 @@ export function useClassContentMutation() {
         }
       );
       
-      console.log("Raw API Response:", response);
-      
-      if (!response.data) {
-        throw new Error('No data received from server');
-      }
-      
       return response.data;
     } catch (error) {
       console.error('API Error:', error);
@@ -38,13 +32,18 @@ export function useClassContentMutation() {
     mutationFn: createClassContentMutation,
     onMutate: async (newContent) => {
       const classId = route.params.classId;
+      // Cancel any outgoing refetches
       await queryClient.cancelQueries({ queryKey: ['class-contents', classId] });
 
+      // Snapshot the previous value
       const previousContents = queryClient.getQueryData(['class-contents', classId]);
 
-      queryClient.setQueryData(['class-contents', classId], (old: any[] = []) => {
-        return [...old, newContent];
-      });
+      // Optimistically update to the new value
+      if (previousContents) {
+        queryClient.setQueryData(['class-contents', classId], (old: any) => {
+          return Array.isArray(old) ? [...old, newContent] : [newContent];
+        });
+      }
 
       return { previousContents };
     },
