@@ -27,6 +27,7 @@
     <Error v-if="error" :error="error" :message="error.message" @refetch="refetch" />
     <Loading v-if="isLoading" />
     <div v-else class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 p-6">
+      
       <CourseCardStudent
         v-for="course in courses"
         :key="course.id"
