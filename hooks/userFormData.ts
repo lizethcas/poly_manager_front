@@ -43,7 +43,7 @@ export function useFormData() {
     };
   };
 
-  const updateFormField = (field: string, value: any) => {
+  const updateFormField = (field: keyof FormData, value: any) => {
     formState.value[field] = value;
   };
 

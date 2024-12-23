@@ -29,7 +29,7 @@
                 {{ getTaskNumber(index) }}
               </p>
               <h3 class="text-lg font-bold">
-                {{ capitalizeFirstLetter(task.tittle || '') }}
+                {{ formatTitle(task.tittle) }}
               </h3>
             </div>
             <p class="">{{ task.instructions }}</p>
@@ -274,5 +274,11 @@ const getTaskNumber = (currentIndex: number) => {
   }
 
   return `${mainNumber}.${subNumber}`;
+};
+
+// Add a safe title formatter
+const formatTitle = (title: string | undefined) => {
+  if (!title) return '';
+  return capitalizeFirstLetter(title);
 };
 </script>
