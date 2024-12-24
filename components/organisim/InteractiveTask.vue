@@ -4,8 +4,11 @@
     <li
       v-for="task in menuItems"
       :key="task.type"
-      @click="$emit('select-task', task)"
-      class="flex items-center gap-2 hover:bg-gray-200 rounded cursor-pointer text-sm  text-gray-700 mb-2"
+      @click="selectTask(task)"
+      :class="[
+        'flex items-center gap-2 hover:bg-gray-200 rounded cursor-pointer text-sm text-gray-700 mb-2',
+        selectedTask?.type === task.type ? 'bg-gray-200' : ''
+      ]"
     >
       {{ task.name }}
     </li>
@@ -19,12 +22,20 @@ interface TaskMenuItem {
   type: string;
   title: string;
 }
-// Define props to receive task options from parent
-defineProps<{ menuItems: TaskMenuItem[] }>();
+// Add ref for selected task
+import { ref } from 'vue';
+const selectedTask = ref<TaskMenuItem | null>(null);
 
-// Define emits
-defineEmits<{
+// Define props and emits
+const props = defineProps<{ menuItems: TaskMenuItem[] }>();
+const emit = defineEmits<{
   (e: 'select-task', task: TaskMenuItem): void
 }>();
+
+// Handle task selection
+const selectTask = (task: TaskMenuItem) => {
+  selectedTask.value = task;
+  emit('select-task', task);
+};
 
 </script>

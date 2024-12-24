@@ -11,7 +11,10 @@
     </template>
 
     <template v-else-if="taskTitle == 'info_box'">
-      <h1>Info Box</h1>
+      <InfoBox
+        v-model="taskData.content_details[0].info_type"
+        :type="taskData.content_details[0].info_type"
+      />
     </template>
 
     <div class="flex items-center gap-2 py-4 text-sm">
@@ -32,20 +35,31 @@ import { useTaskStore } from "~/stores/task.store";
 import { createBaseTaskData } from "~/interfaces/task.interface";
 import { useRoute } from "vue-router";
 import { useClassContentMutation } from '~/composables/useClassContentMutation';
+import InfoBox from '~/components/molecule/multipleTask/InfoBox.vue';
 
 const taskStore = useTaskStore();
 const route = useRoute();
 const mutation = useClassContentMutation();
 const title = computed(() => taskStore.getTask("taskTitle"));
-const taskTitle = ref("text_block");
+const taskTitle = ref("info_box");
 const isActive = ref(false);
 
 const taskInstructions = computed(() => taskStore.getTask("instructions"));
 
+interface TextContent {
+  text: string;
+  columns: number;
+}
+
+interface InfoBoxContent {
+  info_type: string;
+}
 
 const taskData = ref({
-  ...createBaseTaskData(String(route.params.classId), taskTitle.value),
-  content_details: [{ text: '', columns: 1 }],
+  ...createBaseTaskData(String(route.params.classId), title.value),
+  content_details: title.value === 'Plain Text'
+    ? [{ text: '', columns: 1 } as TextContent]
+    : [{ info_type: 'attention' } as InfoBoxContent]
 });
 
 watch(
@@ -57,14 +71,25 @@ watch(
         tittle: newValue.title || "",
         instructions: newValue.instructions || "",
       };
+      if (taskTitle.value === 'info_box') {
+        isActive.value = true;
+      } else { 
+        isActive.value = false;
+      }
     }
   },
   { deep: true, immediate: true }
 );
 
 watch(title, (newTask) => {
-  console.log(newTask);
-  taskTitle.value = newTask == "Plain Text" ? "text_block" : "info_box";
+  taskTitle.value = newTask === "Plain Text" ? "text_block" : "info_box";
+  
+  taskData.value = {
+    ...createBaseTaskData(String(route.params.classId), taskTitle.value),
+    content_details: taskTitle.value === 'text_block'
+      ? [{ text: '', columns: 1 }]
+      : [{ info_type: 'attention' }]
+  };
 });
 
 watch(

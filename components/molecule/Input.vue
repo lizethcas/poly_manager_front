@@ -43,11 +43,11 @@ const getHeightClass = computed(() => {
     case 'sm':
       return 'h-10';
     case 'md':
-      return 'h-20';
-    case 'lg':
       return 'h-32';
-    case 'xl':
+    case 'lg':
       return 'h-40';
+    case 'xl':
+      return 'h-60';
     default:
       return 'h-8';
   }

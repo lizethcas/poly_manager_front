@@ -27,7 +27,7 @@
           ]"
           @click="handleShowEditNavigation(index)"
         >
-          <div v-if="task.tittle !== '' && task.content_type !== 'video'">
+          <div v-if="task.tittle !== '' && task.content_type !== 'video' && task.content_type !== 'info_box'">
             <div class="flex justify-start gap-2 my-2">
               <p class="bg-tarawera-200 text-tarawera-800 px-2 py-1 rounded-md">
                 {{ getTaskNumber(index) }}
@@ -36,7 +36,7 @@
                 {{ capitalizeFirstLetter(task.tittle) }}
               </h3>
             </div>
-            <p class="">{{ task.instructions }}</p>
+            <p  >{{ task.instructions }}</p>
           </div>
           <!-- Display content based on content_type -->
           <div class="text-sm text-fuscous-gray-700">
@@ -76,6 +76,10 @@
 
             <VideoTask v-else-if="task.content_type === 'video'" :task="task" :index="getTaskNumber(index)" />
             <AudioTask v-else-if="task.content_type === 'audio'" :task="task" />
+
+            <div v-else-if="task.content_type === 'info_box'">
+              <InfoBoxStudent :task="task" />
+            </div>
           </div>
         </div>
 
@@ -158,6 +162,9 @@ import OrganisimLayoutBlock from "~/components/organisim/blocks/LayoutBlock.vue"
 import KnowledgeCheckBlock from "~/components/organisim/KnowledgeCheckBlock.vue";
 import { useTaskStore } from "~/stores/task.store";
 import MoleculeMultipleTaskFill from "~/components/molecule/multipleTask/Fill.vue";
+import TextBlockModules from "~/components/organisim/TextBlockModules.vue";
+import GalleryLayout from "~/components/organisim/blocks/GalleryLayout.vue";
+import InfoBoxStudent from "~/components/organisim/templatesUsers/students/taskStudents/InfoBoxStudent.vue";
 
 const taskStore = useTaskStore();
 const route = useRoute();
@@ -181,6 +188,7 @@ watch(closeModalHandler, () => {
 
 const openModalHandler = (label: string, name: string) => {
   currentModal.value = { label, name };
+  
   openModal(); // Asegúrate de abrir el modal
 };
 const dataMenu = (label: string) => getDataMenu(label);
@@ -231,10 +239,14 @@ const getCurrentComponent = () => {
       return VideoBlock;
     case "Text block":
       return TextBlock;
+    case "Info block":
+      return TextBlockModules;
     case "Multimedia block":
       return MultimediaBlock;
     case "Knowledge check":
       return KnowledgeCheckBlock;
+    case "Gallery layout":
+      return GalleryLayout;
     default:
       return null; // Devolver null si no hay coincidencia
   }
@@ -242,8 +254,12 @@ const getCurrentComponent = () => {
 
 const handleShowEditNavigation = (index: number) => {
   selectedTaskIndex.value = index;
+  if (classTasks.value?.data) {
+    selectedTask.value = classTasks.value.data[index];
+    console.log('Selected Task:', selectedTask.value);
+  }
   showEditNavigation.value = true;
-  taskStore.setInsertionIndex(index); // Store the index where we want to insert
+  taskStore.setInsertionIndex(index);
 };
 
 const handleAddBlock = () => {
@@ -253,12 +269,13 @@ const handleAddBlock = () => {
 
 
 const getTaskNumber = (currentIndex: number) => {
-  let mainNumber = 1; // This will always be 1 for now
+  if (!classTasks.value?.data) return '';
+
+  let mainNumber = 1;
   let subNumber = 0;
 
-  // Count only tasks with titles up to the current index
   for (let i = 0; i <= currentIndex; i++) {
-    if (classTasks.value.data[i].tittle !== "") {
+    if (classTasks.value.data[i]?.tittle !== "") {
       subNumber++;
       if (i === currentIndex) {
         return `${mainNumber}.${subNumber}`;
@@ -266,8 +283,7 @@ const getTaskNumber = (currentIndex: number) => {
     }
   }
 
-  // If the current task has no title, don't return a number
-  if (classTasks.value.data[currentIndex].tittle === "") {
+  if (!classTasks.value.data[currentIndex]?.tittle) {
     return "";
   }
 

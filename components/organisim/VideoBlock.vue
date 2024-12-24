@@ -2,24 +2,24 @@
   <form @submit.prevent="handleSave">
     <h3
       class="text-s font-bold text-tarawera-700 my-4"
-      v-show="taskTitle === 'video'"
+      v-show="taskTitle === 'Video'"
     >
       Main Video:
     </h3>
     <h3
       class="text-s font-bold text-tarawera-700 my-4"
-      v-show="taskTitle === 'audio'"
+      v-show="taskTitle === 'Audio'"
     >
       Audio track:
     </h3>
     <InputFile
-      v-show="taskTitle === 'video'"
+      v-show="taskTitle === 'Video'"
       fileType="video"
       icon="true"
       @file-selected="form.video = $event"
     />
     <InputFile
-      v-show="taskTitle === 'audio'"
+      v-show="taskTitle === 'Audio'"
       fileType="audio"
       icon="true"
       @file-selected="form.audio = $event"
@@ -30,12 +30,12 @@
       size="lg"
       container-class="py-2"
       @update:modelValue="
-        taskTitle === 'video'
+        taskTitle === 'Video'
           ? (form.video_transcription = $event)
           : (form.audio_transcription = $event)
       "
     />
-    <template v-if="taskTitle === 'video'">
+    <template v-if="taskTitle === 'Video'">
       <h3 class="text-s font-bold text-tarawera-700 my-4">Background image:</h3>
       <InputFile
         fileType="image"
@@ -62,7 +62,7 @@
 </template>
 <script setup lang="ts">
 import { useRoute } from "vue-router";
-const taskTitle = ref<string>("video");
+const taskTitle = ref<string>("Video");
 import { useTaskStore } from "~/stores/task.store";
 import { useMutation, useQueryClient } from "@tanstack/vue-query";
 import { apiRoutes } from "~/services/routes.api";
@@ -130,18 +130,18 @@ const handleSave = async () => {
 
   // Add basic form data
   formData.append("class_id", route.params.classId.toString());
-  formData.append("content_type", taskTitle.value);
+  formData.append("content_type", taskTitle.value.toLowerCase());
   formData.append("tittle", form.tittle);
   formData.append("instructions", form.instructions);
   formData.append("video_transcription", form.video_transcription);
   formData.append("audio_transcription", form.audio_transcription);
 
 
-  if (taskTitle.value === "video") {
+  if (taskTitle.value === "Video") {
     formData.append("image", form.image as Blob);
     formData.append("video", form.video as Blob);
   }
-  if (taskTitle.value === "audio") {
+  if (taskTitle.value === "Audio") {
     formData.append("audio", form.audio as Blob);
   }
 

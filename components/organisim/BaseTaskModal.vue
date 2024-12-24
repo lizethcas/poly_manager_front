@@ -42,7 +42,7 @@
               <MoleculeInput
                 :title="'Instructions'"
                 type="text_area"
-                size="lg"
+                :size="taskTitle === 'Info Box' ? 'xl' : 'lg'"
                 class="text-md"
                 v-model="formData.instructions"
               />
@@ -79,6 +79,7 @@ interface TaskMenuItem {
   type: string | undefined;
 }
 
+const taskTitle = ref("");
 const taskStore = useTaskStore();
 const formData = ref({
   title: "",
@@ -100,6 +101,9 @@ const emit = defineEmits(["update:modelValue", "close"]);
 // Add handler for task selection
 const handleTaskSelection = (task: TaskMenuItem) => {
   taskStore.addTask("taskTitle", task.name);
+
+  taskTitle.value = task.name;
+  console.log(taskTitle.value);
   
 };
 </script>
