@@ -1,0 +1,1 @@
+import{u as r,g as t,b as a}from"./oP2VfrXJ.js";const n=e=>r({queryKey:["classes",e],queryFn:async()=>{try{const s=await t(a.classes.getByCourseId(e));if(!s)throw new Error("No classes found");return s.data}catch(s){throw console.error("Error fetching classes:",s),s}},refetchOnMount:"always",refetchOnWindowFocus:!0,staleTime:0});export{n as u};

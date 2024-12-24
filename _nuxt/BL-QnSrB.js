@@ -1,0 +1,1 @@
+import{e as o,o as s,c as t,a,t as r,x as n}from"./C88qKsPz.js";const c={class:"shadow-md shadow-fuscous-gray-300 rounded-lg p-4 my-"},d={class:"text-md font-bold text-primary-color"},_=o({__name:"TaskLayout",props:{title:{}},setup(l){return(e,p)=>(s(),t("div",c,[a("h2",d,r(e.title),1),n(e.$slots,"default")]))}});export{_};

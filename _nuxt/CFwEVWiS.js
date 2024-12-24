@@ -1,0 +1,1 @@
+import{e as t,o as s,c as o,a}from"./C88qKsPz.js";const n={class:"py-6"},d=t({__name:"student",setup(r){return(l,e)=>(s(),o("div",n,e[0]||(e[0]=[a("h1",{class:"text-3xl font-bold text-gray-900"},"Portal del student",-1)])))}});export{d as default};
