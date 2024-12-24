@@ -72,7 +72,7 @@ export const multimediaBlockOptions : TaskOption[] = [
 export const textBlockOptions : TaskOption[] = [
   {
     name: "Plain Text",
-    type: "plain_text",
+    type: "text_block",
   },
   {
     name: "Info Box",

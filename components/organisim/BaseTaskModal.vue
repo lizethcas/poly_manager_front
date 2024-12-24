@@ -95,10 +95,11 @@ watch(
   { deep: true }
 );
 
-const emit = defineEmits(["update:modelValue", "close", "select-task"]);
+const emit = defineEmits(["update:modelValue", "close"]);
 
 // Add handler for task selection
 const handleTaskSelection = (task: TaskMenuItem) => {
-  emit("select-task", task);
+  taskStore.addTask("taskTitle", task.name);
+  
 };
 </script>

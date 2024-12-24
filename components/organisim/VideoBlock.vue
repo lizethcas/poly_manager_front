@@ -125,7 +125,6 @@ const classContentMutation = useMutation({
 });
 
 const isLoading = computed(() => classContentMutation.isPending.value);
-
 const handleSave = async () => {
   const formData = new FormData();
 
@@ -136,6 +135,8 @@ const handleSave = async () => {
   formData.append("instructions", form.instructions);
   formData.append("video_transcription", form.video_transcription);
   formData.append("audio_transcription", form.audio_transcription);
+
+
   if (taskTitle.value === "video") {
     formData.append("image", form.image as Blob);
     formData.append("video", form.video as Blob);

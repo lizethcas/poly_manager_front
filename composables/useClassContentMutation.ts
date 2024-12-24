@@ -8,8 +8,6 @@ export function useClassContentMutation() {
 
   const createClassContentMutation = async (formData: FormData) => {
     try {
-      console.log('Sending FormData:', Object.fromEntries(formData.entries()));
-
       const response = await axiosInstance.post(
         apiRoutes.classContent,
         formData,
@@ -20,6 +18,7 @@ export function useClassContentMutation() {
           },
         }
       );
+      console.log("response", response.data);
       
       return response.data;
     } catch (error) {
@@ -38,10 +37,14 @@ export function useClassContentMutation() {
       // Snapshot the previous value
       const previousContents = queryClient.getQueryData(['class-contents', classId]);
 
-      // Optimistically update to the new value
+      // Optimistically update with proper index
       if (previousContents) {
         queryClient.setQueryData(['class-contents', classId], (old: any) => {
-          return Array.isArray(old) ? [...old, newContent] : [newContent];
+          if (!Array.isArray(old)) {
+            return [old];
+          }
+          const newIndex = old.length;
+          return [...old, newContent];
         });
       }
 

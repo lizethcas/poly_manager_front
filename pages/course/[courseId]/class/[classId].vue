@@ -27,7 +27,7 @@
           ]"
           @click="handleShowEditNavigation(index)"
         >
-          <div v-if="task.tittle !== ''">
+          <div v-if="task.tittle !== '' && task.content_type !== 'video'">
             <div class="flex justify-start gap-2 my-2">
               <p class="bg-tarawera-200 text-tarawera-800 px-2 py-1 rounded-md">
                 {{ getTaskNumber(index) }}
@@ -74,7 +74,7 @@
               :data="task.content_details.word_bank"
             />
 
-            <VideoTask v-else-if="task.content_type === 'video'" :task="task" />
+            <VideoTask v-else-if="task.content_type === 'video'" :task="task" :index="getTaskNumber(index)" />
             <AudioTask v-else-if="task.content_type === 'audio'" :task="task" />
           </div>
         </div>
@@ -123,7 +123,6 @@
         v-model="formData"
         class="max-h-[80vh] overflow-y-auto"
         :icon="currentModal.name"
-        @select-task="handleSelectTask"
         :menuItems="dataMenu(currentModal.label)"
       >
         <div class="pb-10">
@@ -155,7 +154,7 @@ import VideoBlock from "~/components/organisim/VideoBlock.vue";
 import TextBlock from "~/components/organisim/blocks/TextBlock.vue";
 
 import MultimediaBlock from "~/components/organisim/blocks/MultimediaBlock.vue";
-import OrganisimLayoutBlock from "~/components/organisim/LayoutBlock.vue";
+import OrganisimLayoutBlock from "~/components/organisim/blocks/LayoutBlock.vue";
 import KnowledgeCheckBlock from "~/components/organisim/KnowledgeCheckBlock.vue";
 import { useTaskStore } from "~/stores/task.store";
 import MoleculeMultipleTaskFill from "~/components/molecule/multipleTask/Fill.vue";
@@ -252,11 +251,6 @@ const handleAddBlock = () => {
   showEditNavigation.value = true;
 };
 
-const handleSelectTask = (task: any) => {
-  taskStore.addTask("taskTitle", task.type);
-  selectedTask.value = task;
-  console.log(task.value);
-};
 
 const getTaskNumber = (currentIndex: number) => {
   let mainNumber = 1; // This will always be 1 for now
@@ -280,9 +274,5 @@ const getTaskNumber = (currentIndex: number) => {
   return `${mainNumber}.${subNumber}`;
 };
 
-// Add a safe title formatter
-const formatTitle = (title: string | undefined) => {
-  if (!title) return "";
-  return capitalizeFirstLetter(title);
-};
+
 </script>

@@ -37,14 +37,15 @@
 import TaskLayout from "~/layouts/TaskLayout.vue";
 import OrganisimMultipleTasks from "~/components/organisim/MultipleTasks.vue";
 import { useDescription } from "~/composables/useDescription";
+import { useTaskStore } from "~/stores/task.store";
 
+const taskStore = useTaskStore();
+const taskTitle = ref<string>("Multiple choice");
+const title = computed(() => taskStore.getTask("taskTitle"));
 
-interface Props {
-  taskTitle: string;
-}
+watch(title, (newTask) => {
+  taskTitle.value = newTask;
+});
 
-
-
-defineProps<Props>();
 const { getTaskDescription } = useDescription();
 </script>
