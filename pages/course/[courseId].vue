@@ -1,63 +1,114 @@
 <template>
-    <fragment v-if="course">
-        <header class="pt-20 px-14 text-title-color mb-15 flex">
-            <img src="../../assets/images/back-button-round.webp" alt="regresar una pagina"
-                class="w-10 h-10 cursor-pointer" @click="navigateTo('/')" />
+    <!-- Contenedor de cargando que ocupa toda la página -->
+    <div v-if="isLoading" class="fixed inset-0 flex items-center justify-center bg-gray-800 bg-opacity-50 z-50">
+        <p class="text-title-color text-2xl">Cargando...</p>
+    </div>
 
-
-            <img :src="course.cover" :alt="course.course_name" class="w-52 h-44 object-contain" />
-
-            <div>
-                <h2 class="text-black font-bold text-2xl">{{ course.course_name }}</h2>
-                <div class="flex items-center">
-                    <div
-                        class="bg-green-high text-green-low  rounded-full w-14 h-8 flex items-center justify-center ">
-                        <p class="text-s font-bold mx-4">{{ course.level.split(".")[0] }}</p>
+    <!-- El contenido del curso una vez cargado -->
+    <div v-if="course">
+        <header class=" text-title-color mb-4 flex items-center">
+            <img src="~/assets/images/back-button-round.webp" alt="regresar una pagina"
+                class="w-10 h-10 cursor-pointer items-center" @click="handleBackNavigation" />
+            <div class="flex items-center">
+                <img v-if="course.cover" :src="getCoverUrl(course.cover)" alt=""
+                    class="mx-4 object-cover w-28 h-28 border-2 rounded-xl" />
+                <div class="flex flex-col justify-start items-start">
+                    <h2 class="text-fuscous-950 font-bold text-2xl">{{ course.course_name }}</h2>
+                    <div class="flex items-center">
+                        <div :class="['rounded-full w-10  flex items-start ', getLevelColor(course.level)]">
+                            <p :class="[
+                                'text-sm font-bold rounded-full px-2 py-1',
+                                getLevelColor(course.level, true)
+                            ]" v-if="course.level">
+                                {{ course.level.split(".")[0] }}
+                            </p>
+                        </div>
+                        <h3 v-if="course.level" class="text-sm font-bold" :class="getLevelColor(course.level)">
+                            {{ course.level.split(' ').length > 1
+                                ? (course.level.split(' ')[2]
+                                    ? `${course.level.split(' ')[1]} ${course.level.split(' ')[2]}`
+                                    : course.level.split(' ')[1])
+                                : course.level.split(' ')[1] }}
+                        </h3>
                     </div>
-                    <h3 class="text-m font-bold text-green-low mx-4">{{ `${course.level.split(" ")[1]}
-                        ${course.level.split("")[2]}` }}
-                    </h3>
-                </div>
 
-                <div class=" flex items-center w-10/12 justify-between mt-4">
-                    <p class="text-gray-high border-2 border-gray-light rounded-full px-2">published</p>
-                    <p class="text-gray-high border-2 border-gray-light rounded-full px-2">2</p>
-                    <p class="text-gray-high border-2 border-gray-light rounded-full px-2 ">45</p>
+                    <div class=" text-xs flex items-start w-10/12 mt-4">
+                        <p class="text-gray-high border-2 border-gray-light rounded-full px-2">published</p>
+                        <p class="text-gray-high border-2 border-gray-light rounded-full px-2">2</p>
+                        <p class="text-gray-high border-2 border-gray-light rounded-full px-2 ">45</p>
+                    </div>
                 </div>
             </div>
-
-
         </header>
-        <main>
-            <!-- Navigation tabs -->
-            <nav class="my-4">
-                <ul class="flex gap-4">
-                    <li>
-                        <NuxtLink :to="`/course/${courseId}`" class="hover:text-blue-500">Lessons</NuxtLink>
-                    </li>
-                    <li>
-                        <NuxtLink :to="`/course/${courseId}/students`" class="hover:text-blue-500">Students</NuxtLink>
-                    </li>
-                    <li>
-                        <NuxtLink :to="`/course/${courseId}/clases`" class="hover:text-blue-500">Statistics</NuxtLink>
-                    </li>
-                </ul>
-            </nav>
 
-            <!-- Router view for nested routes -->
-            <NuxtPage />
+        <main class="px-14 mb-4">
+            <!-- Navigation tabs -->
+            <NuxtLayout>
+                <nav class="flex justify-start gap-4 border-b border-gray-300">
+                    <ul class="flex gap-8">
+                        <li>
+                            <NuxtLink :to="`/course/${routeCourseId}`"
+                                class="relative pb-2 font-bold text-gray-60 hover:text-tarawera-700" :class="{
+                                    'text-tarawera-700 underline-active': $route.path === `/course/${routeCourseId}`
+                                }">
+                                Lessons
+                            </NuxtLink>
+                        </li>
+                        <li>
+                            <NuxtLink :to="`/course/${routeCourseId}/students`"
+                                class="relative pb-2 font-medium text-gray-60 hover:text-tarawera-700" :class="{
+                                    'text-tarawera-700 underline-active': $route.path === `/course/${routeCourseId}/students`
+                                }">
+                                Students
+                            </NuxtLink>
+                        </li>
+                        <li>
+                            <NuxtLink :to="`/course/${routeCourseId}/statistics`"
+                                class="relative pb-2 font-medium text-gray-60 hover:text-tarawera-700" :class="{
+                                    'text-tarawera-700 underline-active': $route.path === `/course/${routeCourseId}/statistics`
+                                }">
+                                Statistics
+                            </NuxtLink>
+                        </li>
+                    </ul>
+                </nav>
+
+                <!-- Render the route components here -->
+                <NuxtPage />
+            </NuxtLayout>
         </main>
-    </fragment>
+    </div>
 </template>
 
+
 <script setup lang="ts">
-import { useCourseStore } from '~/stores/courseStore';
+import { computed } from 'vue';
+import { useRoute } from 'vue-router';
+import { useGetColor } from '~/composables/useGetColor';
+import { useCoursesQuery } from '~/composables/useCourseQuery';
+import type { CourseForm } from '~/interfaces/modal.interface';
+
 
 const route = useRoute();
-const courseStore = useCourseStore();
+const { getLevelColor } = useGetColor();
+const { getCoverUrl } = useGetCover();
 
-const courseId = route.params.courseId;
-const course = computed(() =>
-    courseStore.courses.find(c => c.courseId === courseId)
-);
+const routeCourseId = route.params.courseId as string;
+
+// Use the shared query composable
+const { data: courses, isLoading, error } = useCoursesQuery()
+
+// Get the specific course using computed
+const course = computed(() => {
+    if (!courses.value) return null;
+    return courses.value.find((course: CourseForm) => course.id === Number(routeCourseId));
+});
+
+const handleBackNavigation = () => {
+  if (route.path.includes('/class/')) {
+    navigateTo(`/course/${routeCourseId}`);
+  } else {
+    navigateTo('/courses/');
+  }
+};
 </script>

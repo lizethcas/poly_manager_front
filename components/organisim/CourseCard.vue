@@ -1,28 +1,82 @@
 <template>
-  <div v-if="courseStore.courses.length > 0" v-for="course in courseStore.courses" @click="navigateTo(`/course/${course.courseId}`)"
-    class="flex justify-between border-fresh-green border-2 rounded-xl cursor-pointer my-4">
-    <div class="flex  w-1/2 my-4">
-      <div class="bg-green-high text-green-low  rounded-full w-14 h-14 flex items-center justify-center mx-4">
-        <p class="text-xl font-bold">{{ course.level.split(".")[0] }}</p>
+  <p v-if="!coursesData" class="text-title-color">no hay cursos</p>
+  <div v-if="coursesData.length > 0" v-for="course in coursesData.slice().reverse()" :key="course.id"
+    @click="navigateToCourse(course.id)"
+    class="w-full m-auto flex  bg-white border rounded-xl cursor-pointer mt-4 hover:scale-105 transition-all duration-300 p-2">
+    <!-- Course Image -->
+    <div class="rounded-xl">
+      <img v-if="course.cover" :src="getCoverUrl(course.cover)" alt="" class="rounded-xl object-cover w-20 h-20" />
+    </div>
+
+    <!-- Course Info -->
+
+    <div class="flex flex-col ml-4 flex-grow justify-between">
+      <div class="flex items-center gap-2">
+        <h2 class="text-fuscous-gray-600 font-bold text-lg">{{ course.course_name }}</h2>
+        <!-- Level Badge -->
+
       </div>
-      <div>
-        <h3 class="text-xl font-bold text-green-low">{{ `${course.level.split(" ")[1]} ${course.level.split(" ")[2]}` }}
-        </h3>
-        <h2 class="text-gray-high font-bold text-xl">{{ course.course_name }}</h2>
-        <div class=" flex items-center w-10/12 justify-between mt-4">
-          <p class="text-gray-high border-2 border-gray-light rounded-full px-2">published</p>
-          <p class="text-gray-high border-2 border-gray-light rounded-full px-2">2</p>
-          <p class="text-gray-high border-2 border-gray-light rounded-full px-2 ">45</p>
+
+      <!-- Course Name -->
+
+
+      <!-- Stats -->
+      <div class="flex items-center gap-4 mt-1">
+        <span class="bg-emerald-100 text-emerald-700 text-xs px-2 py-1 rounded-full">published</span>
+        <div class="flex items-center gap-2 text-gray-600 text-xs">
+          <span class="flex items-center">
+            <i class="fas fa-user mr-1"></i> {{ course.students || 25 }} students
+          </span>
+          <span class="flex items-center">
+            <i class="fas fa-book mr-1"></i> {{ course.lessons || 45 }} lessons
+          </span>
         </div>
       </div>
     </div>
-    <div>
-      <img :src="course.cover ?? undefined" alt="edit" class="rounded-[14px] w-36 h-auto" />
+
+    <!-- Action Buttons -->
+    <div class="flex flex-col justify-between">
+      <div class="flex items-center gap-2">
+        <span
+          :class="[getLevelColor(course.level, true), 'text-xs font-semibold px-2 py-1 rounded-full text-fuscous-gray-950']">
+          {{ course.level.split(".")[0] }}
+        </span>
+        <!-- Course Type -->
+        <span
+          :class="[getLevelColor(course.level, true), 'text-xs font-semibold px-2 py-1 rounded-full text-fuscous-gray-950']">{{
+            course.category }}</span>
+      </div>
+      <div class="text-xs flex items-center gap-2"> 
+        <button class="text-blue-500 px-4 py-1 rounded-full border border-blue-500 ">preview</button>
+        <button class="text-blue-500 px-4 py-1 rounded-full border border-blue-500 text-xs">edit</button>
+      </div>
+
     </div>
   </div>
 </template>
+
 <script lang="ts" setup>
-import { useCourseStore } from '~/stores/courseStore';
-const courseStore = useCourseStore();
+import { useGetColor } from '~/composables/useGetColor';
+import { useGetCover } from '~/composables/useGetcover';
+
+// Define las props
+interface Props {
+  coursesData?: any[] // Reemplaza 'any' con la interfaz correcta de tus cursos
+}
+
+const props = defineProps<Props>()
+
+const { getLevelColor } = useGetColor();
+const { getCoverUrl } = useGetCover();
+
+const navigateToCourse = (courseId: number) => {
+  // Verificar que el ID existe antes de navegar
+  const course = props.coursesData?.find(c => c.id === courseId);
+  if (course) {
+    navigateTo(`/course/${courseId}`);
+  } else {
+    console.error('Curso no encontrado');
+  }
+};
 
 </script>

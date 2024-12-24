@@ -1,4 +1,3 @@
-// https://nuxt.com/docs/api/configuration/nuxt-config
 import vuetify, { transformAssetUrls } from "vite-plugin-vuetify";
 
 export default defineNuxtConfig({
@@ -8,8 +7,6 @@ export default defineNuxtConfig({
   colorMode: {
     preference: "light",
   },
-
-  
   postcss: {
     plugins: {
       tailwindcss: {},
@@ -19,17 +16,16 @@ export default defineNuxtConfig({
   compatibilityDate: "2024-04-03",
   devtools: { enabled: true },
   modules: [
+    "@hebilicious/vue-query-nuxt",
     "@nuxt/ui",
     "@nuxtjs/tailwindcss",
-    (_options, nuxt) => {
-      nuxt.hooks.hook("vite:extendConfig", (config) => {
-        // @ts-expect-error
-        config.plugins.push(vuetify({ autoImport: true }));
-      });
-    },
-    '@pinia/nuxt',
+    "@pinia/nuxt",
+    "@pinia-plugin-persistedstate/nuxt",
   ],
 
+  pinia: {
+    storesDirs: ["./stores/**", "./custom-folder/stores/**"],
+  },
   app: {
     head: {
       link: [
@@ -53,14 +49,14 @@ export default defineNuxtConfig({
         transformAssetUrls,
       },
     },
+    plugins: [
+      vuetify({ autoImport: true }), // Agrega vuetify directamente aquí
+    ],
   },
   tailwindcss: {
-    cssPath: "~/assets/css/tailwind.css", // Asegúrate de que Tailwind se importe correctamente sin los estilos base
+    cssPath: "~/assets/css/tailwind.css",
   },
   runtimeConfig: {
-    autoImports: [
-      'defineStore',
-      'storeToRefs'
-    ],
+    autoImports: ["defineStore", "storeToRefs"], // Esto normalmente no se coloca en runtimeConfig, verifica si es necesario.
   },
 });

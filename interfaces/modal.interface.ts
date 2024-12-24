@@ -4,18 +4,17 @@ export interface ModalProps {
   options?: string[];
 }
 
-
 export interface FormDataModal {
-    [key: string]: string;
+  [key: string]: string;
 }
-
 
 export interface CourseForm {
   course_name: string;
   description: string;
-  cover: string | null;
+  cover: File | string | null;
   bullet_points: string[];
   category: string;
   level: string;
-  courseId: string;
+  id: number;
+  image?: File | null;
 }

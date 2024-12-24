@@ -1,21 +1,89 @@
 <template>
-  <div>
-    <NuxtPage />
-  </div>
+    <NuxtLayout>
+        <div class="min-h-screen bg-gray-50 flex">
+            <!-- Sidebar -->
+            <div class="w-64 bg-white shadow-sm fixed h-full">
+                <!-- Logo section -->
+                <div class="px-6 py-4 border-b">
+                    <NuxtLink  class="flex items-center">
+                        <span class="text-blue-600 font-bold text-xl">PolyAcademy</span>
+                    </NuxtLink>
+                </div>
+
+                <!-- Navigation Links -->
+                <nav class="mt-6">
+                    <div class="px-4 space-y-2">
+                        <NuxtLink to="/dashboard"
+                            class="flex items-center px-4 py-2 text-gray-700 hover:bg-gray-100 rounded-md"
+                            :class="{ 'bg-blue-50 text-blue-600': $route.path === '/dashboard' }"
+                            @click="navigateToDashboard('student')">
+                            <span class="mr-3">
+                                <i class="fas fa-home"></i>
+                            </span>
+                            Dashboard Student
+                        </NuxtLink>
+                        <NuxtLink to="/dashboard"
+                            class="flex items-center px-4 py-2 text-gray-700 hover:bg-gray-100 rounded-md"
+                            :class="{ 'bg-blue-50 text-blue-600': $route.path === '/dashboard' }"
+                            @click="navigateToDashboard('teacher')">
+                            <span class="mr-3">
+                                <i class="fas fa-home"></i>
+                            </span>
+                            Dashboard Teacher
+                        </NuxtLink>
+                        <NuxtLink to="/courses"
+                            class="flex items-center px-4 py-2 text-gray-700 hover:bg-gray-100 rounded-md"
+                            @click="navigateToDashboard('student')">
+                            <span class="mr-3">
+                                <i class="fas fa-book"></i>
+                            </span>
+                            Courses estudents
+                        </NuxtLink>
+                        <NuxtLink to="/courses"
+                            class="flex items-center px-4 py-2 text-gray-700 hover:bg-gray-100 rounded-md"
+                            @click="navigateToDashboard('teacher')">
+                            <span class="mr-3">
+                                <i class="fas fa-book"></i>
+                            </span>
+                            Courses teacher
+                        </NuxtLink>
+                        <NuxtLink 
+                            class="flex items-center px-4 py-2 text-gray-700 hover:bg-gray-100 rounded-md">
+                            <span class="mr-3">
+                                <i class="fas fa-users"></i>
+                            </span>
+                            Students
+                        </NuxtLink>
+                        <!-- Add more menu items as needed -->
+                    </div>
+                </nav>
+            </div>
+
+            <!-- Main Content Area -->
+            <div class="flex-1 ml-64">
+                <!-- Header -->
+                <header class="bg-white shadow-sm">
+                   
+
+                </header>
+
+                <!-- Main Content -->
+                <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
+                    
+                    <NuxtPage />
+                </main>
+            </div>
+            
+        </div>
+        
+    </NuxtLayout>
 </template>
 
 <script setup lang="ts">
-import { useCourseStore } from '@/stores/courseStore';
+import { useTaskStore } from '~/stores/task.store';
 
-const courseStore = useCourseStore();
-
-
-console.log(courseStore.courses);
-
-</script>
-
-<style scoped>
-body {
-  font-size: 14px;
+const taskStore = useTaskStore()
+const navigateToDashboard = (userType: string) => {
+    taskStore.addTask('userType', userType)
 }
-</style>
+</script>
