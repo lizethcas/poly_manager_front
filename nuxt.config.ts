@@ -61,4 +61,9 @@ export default defineNuxtConfig({
     autoImports: ["defineStore", "storeToRefs"], // Esto normalmente no se coloca en runtimeConfig, verifica si es necesario.
   },
   target: "static", // Configura Nuxt para generar archivos estáticos
+  nitro: {
+    prerender: {
+      routes: ['/courses', '/student', '/dashboard', '/teacher']
+    }
+  }
 });
