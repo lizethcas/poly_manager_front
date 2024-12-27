@@ -1,5 +1,5 @@
 <template>
-  <template v-if="!isLoading" class="flex items-center">
+  <div v-if="!isLoading" class="flex items-center">
     <img
       src="~/assets/images/back-button-round.webp"
       alt="regresar una pagina"
@@ -7,7 +7,7 @@
       @click="handleBackNavigation"
     />
     <CourseCardStudent :courses="currentCourse" />
-  </template>
+  </div>
   <ClassCardStudent />
 </template>
 

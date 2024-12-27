@@ -2,7 +2,7 @@
   <p v-if="!coursesData" class="text-title-color">no hay cursos</p>
   <div v-if="coursesData.length > 0" v-for="course in coursesData.slice().reverse()" :key="course.id"
     @click="navigateToCourse(course.id)"
-    class="w-full m-auto flex  bg-white border rounded-xl cursor-pointer mt-4 hover:scale-105 transition-all duration-300 p-2">
+    class="w-full  flex  bg-white border rounded-xl cursor-pointer mt-4 hover:scale-105 transition-all duration-300 p-2">
     <!-- Course Image -->
     <div class="rounded-xl">
       <img v-if="course.cover" :src="getCoverUrl(course.cover)" alt="" class="rounded-xl object-cover w-20 h-20" />

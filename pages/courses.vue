@@ -1,14 +1,14 @@
 <template>
   <SearchInput />
   <div class="w-full" v-if="userType === 'teacher'">
-    <header class="pt-10 px-14 text-title-color mb-4 m-auto">
-      <UDivider class="border-gray-500 py-6" type="solid"></UDivider>
+    <header class=" text-title-color mb-">
+      
 
       <h2 class="mt-4 font-bold text-m">{{ homeData.subTitle }}</h2>
       <AddCourseButton @handleAdd="handleAdd" :text="createCourse.buttonText" />
     </header>
     <main
-      class="px-14 w-4/5 text-title-color mb-24 flex flex-wrap items-center justify-evenly"
+      class="w-4/5 text-title-color mb-24 flex flex-wrap items-center justify-evenly"
     >
       <div
         v-if="isOpen"
