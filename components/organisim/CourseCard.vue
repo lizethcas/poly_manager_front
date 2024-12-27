@@ -48,7 +48,11 @@
         <!-- Added dropdown menu for mobile -->
    
           <Icon
+<<<<<<< HEAD
           
+=======
+            @click.stop="toggleDropdown(course.id)"
+>>>>>>> 57538f3 (Refactor app layout and components for improved responsiveness and styling)
             name="mynaui:dots-solid"
             size="30"
             class="md:hidden"

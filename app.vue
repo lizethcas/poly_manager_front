@@ -1,6 +1,16 @@
 <template>
   <NuxtLayout>
     <div class="min-h-screen bg-gray-50 flex">
+<<<<<<< HEAD
+=======
+      <!-- Hamburger Menu Button (Mobile) -->
+      <!--  <button
+        @click="toggleSidebar"
+        class="lg:hidden fixed top-4 left-4 z-20 p-2"
+      >
+        <i class="fas fa-bars text-2xl">menu</i>
+      </button> -->
+>>>>>>> 57538f3 (Refactor app layout and components for improved responsiveness and styling)
       <div class="h-fit p-2">
         <Icon
           @click="toggleSidebar"
@@ -14,7 +24,11 @@
       <div
         :class="`${
           isSidebarOpen ? 'translate-x-0' : '-translate-x-full'
+<<<<<<< HEAD
         } lg:translate-x-0 w-48 lg:w-64 bg-white shadow-sm fixed h-full transition-transform duration-300 ease-in-out `"
+=======
+        } lg:translate-x-0 w-48 lg:w-64 bg-white shadow-sm fixed h-full transition-transform duration-300 ease-in-out z-10`"
+>>>>>>> 57538f3 (Refactor app layout and components for improved responsiveness and styling)
       >
         <!-- Logo section -->
         <div class="px-6 py-4 border-b">
