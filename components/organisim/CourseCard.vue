@@ -23,13 +23,31 @@
       <!-- Stats -->
       <div class="flex items-center gap-4 mt-1">
         <span class="bg-emerald-100 text-emerald-700 text-xs px-2 py-1 rounded-full">published</span>
-        <div class="flex items-center gap-2 text-gray-600 text-xs">
+        <!-- Modified stats section with responsive classes -->
+        <div class="hidden md:flex items-center gap-2 text-gray-600 text-xs">
           <span class="flex items-center">
             <i class="fas fa-user mr-1"></i> {{ course.students || 25 }} students
           </span>
           <span class="flex items-center">
             <i class="fas fa-book mr-1"></i> {{ course.lessons || 45 }} lessons
           </span>
+        </div>
+        <!-- Added dropdown menu for mobile -->
+        <div class="relative md:hidden">
+          <button @click.stop="toggleDropdown(course.id)" class="p-1">
+            <i class="fas fa-ellipsis-v text-gray-600"></i>
+          </button>
+          <div v-if="activeDropdown === course.id" 
+               class="absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg py-1 z-10">
+            <div class="px-4 py-2 text-xs text-gray-600">
+              <div class="flex items-center mb-2">
+                <i class="fas fa-user mr-1"></i> {{ course.students || 25 }} students
+              </div>
+              <div class="flex items-center">
+                <i class="fas fa-book mr-1"></i> {{ course.lessons || 45 }} lessons
+              </div>
+            </div>
+          </div>
         </div>
       </div>
     </div>
@@ -69,7 +87,20 @@ const props = defineProps<Props>()
 const { getLevelColor } = useGetColor();
 const { getCoverUrl } = useGetCover();
 
+const activeDropdown = ref<number | null>(null);
 
+const toggleDropdown = (courseId: number) => {
+  activeDropdown.value = activeDropdown.value === courseId ? null : courseId;
+};
+
+// Close dropdown when clicking outside
+onMounted(() => {
+  document.addEventListener('click', (e) => {
+    if (activeDropdown.value !== null) {
+      activeDropdown.value = null;
+    }
+  });
+});
 
 const navigateToCourse = (courseId: number) => {
   // Verificar que el ID existe antes de navegar

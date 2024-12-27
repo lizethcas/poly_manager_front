@@ -1,5 +1,5 @@
 <template >
-  <div class="w-4/5">
+    <div class="w-full md:w-4/5">
     <UInput v-model="q" name="q" placeholder="Buscar" icon="i-heroicons-magnifying-glass-20-solid" autocomplete="off"
       :ui="{ icon: { trailing: { pointer: '' } } }" >
       <template #trailing>

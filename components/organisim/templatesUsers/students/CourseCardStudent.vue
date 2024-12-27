@@ -5,7 +5,7 @@
     v-for="course in courses"
     :key="course.id"
     @click="navigateToCourse(course.id)"
-    class="w-4/5 flex bg-white border rounded-xl cursor-pointer mt-2  transition-all duration-300 p-2"
+    class="w-full md:w-4/5 flex bg-white border rounded-xl cursor-pointer mt-2 hover:scale-105 transition-all duration-300 p-2"
   >
     <!-- Move "My Current Course" to the top -->
     <div class="flex flex-col w-full p-1">
