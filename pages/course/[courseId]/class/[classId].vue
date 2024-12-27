@@ -153,6 +153,7 @@ import axiosInstance from "~/services/axios.config";
 import { useRoute } from "vue-router";
 import { useCapitalizerLetter } from "~/composables/useCapitalizerLetter";
 import { useDataMenu } from "~/composables/useDataMenu";
+import { useClassContents } from "~/composables/useClassContents";
 
 import VideoBlock from "~/components/organisim/VideoBlock.vue";
 import TextBlock from "~/components/organisim/blocks/TextBlock.vue";
@@ -192,40 +193,24 @@ const openModalHandler = (label: string, name: string) => {
   openModal(); // Asegúrate de abrir el modal
 };
 const dataMenu = (label: string) => getDataMenu(label);
-// Add the query to fetch tasks
-const {
-  data: classTasks,
-  isLoading,
-  error,
-} = useQuery({
-  queryKey: ["class-contents", classId],
-  queryFn: async () => {
-    const response = await axiosInstance.get(
-      `${apiRoutes.classContent}?class_id=${classId}`
-    );
-    console.log("response", response.data);
-    return response.data;
-  },
-});
+// Replace the existing query with the composable
+const { classContents: classTasks, isLoading, error } = useClassContents(classId);
 
-// You can watch the query results
+// Update the watch to use the new variable name
 watch(classTasks, (newTasks) => {
   if (newTasks?.data) {
-    // Cerrar el modal después de guardar exitosamente
     closeModal();
     showEditNavigation.value = false;
 
-    const currentData = [...newTasks.data]; // Crear una copia del array
+    const currentData = [...newTasks.data];
 
     const insertionIndex = taskStore.insertionIndex;
     if (insertionIndex !== -1) {
-      // Actualizar los datos a través del queryClient
       queryClient.setQueryData(["class-contents", classId], {
         ...newTasks,
         data: currentData,
       });
 
-      // Reset the insertion index
       taskStore.setInsertionIndex(-1);
     }
   }

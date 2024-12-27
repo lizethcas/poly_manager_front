@@ -1,90 +1,79 @@
 <template>
-  <div class="max-w-sm rounded-lg overflow-hidden shadow-lg bg-white">
-    <!-- Course Image -->
-    <div class="relative h-48">
-      <img
-        :src="course.imageUrl"
-        class="w-full h-full object-cover"
-        alt="Course cover"
-      />
-    </div>
-
-    <!-- Course Content -->
-    <div class="p-6">
-      <!-- Course Type and Level -->
-      <div class="flex items-center gap-2 mb-2">
-        <span class="bg-gray-100 px-3 py-1 rounded-full text-sm">
-          {{ course.type }}
-        </span>
-        <div class="flex items-center gap-1">
-          <span
-            class="w-6 h-6 flex items-center justify-center rounded-full bg-green-100 text-green-600 text-sm"
-          >
-            {{ course.level }}
-          </span>
-          <span class="text-green-600 text-sm">
-            {{ course.levelName }}
-          </span>
+  <p v-if="!courses" class="text-title-color">no hay cursos</p>
+  <div
+    v-if="courses"
+    v-for="course in courses"
+    :key="course.id"
+    @click="navigateToCourse(course.id)"
+    class="w-5/6 flex bg-white border rounded-xl cursor-pointer mt-2 transition-all duration-300 p-2"
+  >
+    <!-- Move "My Current Course" to the top -->
+    <div class="flex flex-col w-full p-1">
+      <div
+        class="flex justify-between"
+        v-show="route.path.includes('/course-students')"
+      >
+        <h2 class="text-fuscous-gray-600 font-bold text-lg mb-2 w-contain">
+          My Current Course:
+        </h2>
+        <div class="flex items-center gap-2 text-sm">
+          <p class="text-fuscous-gray-600">Unhide finished classes</p>
+          <AtomosToggle />
         </div>
       </div>
-
-      <!-- Course Title -->
-      <h2 class="text-2xl font-bold text-gray-800 mb-3">
-        {{ course.title }}
-      </h2>
-
-      <!-- Course Description -->
-      <p class="text-gray-600 mb-6">
-        {{ course.description }}
-      </p>
-
-      <!-- Action Button -->
-      <button
-        class="w-full bg-teal-400 hover:bg-teal-500 text-white font-medium py-2 px-4 rounded-lg transition-colors"
-        @click="navigateToCourse(course.id)"
-      >
-        Learn more & enroll
-      </button>
-
-      <!-- Course Features -->
-      <div
-        class="flex items-center justify-between mt-6 pt-6 border-t border-gray-200"
-      >
-        <div class="flex items-center gap-2">
-          <div class="text-purple-600">
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              class="h-5 w-5"
-              viewBox="0 0 20 20"
-              fill="currentColor"
-            >
-              <path
-                d="M2 6a2 2 0 012-2h6a2 2 0 012 2v8a2 2 0 01-2 2H4a2 2 0 01-2-2V6z"
-              />
-              <path
-                d="M14 6a2 2 0 012-2h2a2 2 0 012 2v8a2 2 0 01-2 2h-2a2 2 0 01-2-2V6z"
-              />
-            </svg>
-          </div>
-          <span class="text-sm text-gray-600"
-            >{{ course.lessonCount }} Video Lessons</span
-          >
+      <div class="flex mx-6">
+        <!-- Course Image -->
+        <div class="rounded-xl">
+          <img
+            v-if="course.cover"
+            :src="getCoverUrl(course.cover)"
+            alt=""
+            class="rounded-xl object-cover w-20 h-20"
+          />
         </div>
 
-        <div class="flex items-center gap-2">
-          <div class="text-purple-600">
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              class="h-5 w-5"
-              viewBox="0 0 20 20"
-              fill="currentColor"
-            >
-              <path
-                d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-2 0a6 6 0 11-12 0 6 6 0 0112 0zm-8 2a1 1 0 100-2 1 1 0 000 2zm0 2a3 3 0 100-6 3 3 0 000 6z"
-              />
-            </svg>
+        <!-- Course Info -->
+
+        <div class="flex flex-col ml-4 flex-grow justify-between">
+          <div class="items-center gap-2">
+            <h3 class="text-fuscous-gray-600 font-bold text-lg">
+              {{ course.course_name }}
+            </h3>
+            <!-- Level Badge -->
           </div>
-          <span class="text-sm text-gray-600">Constant Assistance</span>
+
+          <NuxtLink
+            v-if="!route.path.includes('/course-students')"
+            :to="`/course-students/${course.id}`"
+            class="text-blue-500 border-blue-500 text-xs hover:underline"
+          >
+            View the course details
+          </NuxtLink>
+        </div>
+
+        <!-- Action Buttons -->
+        <div
+          class="flex flex-col justify-between"
+          v-show="!route.path.includes('/course-students')"
+        >
+          <div class="flex items-center gap-2">
+            <span
+              :class="[
+                getLevelColor(course.level, true),
+                'text-xs font-semibold px-2 py-1 rounded-full text-fuscous-gray-950',
+              ]"
+            >
+              {{ course.level.split(".")[0] }}
+            </span>
+            <!-- Course Type -->
+            <span
+              :class="[
+                getLevelColor(course.level, true),
+                'text-xs font-semibold px-2 py-1 rounded-full text-fuscous-gray-950',
+              ]"
+              >{{ course.category }}</span
+            >
+          </div>
         </div>
       </div>
     </div>
@@ -93,28 +82,19 @@
 
 <script setup lang="ts">
 import { useRoute } from "vue-router";
+import type { Course } from "~/interfaces/course.interface";
+import { useGetCover } from "~/composables/useGetcover";
+import { useGetColor } from "~/composables/useGetColor";
 
 const route = useRoute();
 
-
-
+const { getCoverUrl } = useGetCover();
+const { getLevelColor } = useGetColor();
 const navigateToCourse = (courseId: number) => {
-  console.log(courseId);
   navigateTo(`/course-students/${courseId}`);
 };
 
-interface Course {
-  imageUrl: string;
-  type: string;
-  level: string;
-  levelName: string;
-  title: string;
-  description: string;
-  lessonCount: number;
-  id: number;
-}
-
 defineProps<{
-  course: Course;
+  courses: Course[];
 }>();
 </script>

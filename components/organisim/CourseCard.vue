@@ -69,6 +69,8 @@ const props = defineProps<Props>()
 const { getLevelColor } = useGetColor();
 const { getCoverUrl } = useGetCover();
 
+
+
 const navigateToCourse = (courseId: number) => {
   // Verificar que el ID existe antes de navegar
   const course = props.coursesData?.find(c => c.id === courseId);

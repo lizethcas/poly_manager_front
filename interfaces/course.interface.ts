@@ -1,4 +1,4 @@
-interface Course {
+export interface Course {
   id: number;
   imageUrl: string;
   type: string;
@@ -7,4 +7,7 @@ interface Course {
   title: string;
   description: string;
   lessonCount: number;
+  cover: string;
+  course_name: string;
+  category: string;
 }
