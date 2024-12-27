@@ -8,7 +8,7 @@
       <AddCourseButton @handleAdd="handleAdd" :text="createCourse.buttonText" />
     </header>
     <main
-      class="w-4/5 text-title-color mb-24 flex flex-wrap items-center justify-evenly"
+      class="w-full md:w-4/5 text-title-color mb-24 flex flex-wrap items-center justify-evenly"
     >
       <div
         v-if="isOpen"
