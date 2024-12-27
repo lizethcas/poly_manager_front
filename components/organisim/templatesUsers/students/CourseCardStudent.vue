@@ -5,11 +5,11 @@
     v-for="course in courses"
     :key="course.id"
     @click="navigateToCourse(course.id)"
-    class="w-5/6 flex bg-white border rounded-xl cursor-pointer mt-2  transition-all duration-300 p-2"
+    class="w-4/5 flex bg-white border rounded-xl cursor-pointer mt-2  transition-all duration-300 p-2"
   >
     <!-- Move "My Current Course" to the top -->
     <div class="flex flex-col w-full p-1">
-      <div class="flex  justify-between"  v-show="route.path.includes('/course-students')">
+      <div class="flex justify-between"  v-show="route.path.includes('/course-students')">
         <h2
           class="text-fuscous-gray-600 font-bold text-lg mb-2 w-contain"
           
@@ -21,7 +21,7 @@
           <AtomosToggle />
         </div>
       </div>
-      <div class="flex mx-6">
+      <div class="flex">
         <!-- Course Image -->
         <div class="rounded-xl">
           <img
@@ -96,7 +96,7 @@ const navigateToCourse = (courseId: number) => {
 };
 
 defineProps<{
-  courses: Course;
+  courses: Course[];
 }>();
 
 

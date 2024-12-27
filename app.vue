@@ -6,14 +6,14 @@
                 <!-- Logo section -->
                 <div class="px-6 py-4 border-b">
                     <NuxtLink  class="flex items-center">
-                        <span class="text-blue-600 font-bold text-xl">PolyAcademy</span>
+                        <span class="text-[#478ADF] font-bold text-md">PolyAcademy</span>
                     </NuxtLink>
                 </div>
 
                 <!-- Navigation Links -->
                 <nav class="mt-6">
                     <div class="px-4 space-y-2">
-                        <NuxtLink to="/dashboard"
+                      <!--   <NuxtLink to="/dashboard"
                             class="flex items-center px-4 py-2 text-gray-700 hover:bg-gray-100 rounded-md"
                             :class="{ 'bg-blue-50 text-blue-600': $route.path === '/dashboard' }"
                             @click="navigateToDashboard('student')">
@@ -30,7 +30,7 @@
                                 <i class="fas fa-home"></i>
                             </span>
                             Dashboard Teacher
-                        </NuxtLink>
+                        </NuxtLink> -->
                         <NuxtLink to="/courses"
                             class="flex items-center px-4 py-2 text-gray-700 hover:bg-gray-100 rounded-md"
                             @click="navigateToDashboard('student')">
@@ -47,13 +47,13 @@
                             </span>
                             Courses teacher
                         </NuxtLink>
-                        <NuxtLink 
+                       <!--  <NuxtLink 
                             class="flex items-center px-4 py-2 text-gray-700 hover:bg-gray-100 rounded-md">
                             <span class="mr-3">
                                 <i class="fas fa-users"></i>
                             </span>
                             Students
-                        </NuxtLink>
+                        </NuxtLink> -->
                         <!-- Add more menu items as needed -->
                     </div>
                 </nav>
