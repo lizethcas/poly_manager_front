@@ -36,7 +36,7 @@
 
         <div class="flex flex-col ml-4 flex-grow justify-between">
           <div class="items-center gap-2">
-            <h3 class="text-fuscous-gray-600 font-bold text-lg">
+            <h3 class="text-fuscous-gray-600 font-bold text-base md:text-lg">
               {{ course.course_name }}
             </h3>
             <!-- Level Badge -->

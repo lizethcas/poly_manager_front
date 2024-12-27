@@ -8,7 +8,7 @@
       >
         <i class="fas fa-bars text-2xl">menu</i>
       </button> -->
-      <div class="p-2">
+      <div class="h-fit p-2">
         <Icon
           @click="toggleSidebar"
           name="solar:list-bold"
@@ -21,7 +21,7 @@
       <div
         :class="`${
           isSidebarOpen ? 'translate-x-0' : '-translate-x-full'
-        } lg:translate-x-0 w-64 bg-white shadow-sm fixed h-full transition-transform duration-300 ease-in-out z-10`"
+        } lg:translate-x-0 w-48 lg:w-64 bg-white shadow-sm fixed h-full transition-transform duration-300 ease-in-out z-10`"
       >
         <!-- Logo section -->
         <div class="px-6 py-4 border-b">
@@ -53,20 +53,20 @@
                         </NuxtLink> -->
             <NuxtLink
               to="/courses"
-              class="flex items-center px-4 py-2 text-gray-700 hover:bg-gray-100 rounded-md"
+              class="flex items-start text-gray-700 hover:bg-gray-100 rounded-md"
               @click="navigateToDashboard('student')"
             >
-              <span class="mr-3">
+              <span class="">
                 <i class="fas fa-book"></i>
               </span>
               Courses estudents
             </NuxtLink>
             <NuxtLink
               to="/courses"
-              class="flex items-center px-4 py-2 text-gray-700 hover:bg-gray-100 rounded-md"
+              class="flex items-start text-gray-700 hover:bg-gray-100 rounded-md"
               @click="navigateToDashboard('teacher')"
             >
-              <span class="mr-3">
+              <span class="">
                 <i class="fas fa-book"></i>
               </span>
               Courses teacher
@@ -96,7 +96,7 @@
         <header class="bg-white shadow-sm"></header>
 
         <!-- Main Content -->
-        <main class="max-w-7xl mx-auto pr-2 sm:px-6 lg:px-8 py-6">
+        <main class="max-w-7xl mx-auto pr-4 lg:px-4 py-6">
           <NuxtPage />
         </main>
       </div>
