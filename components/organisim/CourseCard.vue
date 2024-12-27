@@ -48,7 +48,7 @@
         <!-- Added dropdown menu for mobile -->
    
           <Icon
-            @click.stop="toggleDropdown(course.id)"
+          
             name="mynaui:dots-solid"
             size="30"
             class="md:hidden"

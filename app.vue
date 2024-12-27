@@ -1,13 +1,6 @@
 <template>
   <NuxtLayout>
     <div class="min-h-screen bg-gray-50 flex">
-      <!-- Hamburger Menu Button (Mobile) -->
-      <!--  <button
-        @click="toggleSidebar"
-        class="lg:hidden fixed top-4 left-4 z-20 p-2"
-      >
-        <i class="fas fa-bars text-2xl">menu</i>
-      </button> -->
       <div class="h-fit p-2">
         <Icon
           @click="toggleSidebar"
@@ -21,7 +14,7 @@
       <div
         :class="`${
           isSidebarOpen ? 'translate-x-0' : '-translate-x-full'
-        } lg:translate-x-0 w-48 lg:w-64 bg-white shadow-sm fixed h-full transition-transform duration-300 ease-in-out z-10`"
+        } lg:translate-x-0 w-48 lg:w-64 bg-white shadow-sm fixed h-full transition-transform duration-300 ease-in-out `"
       >
         <!-- Logo section -->
         <div class="px-6 py-4 border-b">
@@ -92,9 +85,6 @@
 
       <!-- Main Content Area -->
       <div class="flex-1 lg:ml-64">
-        <!-- Header -->
-        <header class="bg-white shadow-sm"></header>
-
         <!-- Main Content -->
         <main class="max-w-7xl mx-auto pr-4 lg:px-4 py-6">
           <NuxtPage />

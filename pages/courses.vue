@@ -1,9 +1,8 @@
 <template>
-  <SearchInput />
+  
   <div class="w-full" v-if="userType === 'teacher'">
-    <header class=" text-title-color mb-">
-      
-
+    <header class="text-title-color mb-">
+      <SearchInput />
       <h2 class="mt-4 font-bold text-m">{{ homeData.subTitle }}</h2>
       <AddCourseButton @handleAdd="handleAdd" :text="createCourse.buttonText" />
     </header>
@@ -38,7 +37,6 @@
 
   <template v-else>
     <CourseCardStudent :courses="courses" />
- 
   </template>
 </template>
 
