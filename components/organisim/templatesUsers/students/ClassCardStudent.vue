@@ -1,12 +1,12 @@
 <template>
-  <div class="p-4 p-8 flex flex-col items-end">
+  <div class="mt-4 flex flex-col items-end">
     <div v-if="isPending">Loading...</div>
     <div v-else-if="error">Error: {{ error.message }}</div>
 
     <div
       v-for="(classItem, index) in classes"
       :key="classItem.id"
-      class="bg-white rounded-lg shadow-sm hover:shadow-md transition-all duration-300 mb-4 flex  w-9/12"
+      class="bg-white border rounded-lg shadow-sm hover:shadow-md transition-all duration-300 mb-4 flex  w-9/12"
     >
       <div class="flex flex-col justify-between w-full">
         <div class="flex items-start gap-4 p-4">
@@ -29,7 +29,7 @@
           <!-- Right side image -->
         </div>
         <!-- Bottom status and actions -->
-        <div class="flex items-center justify-center gap-2 p-2 w-full bg-[#DFEAF9]">
+        <div class="flex items-center justify-center gap-2 p-2 w-full bg-[#DFEAF9] rounded-b-lg">
           <div
             class="flex items-center gap-2 bg-gray-100 px-3 py-1 rounded-full"
           >
@@ -60,7 +60,7 @@
         <img
           :src="classItem.cover"
           :alt="classItem.class_name"
-          class="w-full h-48 object-cover rounded-r-lg"
+          class="w-full h-36 object-cover rounded-r-lg"
         />
       </div>
     </div>
