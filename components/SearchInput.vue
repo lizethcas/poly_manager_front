@@ -1,5 +1,5 @@
 <template>
-  <div class="w-full md:w-4/5 relative z-40">
+  <div class="w-full md:w-4/5">
     <UInput
       v-model="q"
       name="q"

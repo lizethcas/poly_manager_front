@@ -1,8 +1,6 @@
 <template>
   <NuxtLayout>
     <div class="min-h-screen bg-gray-50 flex">
-<<<<<<< HEAD
-=======
       <!-- Hamburger Menu Button (Mobile) -->
       <!--  <button
         @click="toggleSidebar"
@@ -10,7 +8,6 @@
       >
         <i class="fas fa-bars text-2xl">menu</i>
       </button> -->
->>>>>>> 57538f3 (Refactor app layout and components for improved responsiveness and styling)
       <div class="h-fit p-2">
         <Icon
           @click="toggleSidebar"
@@ -24,11 +21,7 @@
       <div
         :class="`${
           isSidebarOpen ? 'translate-x-0' : '-translate-x-full'
-<<<<<<< HEAD
-        } lg:translate-x-0 w-48 lg:w-64 bg-white shadow-sm fixed h-full transition-transform duration-300 ease-in-out `"
-=======
-        } lg:translate-x-0 w-48 lg:w-64 bg-white shadow-sm fixed h-full transition-transform duration-300 ease-in-out z-10`"
->>>>>>> 57538f3 (Refactor app layout and components for improved responsiveness and styling)
+        } lg:translate-x-0 w-48 lg:w-64 bg-white shadow-sm fixed h-full transition-transform duration-300 ease-in-out z-20 lg:z-0`"
       >
         <!-- Logo section -->
         <div class="px-6 py-4 border-b">
@@ -63,9 +56,7 @@
               class="flex items-start text-gray-700 hover:bg-gray-100 rounded-md"
               @click="navigateToDashboard('student')"
             >
-              <span class="">
-                <i class="fas fa-book"></i>
-              </span>
+            
               Courses estudents
             </NuxtLink>
             <NuxtLink
@@ -73,9 +64,7 @@
               class="flex items-start text-gray-700 hover:bg-gray-100 rounded-md"
               @click="navigateToDashboard('teacher')"
             >
-              <span class="">
-                <i class="fas fa-book"></i>
-              </span>
+             
               Courses teacher
             </NuxtLink>
             <!--  <NuxtLink 

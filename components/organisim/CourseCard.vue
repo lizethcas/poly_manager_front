@@ -5,7 +5,7 @@
     v-for="course in coursesData.slice().reverse()"
     :key="course.id"
     @click="navigateToCourse(course.id)"
-    class="w-full flex bg-white border rounded-xl cursor-pointer mt-4 hover:scale-105 transition-all duration-300 p-2"
+    class="w-full flex bg-white border rounded-xl cursor-pointer mt-4 hover:scale-105 transition-all duration-300 p-2 "
   >
     <!-- Course Image -->
     <div class="rounded-xl">
@@ -48,11 +48,7 @@
         <!-- Added dropdown menu for mobile -->
    
           <Icon
-<<<<<<< HEAD
-          
-=======
             @click.stop="toggleDropdown(course.id)"
->>>>>>> 57538f3 (Refactor app layout and components for improved responsiveness and styling)
             name="mynaui:dots-solid"
             size="30"
             class="md:hidden"

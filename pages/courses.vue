@@ -1,8 +1,7 @@
 <template>
-  
+  <SearchInput />
   <div class="w-full" v-if="userType === 'teacher'">
-    <header class="text-title-color mb-">
-      <SearchInput />
+    <header class="text-title-color mb-4">
       <h2 class="mt-4 font-bold text-m">{{ homeData.subTitle }}</h2>
       <AddCourseButton @handleAdd="handleAdd" :text="createCourse.buttonText" />
     </header>
