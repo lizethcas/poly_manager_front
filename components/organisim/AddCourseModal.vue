@@ -1,5 +1,5 @@
 <template>
-    <div class="p-5 max-w-7xl m-auto w-full bg-white rounded-lg  h-[90vh] overflow-y-auto">
+    <div class="p-5 max-w-7xl m-auto w-full bg-white rounded-lg h-[90vh] overflow-y-auto ">
         <div class="flex justify-between">
             <h2 class="font-bold text-m">{{ title }}</h2>
             <img src="../../assets/images/close.webp" alt="close create course" class="w-5 h-5 cursor-pointer"

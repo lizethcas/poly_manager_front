@@ -21,7 +21,7 @@
       <div
         :class="`${
           isSidebarOpen ? 'translate-x-0' : '-translate-x-full'
-        } lg:translate-x-0 w-48 lg:w-64 bg-white shadow-sm fixed h-full transition-transform duration-300 ease-in-out z-10`"
+        } lg:translate-x-0 w-48 lg:w-64 bg-white shadow-sm fixed h-full transition-transform duration-300 ease-in-out z-20 lg:z-0`"
       >
         <!-- Logo section -->
         <div class="px-6 py-4 border-b">
@@ -56,9 +56,7 @@
               class="flex items-start text-gray-700 hover:bg-gray-100 rounded-md"
               @click="navigateToDashboard('student')"
             >
-              <span class="">
-                <i class="fas fa-book"></i>
-              </span>
+            
               Courses estudents
             </NuxtLink>
             <NuxtLink
@@ -66,9 +64,7 @@
               class="flex items-start text-gray-700 hover:bg-gray-100 rounded-md"
               @click="navigateToDashboard('teacher')"
             >
-              <span class="">
-                <i class="fas fa-book"></i>
-              </span>
+             
               Courses teacher
             </NuxtLink>
             <!--  <NuxtLink 
@@ -92,9 +88,6 @@
 
       <!-- Main Content Area -->
       <div class="flex-1 lg:ml-64">
-        <!-- Header -->
-        <header class="bg-white shadow-sm"></header>
-
         <!-- Main Content -->
         <main class="max-w-7xl mx-auto pr-4 lg:px-4 py-6">
           <NuxtPage />
