@@ -1,5 +1,5 @@
 export default {
   title: "Online courses",
-  subTitle: "All the courses",
+  subTitle: "My courses",
   buttom: "Create new course",
 };

@@ -1,5 +1,5 @@
 <template>
-    <main class="py-10 px-14 text-title-color mb-6">
+    <main class="py-4  text-title-color mb-6 md:w-full w-4/5 ">
       <SearchInput />
       <div class="flex items-center my-5 text-middele-gray">
         <p class="mr-4">total lessons {{ filteredData?.length || 0 }}</p>
@@ -13,7 +13,9 @@
       <div v-else-if="error">Error: {{ error.message }}</div>
       
       <!-- Show data -->
-      <ClassCard v-else-if="data" :classes="data" />
+       <div class="bg-white rounded-lg p-4 mb-2 shadow-sm relative">
+        <ClassCard v-if="data" :classes="data" />
+       </div>
       
       <AddCourseButton @handleAdd="handleAdd" :text="createClass.buttonText" />
       <div v-if="isOpen" class="fixed inset-0 w-full h-full bg-gray-600 bg-opacity-50 overflow-y-auto">

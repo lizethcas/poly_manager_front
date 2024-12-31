@@ -13,7 +13,7 @@
                 <img v-if="course.cover" :src="getCoverUrl(course.cover)" alt=""
                     class="mx-4 object-cover w-28 h-28 border-2 rounded-xl" />
                 <div class="flex flex-col justify-start items-start">
-                    <h2 class="text-fuscous-950 font-bold text-2xl">{{ course.course_name }}</h2>
+                    <h2 class="text-fuscous-950 font-bold text-xl">{{ course.course_name }}</h2>
                     <div class="flex items-center">
                         <div :class="['rounded-full w-10  flex items-start ', getLevelColor(course.level)]">
                             <p :class="[
@@ -49,9 +49,9 @@
                         <li>
                             <NuxtLink :to="`/course/${routeCourseId}`"
                                 class="relative pb-2 font-bold text-gray-60 hover:text-tarawera-700" :class="{
-                                    'text-tarawera-700 underline-active': $route.path === `/course/${routeCourseId}`
+                                    'text-primary-color underline-active': $route.path === `/course/${routeCourseId}`
                                 }">
-                                Lessons
+                                Curriculum
                             </NuxtLink>
                         </li>
                         <li>
@@ -67,7 +67,7 @@
                                 class="relative pb-2 font-medium text-gray-60 hover:text-tarawera-700" :class="{
                                     'text-tarawera-700 underline-active': $route.path === `/course/${routeCourseId}/statistics`
                                 }">
-                                Statistics
+                                Stats
                             </NuxtLink>
                         </li>
                     </ul>
