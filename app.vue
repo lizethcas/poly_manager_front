@@ -8,7 +8,7 @@
       >
         <i class="fas fa-bars text-2xl">menu</i>
       </button> -->
-      <div class="h-fit px-1 fixed top-0 right-0 z-10 flex flex-row gap-2 w-full bg-white py-4 rounded-md items-center lg:hidden border-b border-gray-200">
+      <div class="h-fit px-1 fixed top-0 right-0 lg:z-0 z-10 flex flex-row gap-2 w-full bg-white py-4 rounded-md items-center lg:hidden border-b border-gray-200">
         <Icon
           @click="toggleSidebar"
           name="material-symbols-light:menu"
@@ -22,7 +22,7 @@
       <div
         :class="`${
           isSidebarOpen ? 'translate-x-0' : '-translate-x-full'
-        } lg:translate-x-0 w-48 lg:w-64 bg-white shadow-sm fixed h-full transition-transform duration-300 ease-in-out z-10`"
+        } lg:translate-x-0 w-48 lg:w-64 bg-white shadow-sm fixed h-full transition-transform duration-300 ease-in-out lg:z-0 z-10`"
       >
         <!-- Logo section -->
         <div class="px-6 py-4 border-b">
