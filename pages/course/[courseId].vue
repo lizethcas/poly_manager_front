@@ -12,7 +12,7 @@
             <img src="~/assets/images/back-button-round.webp" alt="regresar una pagina"
                 class="w-8 h-8 cursor-pointer items-center m-2 my-4" @click="handleBackNavigation" />
             <div class="w-4/5">
-                <OrganismCourseCard :course="courses.value" />
+                <OrganismCourseCard :coursesData="courses" />
             </div> 
         </header>
 

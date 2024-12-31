@@ -1,13 +1,7 @@
 <template>
   <NuxtLayout>
     <div class="min-h-screen bg-gray-50 flex">
-      <!-- Hamburger Menu Button (Mobile) -->
-      <!--  <button
-        @click="toggleSidebar"
-        class="lg:hidden fixed top-4 left-4 z-20 p-2"
-      >
-        <i class="fas fa-bars text-2xl">menu</i>
-      </button> -->
+    
       <div class="h-fit px-1 fixed top-0 right-0 lg:z-0 z-10 flex flex-row gap-2 w-full bg-white py-4 rounded-md items-center lg:hidden border-b border-gray-200">
         <Icon
           @click="toggleSidebar"
@@ -92,7 +86,7 @@
       ></div>
 
       <!-- Main Content Area -->
-      <div class="flex-1 lg:ml-64">
+      <div class="flex-1 lg:ml-64 ">
         <!-- Header -->
         <header class="bg-white shadow-sm"></header>
 
