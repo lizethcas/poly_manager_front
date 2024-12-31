@@ -1,51 +1,101 @@
 <template>
-    <p v-if="!classes" class="text-title-color">No hay clases</p>
-    <main v-if="filteredClasses.length > 0" v-for="(classItem, index) in filteredClasses" :key="classItem.id" class="py-4"
-        draggable="true" @dragstart="onDragStart($event, index)" @dragover="onDragOver($event)"
-        @drop="onDrop($event, index)">
-        <div class="flex items-center cursor-grab hover:cursor-grabbing">
-            <div class="flex items-center w-32 h-32">
-                <div>
-                    <Icon name="mingcute:dots-fill" size="40" class="text-gray-500" />
-                </div>
-                <div class="rounded-xl cursor-pointer w-max-32">
-                    <img v-if="classItem.cover" :src="getCoverUrl(classItem.cover)" alt=""
-                        class="rounded-3xl object-contain w-full h-auto m-1" />
-                </div>
-            </div>
-            <div class="mx-4">
-                <p class="text-md font-bold text-primary-color">{{ classItem.class_name }}</p>
-                <div class="flex text-xs items-center gap-2 border border-gray-500 rounded-full p-1 w-fit mb-2">
-                    <Icon name="material-symbols-light:check" size="14" class="text-gray-500" />
-                    <p class="text-xs px-1">12/30</p>
-                </div>
+  <p v-if="!classes" class="text-title-color">No hay clases</p>
+  <main
+    v-if="filteredClasses.length > 0"
+    v-for="(classItem, index) in filteredClasses"
+    :key="classItem.id"
+    draggable="true"
+    @dragstart="onDragStart($event, index)"
+    @dragover="onDragOver($event)"
+    @drop="onDrop($event, index)"
+  >
+    <!-- Dots Menu -->
+    <button class="absolute left-4 top-1/2 -translate-y-1/2 cursor-grab">
+      <Icon
+        name="material-symbols:drag-indicator"
+        size="24"
+        class="text-gray-400"
+      />
+    </button>
 
-                <div class="flex items-center gap-2">
-                    <AtomosButtonAtom :type="'edit'" :size="'24px'"
-                        @handleClick="handlePreviewClick(classItem.id, Number(routeCourseId))" />
-                    <AtomosButtonAtom :type="'preview'" :size="'24px'" @handleClick="openModalHandler" />
-                </div>
-            </div>
+    <!-- Main Content with Left Padding for Dots -->
+    <div class="pl-8">
+      <div class="flex items-start gap-4 bg-[#f5f5f5]">
+        <!-- Image -->
+        <div class="w-20 h-20 flex-shrink-0">
+          <img
+            v-if="classItem.cover"
+            :src="getCoverUrl(classItem.cover)"
+            alt=""
+            class="rounded-lg object-cover w-full h-full"
+          />
+          <div v-else class="w-full h-full bg-gray-100 rounded-lg"></div>
         </div>
-    </main>
+
+        <!-- Content Section -->
+        <div class="flex-1">
+          <!-- Header with Title and Counter -->
+          <div></div>
+          <div class="flex items-center justify-between mb-2">
+            <h3 class="font-medium text-gray-900">
+              Lesson {{ index }}. {{ classItem.class_name }}
+            </h3>
+            <div
+              class="text-sm px-2 py-1 bg-gray-100 rounded-full flex items-center gap-2"
+            >
+              <Icon name="bi:collection-fill" size="14" />
+              {{ index + 1 }}/{{ props.classes.length }}
+            </div>
+          </div>
+
+          <!-- Action Buttons -->
+          <div class="flex gap-2">
+            <button
+              class="action-btn"
+              @click="handlePreviewClick(classItem.id, Number(routeCourseId))"
+            >
+              <Icon name="material-symbols:edit-outline" size="14" />
+              <span class="text-xs">edit</span>
+            </button>
+            <button class="action-btn" @click="openModalHandler">
+              <Icon name="material-symbols:visibility-outline" size="14" />
+              <span class="text-xs">preview</span>
+            </button>
+            <button class="action-btn">
+              <Icon name="material-symbols:hide-outline" size="14" />
+              <span class="text-xs">hide</span>
+            </button>
+            <button class="action-btn text-red-500">
+              <Icon name="material-symbols:delete-outline" size="14" />
+              <span class="text-xs">delete</span>
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </main>
 </template>
 
 <script setup lang="ts">
-import { ref, computed } from 'vue';
-import { useGetCover } from '~/composables/useGetcover';
-import type { ClassData } from '~/interfaces/models/class.interface..model';
-const route = useRoute()
+import { ref, computed } from "vue";
+import { useGetCover } from "~/composables/useGetcover";
+import { useTaskStore } from "~/stores/task.store";
+import type { ClassData } from "~/interfaces/models/class.interface..model";
 
-const courseId = route.params.courseId as string
+const route = useRoute();
+const taskStore = useTaskStore();
+const courseId = route.params.courseId as string;
 // Define props
 const props = defineProps<{
-    classes: ClassData[]
+  classes: ClassData[];
 }>();
 
 // Add computed property for filtered classes
 const filteredClasses = computed(() => {
-    return props.classes.filter(classItem => classItem.course_id == courseId)
-})
+  taskStore.addTask("classes", props.classes.length);
+
+  return props.classes.filter((classItem) => classItem.course_id == courseId);
+});
 
 const classesRef = ref(props.classes);
 
@@ -54,14 +104,23 @@ const routeCourseId = useRoute().params.courseId as string;
 const { onDragOver, onDrop, onDragStart } = useDragAnDrop(classesRef);
 
 const openModalHandler = () => {
-    console.log('open modal');
+  console.log("open modal");
 };
 
-const handlePreviewClick = (classId: number | undefined, courseId: number | undefined) => {
-    if (classId && courseId) {
-        navigateTo(`/course/${courseId}/class/${classId}`);
-    } else {
-        console.error('Class ID or Course ID is undefined');
-    }
-}
+const handlePreviewClick = (
+  classId: number | undefined,
+  courseId: number | undefined
+) => {
+  if (classId && courseId) {
+    navigateTo(`/course/${courseId}/class/${classId}`);
+  } else {
+    console.error("Class ID or Course ID is undefined");
+  }
+};
 </script>
+
+<style scoped>
+.action-btn {
+  @apply flex items-center gap-1 px-2 py-1 hover:bg-gray-100 rounded-lg transition-colors;
+}
+</style>
