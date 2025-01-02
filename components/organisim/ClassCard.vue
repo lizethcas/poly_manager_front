@@ -20,7 +20,7 @@
 
     <!-- Main Content with Left Padding for Dots -->
     <div class="pl-8">
-      <div class="flex items-start gap-4 bg-[#f5f5f5]">
+      <div class="flex items-start gap-4 bg-[#f5f5f5] rounded-md">
         <!-- Image -->
         <div class="w-20 h-20 flex-shrink-0">
           <img
@@ -35,41 +35,43 @@
         <!-- Content Section -->
         <div class="flex-1">
           <!-- Header with Title and Counter -->
-          <div></div>
-          <div class="flex items-center justify-between mb-2">
-            <h3 class="font-medium text-gray-900">
-              Lesson {{ index }}. {{ classItem.class_name }}
-            </h3>
-            <div
-              class="text-sm px-2 py-1 bg-gray-100 rounded-full flex items-center gap-2"
-            >
-              <Icon name="bi:collection-fill" size="14" />
-              {{ index + 1 }}/{{ props.classes.length }}
-            </div>
-          </div>
+          <template class="flex flex-col justify-between h-full">
+            <div class="flex items-center justify-between mb-2">
+              <h3 class="font-medium text-gray-900 text-xs sm:text-base">
+                Lesson {{ index }}. {{ classItem.class_name }}
+              </h3>
 
-          <!-- Action Buttons -->
-          <div class="flex gap-2">
-            <button
-              class="action-btn"
-              @click="handlePreviewClick(classItem.id, Number(routeCourseId))"
-            >
-              <Icon name="material-symbols:edit-outline" size="14" />
-              <span class="text-xs">edit</span>
-            </button>
-            <button class="action-btn" @click="openModalHandler">
-              <Icon name="material-symbols:visibility-outline" size="14" />
-              <span class="text-xs">preview</span>
-            </button>
-            <button class="action-btn">
-              <Icon name="material-symbols:hide-outline" size="14" />
-              <span class="text-xs">hide</span>
-            </button>
-            <button class="action-btn text-red-500">
-              <Icon name="material-symbols:delete-outline" size="14" />
-              <span class="text-xs">delete</span>
-            </button>
-          </div>
+              <div
+                class="text-sm px-2 py-1 bg-gray-100 rounded-full flex items-center gap-2"
+              >
+                <Icon name="bi:collection-fill" size="14" />
+                {{ index + 1 }}/{{ props.classes.length }}
+              </div>
+            </div>
+
+            <!-- Action Buttons -->
+            <div class="flex flex-wrap gap-2">
+              <button
+                class="action-btn"
+                @click="handlePreviewClick(classItem.id, Number(routeCourseId))"
+              >
+                <Icon name="material-symbols:edit-outline" size="14" />
+                <span class="text-xs">edit</span>
+              </button>
+              <button class="action-btn" @click="openModalHandler">
+                <Icon name="material-symbols:visibility-outline" size="14" />
+                <span class="text-xs">preview</span>
+              </button>
+              <button class="action-btn">
+                <Icon name="lucide:eye-off" size="14" />
+                <span class="text-xs">hide</span>
+              </button>
+              <button class="action-btn text-red-500">
+                <Icon name="material-symbols:delete-outline" size="14" />
+                <span class="text-xs">delete</span>
+              </button>
+            </div>
+          </template>
         </div>
       </div>
     </div>
@@ -121,6 +123,6 @@ const handlePreviewClick = (
 
 <style scoped>
 .action-btn {
-  @apply flex items-center gap-1 px-2 py-1 hover:bg-gray-100 rounded-lg transition-colors;
+  @apply flex items-center flex-wrap hover:bg-gray-100 rounded-lg transition-colors;
 }
 </style>

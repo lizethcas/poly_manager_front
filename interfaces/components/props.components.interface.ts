@@ -60,7 +60,8 @@ export interface MultipleTasksProps {
     | "category"
     | "sorting"
     | "ordering"
-    | "text_area";
+    | "fill_gaps"
+    | "word_bank";
   titleTask?: string;
   subtitleTask?: string;
   description?: {

@@ -1,7 +1,7 @@
 <template>
-    <main class="py-4  text-title-color mb-6 md:w-full w-4/5 ">
-      <SearchInput />
-      <div class="flex items-center my-5 text-middele-gray">
+    <main class="py-4  text-title-color mb-6 md:w-full  ">
+      
+      <div class="flex items-center  text-middele-gray">
         <p class="mr-4">total lessons {{ filteredData?.length || 0 }}</p>
         <div class="flex-grow border-t-2 border-dotted border-middele-gray"></div>
       </div>

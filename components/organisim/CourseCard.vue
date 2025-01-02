@@ -1,7 +1,7 @@
 <template>
   <p v-if="!coursesData" class="text-title-color">no hay cursos</p>
   <div
-    v-if="coursesData.length > 0"
+    v-if="coursesData && coursesData.length > 0"
     v-for="course in coursesData.slice().reverse()"
     :key="course.id"
     @click="navigateToCourse(course.id)"
@@ -19,7 +19,7 @@
 
     <!-- Course Info -->
 
-    <div class="flex flex-col  md:mt-0 md:ml-4 flex-grow justify-between">
+    <div class="flex flex-col md:mt-0 md:ml-4 flex-grow justify-between">
       <div class="flex items-center gap-2">
         <h2
           class="text-fuscous-gray-600 font-bold text-base md:text-lg w-contain"
@@ -111,9 +111,20 @@ import { useGetColor } from "~/composables/useGetColor";
 import { useGetCover } from "~/composables/useGetcover";
 import { useTaskStore } from "~/stores/task.store";
 import { IconType } from "~/data/iconsType";
-// Define las props
+
+// Updated Props interface with proper typing
+interface Course {
+  id: number;
+  course_name: string;
+  description: string;
+  category: string;
+  level: string;
+  cover?: string;
+  students?: number;
+}
+
 interface Props {
-  coursesData?: any[]; // Reemplaza 'any' con la interfaz correcta de tus cursos
+  coursesData?: Course[];
 }
 
 const props = defineProps<Props>();
@@ -122,7 +133,7 @@ const { getLevelColor } = useGetColor();
 const { getCoverUrl } = useGetCover();
 const taskStore = useTaskStore();
 const classes = taskStore.getTask("classes");
-console.log("classes", classes);
+console.log(props.coursesData);
 const activeDropdown = ref<number | null>(null);
 
 // Improved click outside handler

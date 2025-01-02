@@ -5,40 +5,15 @@
     </div>
 
     <!-- El contenido del curso una vez cargado -->
-    <div v-if="course">
+    <div v-if="courses">
+        <SearchInput />
         <header class=" text-title-color mb-4 flex items-center">
+            
             <img src="~/assets/images/back-button-round.webp" alt="regresar una pagina"
-                class="w-10 h-10 cursor-pointer items-center" @click="handleBackNavigation" />
-            <div class="flex items-center">
-                <img v-if="course.cover" :src="getCoverUrl(course.cover)" alt=""
-                    class="mx-4 object-cover w-28 h-28 border-2 rounded-xl" />
-                <div class="flex flex-col justify-start items-start">
-                    <h2 class="text-fuscous-950 font-bold text-xl">{{ course.course_name }}</h2>
-                    <div class="flex items-center">
-                        <div :class="['rounded-full w-10  flex items-start ', getLevelColor(course.level)]">
-                            <p :class="[
-                                'text-sm font-bold rounded-full px-2 py-1',
-                                getLevelColor(course.level, true)
-                            ]" v-if="course.level">
-                                {{ course.level.split(".")[0] }}
-                            </p>
-                        </div>
-                        <h3 v-if="course.level" class="text-sm font-bold" :class="getLevelColor(course.level)">
-                            {{ course.level.split(' ').length > 1
-                                ? (course.level.split(' ')[2]
-                                    ? `${course.level.split(' ')[1]} ${course.level.split(' ')[2]}`
-                                    : course.level.split(' ')[1])
-                                : course.level.split(' ')[1] }}
-                        </h3>
-                    </div>
-
-                    <div class=" text-xs flex items-start w-10/12 mt-4">
-                        <p class="text-gray-high border-2 border-gray-light rounded-full px-2">published</p>
-                        <p class="text-gray-high border-2 border-gray-light rounded-full px-2">2</p>
-                        <p class="text-gray-high border-2 border-gray-light rounded-full px-2 ">45</p>
-                    </div>
-                </div>
-            </div>
+                class="w-8 h-8 cursor-pointer items-center m-2 my-4" @click="handleBackNavigation" />
+            <div class="w-4/5">
+                <OrganismCourseCard :coursesData="courses" />
+            </div> 
         </header>
 
         <main class="px-14 mb-4">
@@ -87,22 +62,22 @@ import { useRoute } from 'vue-router';
 import { useGetColor } from '~/composables/useGetColor';
 import { useCoursesQuery } from '~/composables/useCourseQuery';
 import type { CourseForm } from '~/interfaces/modal.interface';
+import OrganismCourseCard from "~/components/organisim/CourseCard.vue";
 
 
 const route = useRoute();
-const { getLevelColor } = useGetColor();
-const { getCoverUrl } = useGetCover();
 
 const routeCourseId = route.params.courseId as string;
 
 // Use the shared query composable
 const { data: courses, isLoading, error } = useCoursesQuery()
-
+console.log(courses.value)
 // Get the specific course using computed
-const course = computed(() => {
+/* const course = computed(() => {
     if (!courses.value) return null;
+    console.log(courses.value.find((course: CourseForm) => course.id === Number(routeCourseId)))
     return courses.value.find((course: CourseForm) => course.id === Number(routeCourseId));
-});
+}); */
 
 const handleBackNavigation = () => {
   if (route.path.includes('/class/')) {

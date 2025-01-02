@@ -16,10 +16,11 @@
     <!-- Tasks list -->
     <div
       v-else-if="classTasks && classTasks.data.length > 0"
-      class="mt-4 text-fuscous-gray-950"
+      class="mt-4 text-fuscous-gray-950 max-w-4xl mx-auto"
     >
       <template v-for="(task, index) in classTasks.data" :key="task.id">
         <div
+          v-if="task.content_type !== 'info_box'"
           :class="[
             task.content_type === 'video'
               ? 'cursor-pointer'
@@ -27,7 +28,13 @@
           ]"
           @click="handleShowEditNavigation(index)"
         >
-          <div v-if="task.tittle !== '' && task.content_type !== 'video' && task.content_type !== 'info_box'">
+          <div
+            v-if="
+              task.tittle !== '' &&
+              task.content_type !== 'video' &&
+              task.content_type !== 'info_box'
+            "
+          >
             <div class="flex justify-start gap-2 my-2">
               <p class="bg-tarawera-200 text-tarawera-800 px-2 py-1 rounded-md">
                 {{ getTaskNumber(index) }}
@@ -36,7 +43,7 @@
                 {{ capitalizeFirstLetter(task.tittle) }}
               </h3>
             </div>
-            <p  >{{ task.instructions }}</p>
+            <p>{{ task.instructions }}</p>
           </div>
           <!-- Display content based on content_type -->
           <div class="text-sm text-fuscous-gray-700">
@@ -74,15 +81,17 @@
               :data="task.content_details.word_bank"
             />
 
-            <VideoTask v-else-if="task.content_type === 'video'" :task="task" :index="getTaskNumber(index)" />
+            <VideoTask
+              v-else-if="task.content_type === 'video'"
+              :task="task"
+              :index="getTaskNumber(index)"
+            />
             <AudioTask v-else-if="task.content_type === 'audio'" :task="task" />
-
-            <div v-else-if="task.content_type === 'info_box'">
-              <InfoBoxStudent :task="task" />
-            </div>
           </div>
         </div>
-
+        <div v-if="task.content_type === 'info_box'" class="mt-16">
+          <InfoBoxStudent :task="task" />
+        </div>
         <!-- Insert EditClassNavigation after the selected task -->
         <transition
           name="slide-up"
@@ -189,12 +198,16 @@ watch(closeModalHandler, () => {
 
 const openModalHandler = (label: string, name: string) => {
   currentModal.value = { label, name };
-  
+
   openModal(); // Asegúrate de abrir el modal
 };
 const dataMenu = (label: string) => getDataMenu(label);
 // Replace the existing query with the composable
-const { classContents: classTasks, isLoading, error } = useClassContents(classId);
+const {
+  classContents: classTasks,
+  isLoading,
+  error,
+} = useClassContents(classId);
 
 // Update the watch to use the new variable name
 watch(classTasks, (newTasks) => {
@@ -241,7 +254,7 @@ const handleShowEditNavigation = (index: number) => {
   selectedTaskIndex.value = index;
   if (classTasks.value?.data) {
     selectedTask.value = classTasks.value.data[index];
-    console.log('Selected Task:', selectedTask.value);
+    console.log("Selected Task:", selectedTask.value);
   }
   showEditNavigation.value = true;
   taskStore.setInsertionIndex(index);
@@ -252,9 +265,8 @@ const handleAddBlock = () => {
   showEditNavigation.value = true;
 };
 
-
 const getTaskNumber = (currentIndex: number) => {
-  if (!classTasks.value?.data) return '';
+  if (!classTasks.value?.data) return "";
 
   let mainNumber = 1;
   let subNumber = 0;
@@ -274,6 +286,4 @@ const getTaskNumber = (currentIndex: number) => {
 
   return `${mainNumber}.${subNumber}`;
 };
-
-
 </script>
