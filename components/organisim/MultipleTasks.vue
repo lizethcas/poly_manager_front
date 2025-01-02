@@ -165,10 +165,13 @@ const taskInstructions = computed(() => taskStore.getTask("instructions"));
 const files = computed(() => taskStore.getTask("files"));
 const select = computed(() => taskStore.getTask("select"));
 const taskTitle = computed(() => taskStore.getTask("taskTitle"));
+const taskType = computed(() => taskStore.getTask("typeTask"));
 const value = ref("");
 const isActive = ref(false);
 const newWordBank = ref("");
 const { getType } = useGetTypeTask();
+
+
 
 const { 
   mutateAsync,
@@ -237,7 +240,7 @@ const { onDragStart, onDragOver, onDrop } = useDragAnDrop(questions);
 // Modify the data structure
 
 const data = ref({
-  ...createBaseTaskData(route.params.classId, typeTask),
+  ...createBaseTaskData(route.params.classId, taskType),
   content_details: {
     questions: [] as Question[],
     passages: [] as Passage[],
@@ -328,6 +331,7 @@ watch(
   data,
   (newValue) => {
     console.log("newValue", newValue);
+   
   },
   { deep: true }
 );
@@ -366,7 +370,7 @@ const handleUpdateValue = (newValue: string) => {
   isActive.value = newValue.trim() !== "";
   infoResponseApi.value.isActive = newValue.trim() !== "";
 
-  if (taskTitle.value == "word_bank") {
+  if (data.value.content_type  == "word_bank") {
     // Extract words in brackets and their positions
     const matches = newValue.match(/\[(.*?)\]/g);
     let processedText = newValue;
@@ -398,7 +402,7 @@ const handleUpdateValue = (newValue: string) => {
     ];
   }
 
-  if (taskTitle.value == "fill_gaps") {
+  if (data.value.content_type  == "fill_gaps") {
     // Split the text by newlines to handle each question
     const lines = newValue.split("\n");
     const passages = lines.map((line, index) => {
