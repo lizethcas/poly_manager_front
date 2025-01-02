@@ -72,6 +72,13 @@
                             Students
                         </NuxtLink> -->
             <!-- Add more menu items as needed -->
+
+            
+             <div @click="openListSceneariosPopup" class="cursor-pointer">List Scenearios</div>
+             <div @click="openScenarioPopup" class="cursor-pointer">Scenario</div>
+             <div @click="openTextToFormatPopup" class="cursor-pointer">Text to format</div>
+             <div @click="openImgCropPopup" class="cursor-pointer">Img Crop</div>
+             <div @click="openImgGenPopup" class="cursor-pointer">Img Gen</div>
           </div>
         </nav>
       </div>
@@ -91,15 +98,61 @@
         </main>
       </div>
     </div>
+
+    <div v-if="isPopupOpen" class="popup-overlay" @click="closePopup">
+      <div class="popup-content" @click.stop>
+        <ListScenearios />
+        <button @click="closePopup">Cerrar</button>
+      </div>
+    </div>
+
+    <div v-if="isScenarioPopupOpen" class="popup-overlay" @click="closeScenarioPopup">
+      <div class="popup-content overflow-y-auto max-h-[80vh]" @click.stop>
+        <ScenarioIA />
+        <button @click="closeScenarioPopup">Cerrar</button>
+      </div>
+    </div>
+
+    <div v-if="isTextToFormatPopupOpen" class="popup-overlay" @click="closeTextToFormatPopup">
+      <div class="popup-content overflow-y-auto max-h-[80vh]" @click.stop>
+        <TextToFormat />
+        <button @click="closeTextToFormatPopup" class="close-button">
+          Cerrar
+        </button>
+      </div>
+    </div>
+
+    <div v-if="isImgCropPopupOpen" class="popup-overlay" @click="closeImgCropPopup">
+      <div class="popup-content" @click.stop>
+        <ImgCrop />
+        <button @click="closeImgCropPopup">Cerrar</button>
+      </div>
+    </div>
+
+    <div v-if="isImgGenPopupOpen" class="popup-overlay" @click="closeImgGenPopup">
+      <div class="popup-content" @click.stop>
+        <ImgGen />
+        <button @click="closeImgGenPopup">Cerrar</button>
+      </div>
+    </div>
   </NuxtLayout>
 </template>
 
 <script setup lang="ts">
 import { useTaskStore } from "~/stores/task.store";
 import { ref } from "vue";
-
+import ListScenearios from '~/components/atomos/ListScenearios.vue';
+import ScenarioIA from '~/components/atomos/ScenarioIA.vue';
+import TextToFormat from '~/components/atomos/TextToFormat.vue';
+import ImgCrop from '~/components/atomos/ImgCrop.vue';
+import ImgGen from '~/components/atomos/ImgGen.vue';
 const taskStore = useTaskStore();
 const isSidebarOpen = ref(false);
+const isPopupOpen = ref(false);
+const isScenarioPopupOpen = ref(false);
+const isTextToFormatPopupOpen = ref(false);
+const isImgCropPopupOpen = ref(false);
+const isImgGenPopupOpen = ref(false);
 
 const toggleSidebar = () => {
   isSidebarOpen.value = !isSidebarOpen.value;
@@ -110,4 +163,72 @@ const navigateToDashboard = (userType: string) => {
   // Close sidebar on mobile after navigation
   isSidebarOpen.value = false;
 };
+
+const openListSceneariosPopup = () => {
+  isPopupOpen.value = true;
+  isScenarioPopupOpen.value = false;
+};
+
+const openScenarioPopup = () => {
+  isScenarioPopupOpen.value = true;
+  isPopupOpen.value = false;
+};
+
+const openTextToFormatPopup = () => {
+  isTextToFormatPopupOpen.value = true;
+  isPopupOpen.value = false;
+};
+
+const openImgCropPopup = () => {
+  isImgCropPopupOpen.value = true;
+  isPopupOpen.value = false;
+};
+
+const openImgGenPopup = () => {
+  isImgGenPopupOpen.value = true;
+  isPopupOpen.value = false;
+};
+
+const closePopup = () => {
+  isPopupOpen.value = false;
+};
+
+const closeScenarioPopup = () => {
+  isScenarioPopupOpen.value = false;
+};
+
+const closeTextToFormatPopup = () => {
+  isTextToFormatPopupOpen.value = false;
+};
+
+const closeImgCropPopup = () => {
+  isImgCropPopupOpen.value = false;
+};
+
+const closeImgGenPopup = () => {
+  isImgGenPopupOpen.value = false;
+};
+
 </script>
+
+<style scoped>
+.popup-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+}
+
+.popup-content {
+  background: white;
+  padding: 20px;
+  border-radius: 8px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+}
+</style>
