@@ -1,20 +1,22 @@
 <template>
   <NuxtLayout>
     <div class="min-h-screen bg-gray-50 flex">
-      <div class="h-fit p-2">
+    
+      <div class="h-fit px-1 fixed top-0 right-0 lg:z-0 z-10 flex flex-row gap-2 w-full bg-white py-4 rounded-md items-center lg:hidden border-b border-gray-200">
         <Icon
           @click="toggleSidebar"
-          name="solar:list-bold"
-          size="20"
-          class="text-tarawera-600 group-hover:text-fuscous-gray-600 lg:hidden"
+          name="material-symbols-light:menu"
+          size="24"
+          class="text-tarawera-600 group-hover:text-fuscous-gray-600"
         />
+        <SearchInput class="pr-4 m-auto" />
       </div>
 
       <!-- Sidebar -->
       <div
         :class="`${
           isSidebarOpen ? 'translate-x-0' : '-translate-x-full'
-        } lg:translate-x-0 w-48 lg:w-64 bg-white shadow-sm fixed h-full transition-transform duration-300 ease-in-out `"
+        } lg:translate-x-0 w-48 lg:w-64 bg-white shadow-sm fixed h-full transition-transform duration-300 ease-in-out lg:z-0 z-10`"
       >
         <!-- Logo section -->
         <div class="px-6 py-4 border-b">
@@ -91,9 +93,12 @@
       ></div>
 
       <!-- Main Content Area -->
-      <div class="flex-1 lg:ml-64">
+      <div class="flex-1 lg:ml-64 ">
+        <!-- Header -->
+        <header class="bg-white shadow-sm"></header>
+
         <!-- Main Content -->
-        <main class="max-w-7xl mx-auto pr-4 lg:px-4 py-6">
+        <main class="max-w-7xl mx-auto lg:px-4 py-6">
           <NuxtPage />
         </main>
       </div>

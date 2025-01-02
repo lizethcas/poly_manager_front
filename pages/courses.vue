@@ -1,17 +1,17 @@
 <template>
   
-  <div class="w-full" v-if="userType === 'teacher'">
-    <header class="text-title-color mb-">
-      <SearchInput />
-      <h2 class="mt-4 font-bold text-m">{{ homeData.subTitle }}</h2>
+  <div class="md:w-4/5 px-4 w-full" v-if="userType === 'teacher'">
+    <SearchInput />
+    <header class="text-title-color mb-4">
+      <h2 class="mt-4 font-bold text-m text-fuscous-gray-600">{{ homeData.subTitle }}</h2>
       <AddCourseButton @handleAdd="handleAdd" :text="createCourse.buttonText" />
     </header>
     <main
-      class="w-full md:w-4/5 text-title-color mb-24 flex flex-wrap items-center justify-evenly"
+      class="w-full  text-title-color mb-24 flex flex-wrap items-center justify-evenly"
     >
       <div
         v-if="isOpen"
-        class="fixed top-0 left-0 w-full min-h-full bg-gray-600 bg-opacity-50 flex justify-center items-start overflow-y-auto"
+        class="fixed top-0 left-0 w-full min-h-full bg-gray-600 bg-opacity-50 flex justify-center items-start overflow-y-auto z-50"
       >
         <div class="w-full max-w-5xl m-auto p-5">
           <AddCourseModal
