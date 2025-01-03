@@ -66,7 +66,7 @@ const taskTitle = ref<string>("Video");
 import { useTaskStore } from "~/stores/task.store";
 import { useMutation, useQueryClient } from "@tanstack/vue-query";
 import { apiRoutes } from "~/services/routes.api";
-import axiosInstance from "~/services/axios.config";
+import { axiosDashboard } from "~/services/axios.config";
 
 const queryClient = useQueryClient();
 const route = useRoute();
@@ -98,7 +98,7 @@ const form = reactive<Form>({
 
 const classContentMutation = useMutation({
   mutationFn: async (formData: FormData) => {
-    const response = await axiosInstance.post(
+    const response = await axiosDashboard.post(
       apiRoutes.classContent,
       formData,
       {

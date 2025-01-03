@@ -40,26 +40,31 @@
     </div>
 
     <!-- Upload options -->
-    <div class="flex gap-4 mt-4">
+    <div class="flex mt-4 items-end gap-2">
       <InputFile
         fileType="image"
         icon="true"
         @file-selected="addNewImage"
+        :showPreview="false"
+       
       />
-      
+
       <!-- AI Image Generator Button -->
-      <button 
+
+      <IconMolecule
+        :name="IconType.imgGen"
+        :size="30"
         @click="showImageGenerator = true"
-        class="px-4 py-2 text-white bg-blue-600 hover:bg-blue-700 rounded-md"
-      >
-        Generate AI Image
-      </button>
+        color="text-purple-500 hover:text-purple-600"
+        class="mr-2 shimmer-effect transition-all duration-300"
+      />
     </div>
 
     <!-- AI Image Generator Modal -->
-    <Modal v-if="showImageGenerator" @close="showImageGenerator = false">
-      <ImgGenerator @image-generated="handleGeneratedImage" />
-    </Modal>
+    <IaGeneratorModal
+      v-model="showImageGenerator"
+      @image-generated="handleGeneratedImage"
+    />
 
     <div class="flex items-center gap-2 py-4 text-sm">
       <p>Include the stats</p>
@@ -80,23 +85,40 @@ import { useTaskStore } from "~/stores/task.store";
 import { useRoute } from "vue-router";
 import { useClassContentMutation } from "~/composables/useClassContentMutation";
 import { createBaseTaskData } from "~/interfaces/task.interface";
-import ImgGenerator from '../IA/ImgGenerator.vue';
+import ImgGenerator from "../IA/ImgGenerator.vue";
+import IconMolecule from "~/components/atomos/Icon.vue";
+import { IconType } from "~/data/iconsType";
+import IaGeneratorModal from "../IA/IaGeneratorModal.vue";
+
 
 const route = useRoute();
 const taskStore = useTaskStore();
 const mutation = useClassContentMutation();
 const taskInstructions = computed(() => taskStore.getTask("instructions"));
-
+const taskImgGen = computed(() => taskStore.getTask("img_gen"));
 interface Image {
   title: string;
   description: string;
   image: string;
   preview: string;
+  showPreview: boolean;
 }
+
+
 
 const formData = ref({
   ...createBaseTaskData(route.params.classId, "image"),
   content_details: [] as Array<Image>,
+});
+
+watch(taskImgGen, (newValue) => {
+  formData.value.content_details.push({
+    title: "",
+    description: "",
+    image: newValue,
+    preview: newValue,
+    showPreview: true,
+  });
 });
 
 watch(
@@ -212,11 +234,11 @@ const handleGeneratedImage = async (imageUrl: string) => {
       title: "",
       description: "",
       image: imageUrl,
-      preview: imageUrl
+      preview: imageUrl,
     });
     showImageGenerator.value = false;
   } catch (error) {
-    console.error('Error al agregar la imagen generada:', error);
+    console.error("Error al agregar la imagen generada:", error);
   }
 };
 </script>

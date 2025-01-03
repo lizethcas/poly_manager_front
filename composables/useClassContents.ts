@@ -1,5 +1,5 @@
 import { useQuery } from "@tanstack/vue-query";
-import axiosInstance from "~/services/axios.config";
+import { axiosDashboard } from "~/services/axios.config";
 import { apiRoutes } from "~/services/routes.api";
 
 export const useClassContents = (classId: string | string[]) => {
@@ -10,7 +10,7 @@ export const useClassContents = (classId: string | string[]) => {
   } = useQuery({
     queryKey: ["class-contents", classId],
     queryFn: async () => {
-      const response = await axiosInstance.get(
+      const response = await axiosDashboard.get(
         `${apiRoutes.classContent}?class_id=${classId}`
       );
       return response.data;

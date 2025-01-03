@@ -1,5 +1,5 @@
 // routes/apiRoutes.js
-import { axiosDashboard } from "./axios.config";
+import { axiosDashboard, axiosDefault } from "./axios.config";
 
 export const apiRoutes = {
   classContent: "class-contents/",
@@ -20,3 +20,5 @@ export const get = async (route: string) => {
 export const del = async (url: string) => {
   return await axiosDashboard.delete(url);
 };
+
+

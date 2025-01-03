@@ -4,5 +4,8 @@ export const IconType = {
   add: "icon-park-solid:add",
   eye: "mdi:eye-outline",
   students:"mdi:people",
-  collection:"bi:collection-fill"
+  collection:"bi:collection-fill",
+  imgGen: "hugeicons:ai-image",
+  save: "mingcute:save-fill",
+  expand:"fe:expand"
 };

@@ -138,12 +138,10 @@ const handleDelete = async (classId: number) => {
     try {
       await deleteClass(classId);
       success("Class deleted successfully");
-      const toast = useToast();
-      toast.success("Class deleted successfully");
+     
     } catch (error) {
       console.error("Error deleting class:", error);
-      const toast = useToast();
-      toast.error("Error deleting class");
+      
       showError("Error deleting class");
     }
   }

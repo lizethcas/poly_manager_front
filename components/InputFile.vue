@@ -1,5 +1,5 @@
 <template>
-    <div class="flex flex-col items-start w-full">
+    <div class="flex flex-col items-start">
         <div class="flex items-center gap-4 my-1 w-full">
             <div v-if="icon">
                 <label for="file-upload" class="min-w-[120px] text-primary-color font-bold text-sm">{{ title }}</label>
@@ -13,7 +13,7 @@
 
             <!-- Label and preview -->
             <label v-if="!icon" for="file-upload" class="min-w-[120px] text-middele-gray">File:</label>
-            <div :class="[
+            <div v-if="showPreview" :class="[
                 'rounded overflow-hidden',
                 fileType === 'video' ? 'w-64 h-36' : fileType === 'audio' ? 'w-3/6' : 'w-16 h-16'
             ]">
@@ -47,13 +47,29 @@
     </div>
 </template>
 
-<script setup>
+<script setup lang="ts">
 import ImgAtom from "./atomos/ImgAtom.vue";
 import { ref, defineProps, defineEmits } from "vue";
 import EventBus from '~/composables/useEvenBus';
 import { useTaskStore } from '~/stores/task.store';
+
+interface InputFileProps {
+    modelValue: string;
+    title: string;
+    icon: boolean;
+    showPreview: boolean;
+}
+
 // Props and events
-const props = defineProps(['modelValue', 'title', 'icon']);
+const props = defineProps({
+    modelValue: {},
+    title: {},
+    icon: {},
+    showPreview: {
+        type: Boolean,
+        default: true
+    }
+});
 const emit = defineEmits(['update:modelValue', 'file-selected']);
 const taskStore = useTaskStore();
 // References
@@ -61,6 +77,8 @@ const fileInput = ref(null);
 const previewUrl = ref(null);
 const fileType = ref(null);
 const fileName = ref(null);
+
+
 
 // Trigger file input on button click
 const triggerFileUpload = () => {

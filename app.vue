@@ -101,13 +101,13 @@
         </header>
 
         <!-- Main Content -->
-        <main class="max-w-7xl mx-auto lg:px-4 py-6">
+        <main class="max-w-7xl mx-auto lg:px-4 py-2">
           <NuxtPage />
         </main>
 
         <!-- Chat IA Component - Moved inside main content area -->
         <div class="fixed right-4 bottom-4">
-          <IAChat />
+          <Chat />
         </div>
       </div>
     </div>
@@ -116,7 +116,8 @@
 
 <script setup lang="ts">
 import UserProfile from "~/components/organisim/UserProfile.vue";
-import { useTaskStore } from "~/stores/task.store";
+/* import Chat from "~/components/organisim/IA/Chat.vue";
+ */import { useTaskStore } from "~/stores/task.store";
 import { ref } from "vue";
 
 const taskStore = useTaskStore();

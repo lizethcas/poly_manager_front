@@ -6,13 +6,14 @@
 
     <!-- El contenido del curso una vez cargado -->
     <div v-if="courses">
-        <SearchInput />
+        
+        
         <header class=" text-title-color mb-4 flex items-center">
             
             <img src="~/assets/images/back-button-round.webp" alt="regresar una pagina"
                 class="w-8 h-8 cursor-pointer items-center m-2 my-4" @click="handleBackNavigation" />
             <div class="w-4/5">
-                <OrganismCourseCard :coursesData="courses" />
+                <OrganismCourseCard :coursesData="currentCourse" />
             </div> 
         </header>
 
@@ -73,11 +74,14 @@ const routeCourseId = route.params.courseId as string;
 const { data: courses, isLoading, error } = useCoursesQuery()
 console.log(courses.value)
 // Get the specific course using computed
-/* const course = computed(() => {
-    if (!courses.value) return null;
-    console.log(courses.value.find((course: CourseForm) => course.id === Number(routeCourseId)))
-    return courses.value.find((course: CourseForm) => course.id === Number(routeCourseId));
-}); */
+
+// Get only the current course based on courseId
+const currentCourse = computed(() => {
+  if (!courses.value) return null;
+  return courses.value.filter(
+    (course: CourseForm) => course.id === Number(routeCourseId)
+  );
+});
 
 const handleBackNavigation = () => {
   if (route.path.includes('/class/')) {
