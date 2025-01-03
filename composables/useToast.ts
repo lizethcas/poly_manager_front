@@ -1,6 +1,6 @@
-import { useToast as useVueToast } from 'vue-toastification/dist/index.mjs'
+import { useToast as useVueToast } from 'vue-toastification'
 
-export const useToast = () => {
+export const useCustomToast = () => {
   const toast = useVueToast()
 
   return {
@@ -10,3 +10,5 @@ export const useToast = () => {
     info: (message: string) => toast.info(message)
   }
 }
+
+export const useToast = useCustomToast

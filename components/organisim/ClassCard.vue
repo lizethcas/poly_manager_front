@@ -100,6 +100,9 @@ const props = defineProps<{
   classes: ClassData[];
 }>();
 
+// Move useToast to the top level
+const { success, error: showError } = useToast();
+
 // Add computed property for filtered classes
 const filteredClasses = computed(() => {
   taskStore.addTask("classes", props.classes.length);
@@ -134,11 +137,9 @@ const handleDelete = async (classId: number) => {
   if (confirm("Are you sure you want to delete this class?")) {
     try {
       await deleteClass(classId);
-      const { success } = useToast();
       success("Class deleted successfully");
     } catch (error) {
       console.error("Error deleting class:", error);
-      const { error: showError } = useToast();
       showError("Error deleting class");
     }
   }

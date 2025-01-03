@@ -165,7 +165,6 @@ const route = useRoute();
 const taskInstructions = computed(() => taskStore.getTask("instructions"));
 const files = computed(() => taskStore.getTask("files"));
 const select = computed(() => taskStore.getTask("select"));
-const taskTitle = computed(() => taskStore.getTask("taskTitle"));
 const taskType = computed(() => taskStore.getTask("typeTask"));
 const value = ref("");
 const isActive = ref(false);

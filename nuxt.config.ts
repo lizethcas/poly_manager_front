@@ -43,7 +43,7 @@ export default defineNuxtConfig({
     },
     baseURL: '/poly_manager_front/'
   },
-  css: ["~/assets/css/main.css"],
+  css: ["~/assets/css/main.css", 'vue-toastification/dist/index.css'],
   vite: {
     vue: {
       template: {

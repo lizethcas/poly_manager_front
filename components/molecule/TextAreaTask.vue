@@ -44,12 +44,17 @@
         @input="handleExtraInput"
       />
     </div>
+    <div class="mt-2">
+      <p class="text-sm font-bold text-primary-color">Example:</p>
+      <p class="text-xs text-fuscous-gray-950">
+        {{ data.example }}
+      </p>
+    </div>
   </div>
 </template>
 
 <script setup lang="ts">
 import MoleculeInput from "~/components/molecule/Input.vue";
-
 
 interface Extra {
   subtitle: string;
@@ -90,8 +95,6 @@ const handleExtraInput = (event: Event) => {
   const target = event.target as HTMLInputElement;
   emit("update:extraValue", target.value);
 };
-
-
 
 const handleClick = (item: string) => {
   inputRef.value?.insertTextAtCursor(item);
