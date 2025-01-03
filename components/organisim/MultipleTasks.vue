@@ -173,6 +173,9 @@ const newWordBank = ref("");
 const { getType } = useGetTypeTask();
 const { success, error: showError } = useToast();
 
+watch(taskType, (newValue) => {
+  console.log("typeTask changed:", newValue);
+});
 
 const { 
   mutateAsync,

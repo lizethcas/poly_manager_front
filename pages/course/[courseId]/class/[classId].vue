@@ -87,6 +87,10 @@
               :index="getTaskNumber(index)"
             />
             <AudioTask v-else-if="task.content_type === 'audio'" :task="task" />
+
+            <div v-else-if="task.content_type === 'image'">
+              <BankGallery :images="task.content_details.images" />
+            </div>
           </div>
         </div>
         <div v-if="task.content_type === 'info_box'" class="mt-16 cursor-pointer" @click="handleShowEditNavigation(index)">
@@ -157,8 +161,7 @@ import AudioTask from "~/components/organisim/templatesUsers/students/taskStuden
 import VideoTask from "~/components/organisim/templatesUsers/students/taskStudents/Video.vue";
 import { useAnimation } from "~/composables/useAnimation";
 import { useQueryClient, useQuery } from "@tanstack/vue-query";
-import { apiRoutes } from "~/services/routes.api";
-import axiosInstance from "~/services/axios.config";
+
 import { useRoute } from "vue-router";
 import { useCapitalizerLetter } from "~/composables/useCapitalizerLetter";
 import { useDataMenu } from "~/composables/useDataMenu";
@@ -175,6 +178,7 @@ import MoleculeMultipleTaskFill from "~/components/molecule/multipleTask/Fill.vu
 import TextBlockModules from "~/components/organisim/TextBlockModules.vue";
 import GalleryLayout from "~/components/organisim/blocks/GalleryLayout.vue";
 import InfoBoxStudent from "~/components/organisim/templatesUsers/students/taskStudents/InfoBoxStudent.vue";
+import BankGallery from '~/components/organisim/templatesUsers/students/taskStudents/BankGallery.vue';
 
 const taskStore = useTaskStore();
 const route = useRoute();

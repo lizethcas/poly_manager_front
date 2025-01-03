@@ -10,29 +10,30 @@
         class="flex gap-4"
       >
         <!-- Image preview -->
-        <div class="w-24 h-24" v-if="item.image_gallery">
+        <div class="w-24 h-24" v-if="item.preview">
           <img
-            :src="item.preview_url"
+            :src="item.preview"
             class="w-full h-full object-cover rounded-lg"
             alt="Preview"
           />
         </div>
         <!-- Form fields -->
-        <div class="flex-1 flex flex-col gap-2" v-if="item.image_gallery">
+        <div class="flex-1 flex flex-col gap-2">
           <MoleculeInput
             title="Title"
             type="text"
             class="text-md"
-            v-model="item.title_gallery"
+            v-model="item.title"
           />
           <MoleculeInput
             title="Description"
             type="text_area"
             :size="'md'"
-            v-model="item.description_gallery"
+            v-model="item.description"
             class="text-md"
           />
         </div>
+        <button @click="removeImage(index)" class="text-red-500">Eliminar</button>
       </div>
     </div>
 
@@ -50,7 +51,7 @@
     </div>
 
     <MoleculeActionButtons
-      @handleSave="handleSave()"
+      @handleSave="handleSave"
       @handleCancel="handleCancel"
       :isActive="isFormValid"
     />
@@ -58,137 +59,116 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, watch, onBeforeUnmount } from "vue";
+import { ref, computed } from "vue";
 import { useTaskStore } from "~/stores/task.store";
-import { createBaseTaskData } from "~/interfaces/task.interface";
 import { useRoute } from "vue-router";
 import { useClassContentMutation } from "~/composables/useClassContentMutation";
 
 const route = useRoute();
 const taskStore = useTaskStore();
-const taskInstructions = computed(() => taskStore.getTask("instructions"));
 const mutation = useClassContentMutation();
 
-interface FormData {
-  title_gallery: string;
-  description_gallery: string;
-  image_gallery: File | null;
-  preview_url?: string;
-}
-
 const formData = ref({
-  ...createBaseTaskData(String(route.params.classId), "image"),
-  content_details: [] as FormData[], // Inicializar como array vacío
+  class_id: String(route.params.classId),
+  content_type: "image",
+  tittle: "Gallery Images",
+  instructions: "",
+  content_details: [] as Array<{
+    title: string;
+    description: string;
+    image: string;
+    preview: string;
+  }>,
+  stats: false
 });
 
-// Computed property to check if all fields are filled
 const isFormValid = computed(() => {
-  if (formData.value.content_details.length === 0) return false;
-
-  return formData.value.content_details.every(
-    (item) =>
-      item.title_gallery.trim() !== "" &&
-      item.description_gallery.trim() !== "" &&
-      item.image_gallery !== null
-  );
+  const images = formData.value.content_details;
+  return images.length > 0 && images.every(img => img.title && img.description);
 });
-
-// Add new image to the gallery
-const addNewImage = (file: File) => {
-  if (!(file instanceof File)) {
-    console.error('Not a valid File object:', file);
-    return;
-  }
-  
-  const preview_url = URL.createObjectURL(file);
-  const newItem = reactive({
-    title_gallery: "",
-    description_gallery: "",
-    image_gallery: file,
-    preview_url: preview_url
-  });
-  
-  formData.value.content_details.push(newItem);
-  
-  console.log('Se agregó una nueva imagen:', formData.value.content_details);
-};
-
-// Add cleanup function for URLs when component is unmounted
-onBeforeUnmount(() => {
-  formData.value.content_details.forEach(item => {
-    if (item.preview_url) {
-      URL.revokeObjectURL(item.preview_url);
-    }
-  });
-});
-
-watch(
-  taskInstructions,
-  (newValue) => {
-    if (newValue) {
-      formData.value = {
-        ...formData.value,
-        tittle: newValue.title || "",
-        instructions: newValue.instructions || "",
-      };
-    }
-  },
-  { deep: true, immediate: true }
-);
-
-
 
 const handleSave = async () => {
   try {
-    const formDataToSend = new FormData();
+    // Preparar las imágenes en el formato correcto
+    const images = formData.value.content_details.map(item => ({
+      title: item.title,
+      description: item.description,
+      image: item.preview // Mantener el preview completo
+    }));
 
-    // Add basic fields
-    formDataToSend.append("class_id", String(route.params.classId));
-    formDataToSend.append("content_type", "image");
-    formDataToSend.append("tittle", formData.value.tittle);
-    formDataToSend.append("instructions", formData.value.instructions);
-    formDataToSend.append("stats", String(formData.value.stats));
-
-    // Add each gallery item
-    formData.value.content_details.forEach((item, index) => {
-      formDataToSend.append(
-        `content_details[${index}][title_gallery]`, 
-        item.title_gallery
-      );
-      formDataToSend.append(
-        `content_details[${index}][description_gallery]`, 
-        item.description_gallery
-      );
-      if (item.image_gallery instanceof File) {
-        formDataToSend.append(
-          `content_details[${index}][image_gallery]`, 
-          item.image_gallery
-        );
-      }
-    });
-
-    // Añadir el JSON de content_details
-    console.log("Sending data:", {
+    const contentData = {
       class_id: formData.value.class_id,
-      content_type: formData.value.content_type,
-      tittle: formData.value.tittle,
-      instructions: formData.value.instructions,
-      content_details: formData.value.content_details,
-      stats: formData.value.stats,
-    });
+      content_type: "image",
+      tittle: "Gallery Images",
+      content_details: {
+        images: images
+      },
+      stats: formData.value.stats
+    };
 
-    await mutation.mutateAsync(formDataToSend);
-    handleCancel();
+    console.log('Datos a enviar:', contentData);
+
+    // Validaciones
+    if (images.length === 0) {
+      throw new Error('Debe agregar al menos una imagen');
+    }
+
+    if (!images.every(img => img.title && img.description && img.image)) {
+      throw new Error('Todas las imágenes deben tener título y descripción');
+    }
+
+    const response = await mutation.mutateAsync(contentData);
+    console.log('Respuesta del servidor:', response);
+    
+    if (response.status === 'success') {
+      taskStore.addTask("modal", { modal: false });
+      formData.value.content_details = [];
+      formData.value.stats = false;
+    } else {
+      throw new Error(response.message || 'Error al guardar las imágenes');
+    }
   } catch (error) {
-    console.error("Error saving gallery:", error);
+    console.error("Error al guardar la galería:", error);
+    alert(error.message || 'Error al guardar las imágenes');
   }
+};
+
+// Método para agregar nueva imagen
+const addNewImage = async (file: File) => {
+  if (!(file instanceof File)) {
+    console.error('No es un objeto File válido:', file);
+    return;
+  }
+  
+  try {
+    const preview = await getBase64(file);
+    formData.value.content_details.push({
+      title: "",
+      description: "",
+      image: file.name,
+      preview: preview
+    });
+  } catch (error) {
+    console.error('Error al procesar la imagen:', error);
+  }
+};
+
+const removeImage = (index: number) => {
+  formData.value.content_details.splice(index, 1);
+};
+
+const getBase64 = (file: File): Promise<string> => {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.readAsDataURL(file);
+    reader.onload = () => resolve(reader.result as string);
+    reader.onerror = error => reject(error);
+  });
 };
 
 const handleCancel = () => {
   taskStore.addTask("modal", { modal: false });
-  formData.value = {
-    ...createBaseTaskData(String(route.params.classId), "image"),
-    content_details: [],
-  };
+  formData.value.content_details = [];
+  formData.value.stats = false;
 };
 </script>

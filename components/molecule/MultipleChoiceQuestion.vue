@@ -3,7 +3,7 @@
     <img :src="data.image" alt="Question Image" class="w-full h-full object-cover rounded-[10px]" />
   </div>
   <div class="w-full">
-    <audio :src="data.audio" controls class="mb-4 w-full"></audio>
+    <audio :src="data.audio" controls class="mb-4 w-full" v-if="data.audio !== null"></audio>
 
     <div
       v-for="(question, index) in data.content_details.questions ||
