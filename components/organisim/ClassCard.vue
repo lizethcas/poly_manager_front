@@ -47,7 +47,7 @@
                   class="text-sm px-2 py-1 bg-gray-100 rounded-full flex items-center gap-2"
                 >
                   <Icon name="bi:collection-fill" size="14" />
-                  {{ index + 1 }}/{{ props.classes.length }}
+                  {{ index  }}/{{ props.classes.length }}
                 </div>
               </div>
 
