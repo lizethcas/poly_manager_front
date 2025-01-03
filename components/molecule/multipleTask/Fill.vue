@@ -1,7 +1,7 @@
 <template>
   <div>
     <!-- Help text section if provided -->
-    <p v-if="help_text" class="text-sm text-gray-600 mb-2">{{ help_text }}</p>
+    <p v-if="help_text" class="text-sm text-gray-600 mb-2">Hint: {{ help_text }}</p>
     <!-- Muestra el texto formateado con las keywords en negrita -->
     <p v-html="formattedText"></p>
   </div>

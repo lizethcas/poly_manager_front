@@ -89,8 +89,8 @@
             <AudioTask v-else-if="task.content_type === 'audio'" :task="task" />
           </div>
         </div>
-        <div v-if="task.content_type === 'info_box'" class="mt-16">
-          <InfoBoxStudent :task="task" />
+        <div v-if="task.content_type === 'info_box'" class="mt-16 cursor-pointer" @click="handleShowEditNavigation(index)">
+          <InfoBoxStudent :task="task"  />
         </div>
         <!-- Insert EditClassNavigation after the selected task -->
         <transition

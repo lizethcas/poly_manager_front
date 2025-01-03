@@ -1,9 +1,9 @@
 <template v-if="data">
   <div class="w-1/4" v-if="data.image">
-    <img :src="data.image" alt="Question Image" />
+    <img :src="data.image" alt="Question Image" class="w-full h-full object-cover rounded-[10px]" />
   </div>
-  <div class="">
-    <audio :src="data.audio" controls class="mb-4"></audio>
+  <div class="w-full">
+    <audio :src="data.audio" controls class="mb-4 w-full"></audio>
 
     <div
       v-for="(question, index) in data.content_details.questions ||

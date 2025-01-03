@@ -26,7 +26,7 @@ export function useDescription() {
         break;
       case "Fill in the gaps":
         data = {
-          description: ["[ ]", "/", "/"],
+          description: ["[ ]", "*/", "/"],
           instructions:
             "Use brackets for gaps: []. Separate a hint from the correct answer by */: [a hint*/the answer]. Use multiple / for multiple correct answers: [a hint/correct answer 1/correct answer 2]. Leave the space before the first / empty for multiple correct answers without a hint: [/correct answer 1/correct answer 2].",
         };

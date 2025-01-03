@@ -31,6 +31,7 @@
     "vue": "latest",
     "vue-query": "^1.26.0",
     "vue-router": "latest",
+    "vue-toastification": "^2.0.0-rc.5",
     "vuedraggable": "^2.24.3",
     "vuetify": "^3.7.4"
   },

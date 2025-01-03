@@ -149,6 +149,7 @@ import { useDragAnDrop } from "~/composables/useDragAndDrop";
 import { useTaskStore } from "~/stores/task.store";
 import { useClassContentMutation } from "~/composables/useClassContentMutation";
 import { useGetTypeTask } from "~/composables/useGetTypeTask";
+import { useToast } from "~/composables/useToast";
 /* Interfaces */
 import type {
   Question,
@@ -170,7 +171,7 @@ const value = ref("");
 const isActive = ref(false);
 const newWordBank = ref("");
 const { getType } = useGetTypeTask();
-
+const { success, error: showError } = useToast();
 
 
 const { 
@@ -403,24 +404,32 @@ const handleUpdateValue = (newValue: string) => {
   }
 
   if (data.value.content_type  == "fill_gaps") {
-    // Split the text by newlines to handle each question
     const lines = newValue.split("\n");
     const passages = lines.map((line, index) => {
-      // Extract content within square brackets
       const matches = line.match(/\[(.*?)\]/g);
       let processedText = line;
       const keywords: string[] = [];
+      let helpText = "";
 
       if (matches) {
         matches.forEach((match, matchIndex) => {
-          // Remove brackets and extract options
           const options = match.slice(1, -1).split("/");
-          // Clean up options and add to keywords
+          
+          // Check for hint (text before *)
+          const firstOption = options[0];
+          if (firstOption.includes("*")) {
+            const [hint] = firstOption.split("*");
+            helpText = hint.trim();
+            // Remove the hint option from the options array
+            options.shift();
+          }
+
+          // Clean up remaining options and add to keywords
           options.forEach((opt) => {
-            const cleanOption = opt.replace("*", "").trim();
+            const cleanOption = opt.trim();
             if (cleanOption) keywords.push(cleanOption);
           });
-          // Replace bracket content with placeholder
+
           processedText = processedText.replace(match, `__${matchIndex + 1}__`);
         });
       }
@@ -428,7 +437,7 @@ const handleUpdateValue = (newValue: string) => {
       return {
         text: processedText,
         keywords: keywords,
-        help_text: false,
+        help_text: helpText || "",
       };
     });
 
@@ -500,6 +509,8 @@ const hasQuestionsWithAnswers = () => {
 };
 
 const handleSave = async () => {
+  
+  
   try {
     const formData = new FormData();
     // Prepare content_details based on content type
@@ -539,13 +550,18 @@ const handleSave = async () => {
     });
 
     await mutateAsync(formData);
+    success("Task saved successfully");
+    taskStore.addTask("modal", { modal: false });
   } catch (error) {
     console.error("Error preparing data:", error);
+    showError("Error saving task");
     throw error;
   }
 };
 
 const handleCancel = () => {
+  const { info } = useToast();
   taskStore.addTask("modal", { modal: false });
+  info("Task cancelled");
 };
 </script>

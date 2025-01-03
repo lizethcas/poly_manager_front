@@ -66,7 +66,10 @@
                 <Icon name="lucide:eye-off" size="14" />
                 <span class="text-xs">hide</span>
               </button>
-              <button class="action-btn text-red-500">
+              <button
+                class="action-btn text-red-500"
+                @click="handleDelete(classItem.id)"
+              >
                 <Icon name="material-symbols:delete-outline" size="14" />
                 <span class="text-xs">delete</span>
               </button>
@@ -83,6 +86,8 @@ import { ref, computed } from "vue";
 import { useGetCover } from "~/composables/useGetcover";
 import { useTaskStore } from "~/stores/task.store";
 import type { ClassData } from "~/interfaces/models/class.interface..model";
+import { useClassesQuery } from "~/composables/useClassesQuery";
+import { useToast } from "~/composables/useToast";
 
 const route = useRoute();
 const taskStore = useTaskStore();
@@ -105,6 +110,8 @@ const { getCoverUrl } = useGetCover();
 const routeCourseId = useRoute().params.courseId as string;
 const { onDragOver, onDrop, onDragStart } = useDragAnDrop(classesRef);
 
+const { deleteClass, isDeletingClass } = useClassesQuery(courseId);
+
 const openModalHandler = () => {
   console.log("open modal");
 };
@@ -117,6 +124,20 @@ const handlePreviewClick = (
     navigateTo(`/course/${courseId}/class/${classId}`);
   } else {
     console.error("Class ID or Course ID is undefined");
+  }
+};
+
+const handleDelete = async (classId: number) => {
+  if (confirm("Are you sure you want to delete this class?")) {
+    try {
+      await deleteClass(classId);
+      const { success } = useToast();
+      success("Class deleted successfully");
+    } catch (error) {
+      console.error("Error deleting class:", error);
+      const { error: showError } = useToast();
+      showError("Error deleting class");
+    }
   }
 };
 </script>

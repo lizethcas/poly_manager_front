@@ -6,7 +6,7 @@ const urls = {
 };
 
 const axiosInstance = axios.create({
-  baseURL: urls.production,
+  baseURL: process.env.NODE_ENV === "development" ? urls.development : urls.production,
   timeout: 5000,
   headers: {
     "Content-Type": "application/json",

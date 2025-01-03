@@ -4,12 +4,15 @@
     <label v-if="!label" class="min-w-[70px] text-middele-gray text-sm">{{ props.title }}</label>
     <UInput v-if="type == 'text'" :type="type"  class="w-full" v-model="inputValue"
       :required="props.required" />
-    <textarea v-if="type == 'text_area'" :size="size || 'xl'" v-model="inputValue" :class="['w-full resize-none p-3 border border-gray-300 rounded-md text-base', getHeightClass]"/>
+    <textarea  v-if="type == 'text_area'" :size="size || 'xl'" :value="modelValue"
+      @input="handleInput"
+      ref="textareaRef"
+      :class="['w-full resize-none p-3 border border-gray-300 rounded-md text-base', getHeightClass]"/>
   </div>
 </template>
 
 <script lang="ts" setup>
-import { ref, defineProps, defineEmits, watch, computed } from 'vue';
+import { ref, defineProps, defineEmits, watch, computed, nextTick } from 'vue';
 import EventBus from '~/composables/useEvenBus';
 
 const props = defineProps({
@@ -34,7 +37,7 @@ const props = defineProps({
 
 
 const emit = defineEmits(['update:modelValue']);
-const inputValue = ref(props.modelValue)
+const inputValue = ref(props.modelValue || '')
 
 const getHeightClass = computed(() => {
   switch (props.size) {
@@ -57,5 +60,38 @@ watch(inputValue, (newValue) => {
   emit('update:modelValue', newValue);
   EventBus.emit('text-script', newValue);
 });
+
+const textareaRef = ref<HTMLTextAreaElement | null>(null);
+
+const handleInput = (e: Event) => {
+  const target = e.target as HTMLTextAreaElement;
+  emit('update:modelValue', target.value);
+};
+
+// Add method to handle text insertion
+const insertTextAtCursor = (text: string) => {
+  const textarea = textareaRef.value;
+  if (!textarea) return;
+
+  const startPos = textarea.selectionStart;
+  const endPos = textarea.selectionEnd;
+  const currentValue = textarea.value;
+  
+  const newValue = currentValue.substring(0, startPos) + 
+                   text + 
+                   currentValue.substring(endPos);
+                   
+  emit('update:modelValue', newValue);
+  
+  // Set cursor position after inserted text
+  nextTick(() => {
+    textarea.selectionStart = startPos + text.length;
+    textarea.selectionEnd = startPos + text.length;
+    textarea.focus();
+  });
+};
+
+// Expose the method to parent components
+defineExpose({ insertTextAtCursor });
 </script>
 

@@ -15,37 +15,41 @@
       <div
         v-for="(item, index) in data.description"
         :key="index"
-        class=" bg-white rounded-md p-2"
+        class="bg-white rounded-md p-2 cursor-pointer"
+        @click="handleClick(item)"
       >
         {{ item }}
       </div>
     </div>
 
- 
-    <UTextarea
-      v-model="localValue"
-      class="text-xs mt-2"
+    <MoleculeInput
+      ref="inputRef"
+      type="text_area"
+      size="lg"
+      container-class="py-2"
       @update:model-value="handleInput"
+      v-model="localValue"
     />
 
     <div v-if="data.extra" class="mt-2">
-      <p class="text-sm font-bold  text-primary-color">
+      <p class="text-sm font-bold text-primary-color">
         {{ data.extra.subtitle }}
       </p>
       <p class="text-xs text-fuscous-gray-950">
         {{ data.extra.description }}
       </p>
-      <input 
-        type="text" 
-        class="text-xs mt-2 w-full border border-gray-300 rounded-md p-2 focus:outline-none focus:ring-2 focus:ring-tarawera-500" 
+      <input
+        type="text"
+        class="text-xs mt-2 w-full border border-gray-300 rounded-md p-2 focus:outline-none focus:ring-2 focus:ring-tarawera-500"
         @input="handleExtraInput"
       />
     </div>
   </div>
 </template>
 
-
 <script setup lang="ts">
+import MoleculeInput from "~/components/molecule/Input.vue";
+
 
 interface Extra {
   subtitle: string;
@@ -69,12 +73,17 @@ interface Props {
 
 const props = defineProps<Props>();
 const emit = defineEmits(["update:value", "update:extraValue"]);
-
+const inputRef = ref();
 // Create local value to handle v-model correctly
-const localValue = ref(props.value);
+const localValue = ref(props.value || "");
+
+watch(localValue, (newValue) => {
+  localValue.value = newValue;
+});
 
 const handleInput = (newValue: string) => {
   emit("update:value", newValue);
+  console.log(newValue);
 };
 
 const handleExtraInput = (event: Event) => {
@@ -83,5 +92,8 @@ const handleExtraInput = (event: Event) => {
 };
 
 
-</script>
 
+const handleClick = (item: string) => {
+  inputRef.value?.insertTextAtCursor(item);
+};
+</script>
