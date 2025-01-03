@@ -81,6 +81,7 @@
              <div @click="openTextToFormatPopup" class="cursor-pointer">Text to format</div>
              <div @click="openImgCropPopup" class="cursor-pointer">Img Crop</div>
              <div @click="openImgGenPopup" class="cursor-pointer">Img Gen</div>
+             <div @click="openImgBanckPopup" class="cursor-pointer">Img Banck</div>
           </div>
         </nav>
       </div>
@@ -140,6 +141,13 @@
         <button @click="closeImgGenPopup">Cerrar</button>
       </div>
     </div>
+
+    <div v-if="isImgBanckPopupOpen" class="popup-overlay" @click="closeImgBanckPopup">
+      <div class="popup-content" @click.stop>
+        <ImgBanck />
+        <button @click="closeImgBanckPopup">Cerrar</button>
+      </div>
+    </div>
   </NuxtLayout>
 </template>
 
@@ -151,6 +159,7 @@ import ScenarioIA from '~/components/atomos/ScenarioIA.vue';
 import TextToFormat from '~/components/atomos/TextToFormat.vue';
 import ImgCrop from '~/components/atomos/ImgCrop.vue';
 import ImgGen from '~/components/atomos/ImgGen.vue';
+import ImgBanck from '~/components/atomos/ImgBanck.vue';
 const taskStore = useTaskStore();
 const isSidebarOpen = ref(false);
 const isPopupOpen = ref(false);
@@ -158,6 +167,7 @@ const isScenarioPopupOpen = ref(false);
 const isTextToFormatPopupOpen = ref(false);
 const isImgCropPopupOpen = ref(false);
 const isImgGenPopupOpen = ref(false);
+const isImgBanckPopupOpen = ref(false);
 
 const toggleSidebar = () => {
   isSidebarOpen.value = !isSidebarOpen.value;
@@ -192,6 +202,15 @@ const openImgCropPopup = () => {
 const openImgGenPopup = () => {
   isImgGenPopupOpen.value = true;
   isPopupOpen.value = false;
+};
+
+const openImgBanckPopup = () => {
+  isImgBanckPopupOpen.value = true;
+  isPopupOpen.value = false;
+};
+
+const closeImgBanckPopup = () => {
+  isImgBanckPopupOpen.value = false;
 };
 
 const closePopup = () => {

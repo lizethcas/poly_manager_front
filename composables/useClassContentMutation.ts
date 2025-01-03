@@ -6,20 +6,27 @@ export function useClassContentMutation() {
   const queryClient = useQueryClient()
   const route = useRoute()
 
-  const createClassContentMutation = async (formData: FormData) => {
+  const createClassContentMutation = async (data: any) => {
     try {
+      // Si los datos ya vienen como FormData, usarlos directamente
+      // Si no, enviarlos como JSON
+      const isFormData = data instanceof FormData;
+      
       const response = await axiosInstance.post(
         apiRoutes.classContent,
-        formData,
+        data,
         {
-          headers: {
+          headers: isFormData ? {
             "Content-Type": "multipart/form-data",
+            Accept: "application/json",
+          } : {
+            "Content-Type": "application/json",
             Accept: "application/json",
           },
         }
       );
-      console.log("response", response.data);
       
+      console.log("Response from mutation:", response.data);
       return response.data;
     } catch (error) {
       console.error('API Error:', error);
