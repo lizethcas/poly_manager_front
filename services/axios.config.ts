@@ -1,16 +1,22 @@
 import axios from "axios";
 
-const urls = {
-  production: "https://dploy-production.up.railway.app/dashboard/api/",
-  development: "http://localhost:8000/dashboard/api/",
+const baseURLs = {
+  development: {
+    default: "http://localhost:8000/",
+    dashboard: "http://localhost:8000/dashboard/api/",
+    chat: "http://localhost:8000/chat/"
+  }
 };
 
-const axiosInstance = axios.create({
-  baseURL: process.env.NODE_ENV === "development" ? urls.development : urls.production,
-  timeout: 5000,
-  headers: {
-    "Content-Type": "application/json",
-  },
+// Create separate axios instances for different endpoints
+export const axiosDefault = axios.create({
+  baseURL: baseURLs.development.default
 });
 
-export default axiosInstance;
+export const axiosDashboard = axios.create({
+  baseURL: baseURLs.development.dashboard
+});
+
+export const axiosChat = axios.create({
+  baseURL: baseURLs.development.chat
+});

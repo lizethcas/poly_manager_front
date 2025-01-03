@@ -1,8 +1,9 @@
 <template>
   <NuxtLayout>
     <div class="min-h-screen bg-gray-50 flex">
-    
-      <div class="h-fit px-1 fixed top-0 right-0 lg:z-0 z-10 flex flex-row gap-2 w-full bg-white py-4 rounded-md items-center lg:hidden border-b border-gray-200">
+      <div
+        class="h-fit px-1 fixed top-0 right-0 lg:z-0 z-10 flex flex-row gap-2 w-full bg-white py-4 rounded-md items-center lg:hidden border-b border-gray-200"
+      >
         <Icon
           @click="toggleSidebar"
           name="material-symbols-light:menu"
@@ -86,20 +87,35 @@
       ></div>
 
       <!-- Main Content Area -->
-      <div class="flex-1 lg:ml-64 ">
+      <div class="flex-1 lg:ml-64">
         <!-- Header -->
-        <header class="bg-white shadow-sm"></header>
+        <header class="flex items-center justify-between px-4 py-2 bg-white shadow-sm w-full">
+          <div class="flex-1 max-w-2xl">
+            <SearchInput class="w-full" />
+          </div>
+          <UserProfile
+            :profileImage="user.profileImage"
+            :userName="user.name"
+            :userRole="user.role"
+          />
+        </header>
 
         <!-- Main Content -->
         <main class="max-w-7xl mx-auto lg:px-4 py-6">
           <NuxtPage />
         </main>
+
+        <!-- Chat IA Component - Moved inside main content area -->
+        <div class="fixed right-4 bottom-4">
+          <IAChat />
+        </div>
       </div>
     </div>
   </NuxtLayout>
 </template>
 
 <script setup lang="ts">
+import UserProfile from "~/components/organisim/UserProfile.vue";
 import { useTaskStore } from "~/stores/task.store";
 import { ref } from "vue";
 
@@ -114,5 +130,11 @@ const navigateToDashboard = (userType: string) => {
   taskStore.addTask("userType", userType);
   // Close sidebar on mobile after navigation
   isSidebarOpen.value = false;
+};
+
+const user = {
+  profileImage: "https://via.placeholder.com/150",
+  name: "Mark Andrew Chernetskiy",
+  role: "Content Administrator ",
 };
 </script>

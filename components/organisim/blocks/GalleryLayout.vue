@@ -37,13 +37,27 @@
       </div>
     </div>
 
-    <!-- Upload new image button -->
-    <InputFile
-      fileType="image"
-      icon="true"
-      @file-selected="addNewImage"
-      class="mt-4"
-    />
+    <!-- Upload options -->
+    <div class="flex gap-4 mt-4">
+      <InputFile
+        fileType="image"
+        icon="true"
+        @file-selected="addNewImage"
+      />
+      
+      <!-- AI Image Generator Button -->
+      <button 
+        @click="showImageGenerator = true"
+        class="px-4 py-2 text-white bg-blue-600 hover:bg-blue-700 rounded-md"
+      >
+        Generate AI Image
+      </button>
+    </div>
+
+    <!-- AI Image Generator Modal -->
+    <Modal v-if="showImageGenerator" @close="showImageGenerator = false">
+      <ImgGenerator @image-generated="handleGeneratedImage" />
+    </Modal>
 
     <div class="flex items-center gap-2 py-4 text-sm">
       <p>Include the stats</p>
@@ -63,6 +77,7 @@ import { ref, computed } from "vue";
 import { useTaskStore } from "~/stores/task.store";
 import { useRoute } from "vue-router";
 import { useClassContentMutation } from "~/composables/useClassContentMutation";
+import ImgGenerator from '../IA/ImgGenerator.vue';
 
 const route = useRoute();
 const taskStore = useTaskStore();
@@ -70,8 +85,8 @@ const mutation = useClassContentMutation();
 
 const formData = ref({
   class_id: String(route.params.classId),
-  content_type: "image",
-  tittle: "Gallery Images",
+  content_type: "",
+  tittle: "",
   instructions: "",
   content_details: [] as Array<{
     title: string;
@@ -98,8 +113,8 @@ const handleSave = async () => {
 
     const contentData = {
       class_id: formData.value.class_id,
-      content_type: "image",
-      tittle: "Gallery Images",
+      content_type: "",
+      tittle: "",
       content_details: {
         images: images
       },
@@ -170,5 +185,23 @@ const handleCancel = () => {
   taskStore.addTask("modal", { modal: false });
   formData.value.content_details = [];
   formData.value.stats = false;
+};
+
+// Add new refs
+const showImageGenerator = ref(false);
+
+// Add new method to handle generated images
+const handleGeneratedImage = async (imageUrl: string) => {
+  try {
+    formData.value.content_details.push({
+      title: "",
+      description: "",
+      image: imageUrl,
+      preview: imageUrl
+    });
+    showImageGenerator.value = false;
+  } catch (error) {
+    console.error('Error al agregar la imagen generada:', error);
+  }
 };
 </script>

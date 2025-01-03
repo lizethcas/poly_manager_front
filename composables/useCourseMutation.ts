@@ -1,13 +1,13 @@
 import { useMutation, useQueryClient } from "@tanstack/vue-query";
 import { apiRoutes } from "~/services/routes.api";
-import axiosInstance from "~/services/axios.config";
+import { axiosDashboard } from "~/services/axios.config";
 
 export const useCourseMutation = () => {
   const queryClient = useQueryClient();
 
   const createCourseMutation = async (courseData: any) => {
     console.log('Course data:', courseData)
-    const response = await axiosInstance.post(apiRoutes.courses, courseData, {
+    const response = await axiosDashboard.post(apiRoutes.courses, courseData, {
       headers: {
         "Content-Type": "multipart/form-data",
         Accept: "application/json",

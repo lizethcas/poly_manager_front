@@ -1,5 +1,5 @@
 // routes/apiRoutes.js
-import axiosInstance from "./axios.config";
+import { axiosDashboard } from "./axios.config";
 
 export const apiRoutes = {
   classContent: "class-contents/",
@@ -13,10 +13,10 @@ export const apiRoutes = {
 };
 
 export const get = async (route: string) => {
-  const response = await axiosInstance.get(route);
+  const response = await axiosDashboard.get(route);
   return response.data;
 };
 
 export const del = async (url: string) => {
-  return await axiosInstance.delete(url);
+  return await axiosDashboard.delete(url);
 };

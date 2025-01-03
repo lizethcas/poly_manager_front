@@ -1,6 +1,6 @@
 import { useMutation, useQueryClient } from '@tanstack/vue-query'
 import { apiRoutes } from '~/services/routes.api'
-import axiosInstance from '~/services/axios.config'
+import { axiosDashboard } from '~/services/axios.config'
 
 export function useClassContentMutation() {
   const queryClient = useQueryClient()
@@ -12,7 +12,7 @@ export function useClassContentMutation() {
       // Si no, enviarlos como JSON
       const isFormData = data instanceof FormData;
       
-      const response = await axiosInstance.post(
+      const response = await axiosDashboard.post(
         apiRoutes.classContent,
         data,
         {
