@@ -33,7 +33,9 @@
             class="text-md"
           />
         </div>
-        <button @click="removeImage(index)" class="text-red-500">Eliminar</button>
+        <button @click="removeImage(index)" class="text-red-500">
+          Eliminar
+        </button>
       </div>
     </div>
 
@@ -77,94 +79,107 @@ import { ref, computed } from "vue";
 import { useTaskStore } from "~/stores/task.store";
 import { useRoute } from "vue-router";
 import { useClassContentMutation } from "~/composables/useClassContentMutation";
+import { createBaseTaskData } from "~/interfaces/task.interface";
 import ImgGenerator from '../IA/ImgGenerator.vue';
 
 const route = useRoute();
 const taskStore = useTaskStore();
 const mutation = useClassContentMutation();
+const taskInstructions = computed(() => taskStore.getTask("instructions"));
+
+interface Image {
+  title: string;
+  description: string;
+  image: string;
+  preview: string;
+}
 
 const formData = ref({
-  class_id: String(route.params.classId),
-  content_type: "",
-  tittle: "",
-  instructions: "",
-  content_details: [] as Array<{
-    title: string;
-    description: string;
-    image: string;
-    preview: string;
-  }>,
-  stats: false
+  ...createBaseTaskData(route.params.classId, "image"),
+  content_details: [] as Array<Image>,
 });
+
+watch(
+  taskInstructions,
+  (newValue) => {
+    console.log(newValue);
+    formData.value.tittle = newValue.title || "";
+    formData.value.instructions = newValue.instructions || "";
+  },
+
+  { deep: true }
+);
 
 const isFormValid = computed(() => {
   const images = formData.value.content_details;
-  return images.length > 0 && images.every(img => img.title && img.description);
+  return (
+    images.length > 0 && images.every((img) => img.title && img.description)
+  );
 });
 
 const handleSave = async () => {
   try {
     // Preparar las imágenes en el formato correcto
-    const images = formData.value.content_details.map(item => ({
+    const images = formData.value.content_details.map((item) => ({
       title: item.title,
       description: item.description,
-      image: item.preview // Mantener el preview completo
+      image: item.preview, // Mantener el preview completo
     }));
 
     const contentData = {
       class_id: formData.value.class_id,
-      content_type: "",
-      tittle: "",
+      content_type: formData.value.content_type,
+      tittle: formData.value.tittle,
       content_details: {
-        images: images
+        images: images,
       },
-      stats: formData.value.stats
+      stats: formData.value.stats,
     };
 
-    console.log('Datos a enviar:', contentData);
+    console.log("Datos a enviar:", contentData);
 
     // Validaciones
     if (images.length === 0) {
-      throw new Error('Debe agregar al menos una imagen');
+      throw new Error("Debe agregar al menos una imagen");
     }
 
-    if (!images.every(img => img.title && img.description && img.image)) {
-      throw new Error('Todas las imágenes deben tener título y descripción');
+    if (!images.every((img) => img.title && img.description && img.image)) {
+      throw new Error("Todas las imágenes deben tener título y descripción");
     }
 
     const response = await mutation.mutateAsync(contentData);
-    console.log('Respuesta del servidor:', response);
-    
-    if (response.status === 'success') {
+    console.log("Respuesta del servidor:", response);
+
+    if (response.status === "success") {
       taskStore.addTask("modal", { modal: false });
       formData.value.content_details = [];
       formData.value.stats = false;
     } else {
-      throw new Error(response.message || 'Error al guardar las imágenes');
+      throw new Error(response.message || "Error al guardar las imágenes");
     }
   } catch (error) {
     console.error("Error al guardar la galería:", error);
-    alert(error.message || 'Error al guardar las imágenes');
+    alert(error.message || "Error al guardar las imágenes");
   }
 };
 
 // Método para agregar nueva imagen
 const addNewImage = async (file: File) => {
   if (!(file instanceof File)) {
-    console.error('No es un objeto File válido:', file);
+    console.error("No es un objeto File válido:", file);
     return;
   }
-  
+
   try {
     const preview = await getBase64(file);
     formData.value.content_details.push({
       title: "",
       description: "",
       image: file.name,
-      preview: preview
+      preview: preview,
     });
   } catch (error) {
-    console.error('Error al procesar la imagen:', error);
+    console.error("Error al procesar la imagen:", error);
   }
 };
 
@@ -177,7 +192,7 @@ const getBase64 = (file: File): Promise<string> => {
     const reader = new FileReader();
     reader.readAsDataURL(file);
     reader.onload = () => resolve(reader.result as string);
-    reader.onerror = error => reject(error);
+    reader.onerror = (error) => reject(error);
   });
 };
 

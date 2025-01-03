@@ -13,7 +13,7 @@
         <img 
           :src="image.image" 
           :alt="image.title"
-          class="w-full h-auto rounded-lg"
+          class="w-full h-80 rounded-lg object-cover object-center"
         />
         <div class="mt-2">
           <h3 class="font-semibold text-lg">{{ image.title }}</h3>
