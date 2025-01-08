@@ -67,7 +67,7 @@ const props = defineProps<{
   };
 }>();
 
-const showScript = ref(true);
+const showScript = ref(false);
 </script>
 
 <style>

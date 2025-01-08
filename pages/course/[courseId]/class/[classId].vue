@@ -47,54 +47,59 @@
           </div>
           <!-- Display content based on content_type -->
           <div class="text-sm text-fuscous-gray-700">
-            <div
+            <!-- Multiple Choice and True/False with Media -->
+            <div 
+              v-if="['multiple_choice', 'category'].includes(task.content_type) || 
+                    (task.content_type === 'true_false' && (task.image || task.audio))"
               class="flex gap-2"
-              v-if="
-                task.content_type === 'multiple_choice' ||
-                task.content_type === 'category'
-              "
             >
-              <MoleculeMultipleChoiceQuestion :data="task" />
+              <MoleculeMultipleTaskLayout
+                v-if="task.image || task.audio"
+                :data="task"
+              >
+                <component 
+                  :is="getQuestionComponent(task.content_type)"
+                  v-for="(question, index) in getQuestions(task)"
+                  :key="index"
+                  :question="question"
+                  :index="index"
+                />
+              </MoleculeMultipleTaskLayout>
+              <component 
+                v-else
+                :is="getQuestionComponent(task.content_type)"
+                v-for="(question, index) in getQuestions(task)"
+                :key="index"
+                :question="question"
+                :index="index"
+              />
             </div>
 
-            <div v-else-if="task.content_type === 'true_false'">
-              <MoleculeMultipleTaskTrueFalse
+            <!-- Standard Multiple Choice and True/False -->
+            <div v-else-if="['true_false', 'multiple_choice'].includes(task.content_type)">
+              <component 
+                :is="getQuestionComponent(task.content_type)"
                 v-for="(question, index) in task.content_details.questions"
                 :key="index"
                 :question="question"
+                :index="index"
               />
             </div>
 
-            <div v-else-if="task.content_type === 'fill_gaps'">
-              <MoleculeMultipleTaskFill
-                v-for="(passage, index) in task.content_details.passages"
-                :key="index"
-                :text="passage.text"
-                :keywords="passage.keywords"
-                :help_text="passage.help_text"
-                class="my-4"
-              />
-            </div>
-
-            <MoleculeMultipleTaskWordBank
-              v-else-if="task.content_type === 'word_bank'"
-              :data="task.content_details.word_bank"
+            <!-- Other content types -->
+            <component
+              v-else
+              :is="getContentComponent(task.content_type)"
+              v-bind="getComponentProps(task, index)"
             />
-
-            <VideoTask
-              v-else-if="task.content_type === 'video'"
-              :task="task"
-              :index="getTaskNumber(index)"
-            />
-            <AudioTask v-else-if="task.content_type === 'audio'" :task="task" />
-
-            <div v-else-if="task.content_type === 'image'">
-              <BankGallery :images="task.content_details.images" />
-            </div>
           </div>
         </div>
-        <div v-if="task.content_type === 'info_box'" class="mt-16 cursor-pointer" @click="handleShowEditNavigation(index)">
-          <InfoBoxStudent :task="task"  />
+        <div
+          v-if="task.content_type === 'info_box'"
+          class="mt-16 cursor-pointer"
+          @click="handleShowEditNavigation(index)"
+        >
+          <InfoBoxStudent :task="task" />
         </div>
         <!-- Insert EditClassNavigation after the selected task -->
         <transition
@@ -161,7 +166,10 @@ import AudioTask from "~/components/organisim/templatesUsers/students/taskStuden
 import VideoTask from "~/components/organisim/templatesUsers/students/taskStudents/Video.vue";
 import { useAnimation } from "~/composables/useAnimation";
 import { useQueryClient, useQuery } from "@tanstack/vue-query";
-
+import MoleculeMultipleTaskLayout from "~/layouts/MultipleTakLayout.vue";
+import MoleculeMultipleTaskWordBank from "~/components/molecule/multipleTask/WordBank.vue";
+import MoleculeMultipleTaskTrueFalse from "~/components/molecule/multipleTask/TrueFalse.vue";
+import MoleculeMultipleChoiceQuestion from "~/components/molecule/multipleTask/MultipleChoiceQuestion.vue";
 import { useRoute } from "vue-router";
 import { useCapitalizerLetter } from "~/composables/useCapitalizerLetter";
 import { useDataMenu } from "~/composables/useDataMenu";
@@ -178,7 +186,7 @@ import MoleculeMultipleTaskFill from "~/components/molecule/multipleTask/Fill.vu
 import TextBlockModules from "~/components/organisim/TextBlockModules.vue";
 import GalleryLayout from "~/components/organisim/blocks/GalleryLayout.vue";
 import InfoBoxStudent from "~/components/organisim/templatesUsers/students/taskStudents/InfoBoxStudent.vue";
-import BankGallery from '~/components/organisim/templatesUsers/students/taskStudents/BankGallery.vue';
+import BankGallery from "~/components/organisim/templatesUsers/students/taskStudents/BankGallery.vue";
 
 const taskStore = useTaskStore();
 const route = useRoute();
@@ -213,6 +221,7 @@ const {
   error,
 } = useClassContents(classId);
 
+console.log("classTasks", classTasks);
 // Update the watch to use the new variable name
 watch(classTasks, (newTasks) => {
   if (newTasks?.data) {
@@ -220,6 +229,7 @@ watch(classTasks, (newTasks) => {
     showEditNavigation.value = false;
 
     const currentData = [...newTasks.data];
+    console.log("currentData", currentData);
 
     const insertionIndex = taskStore.insertionIndex;
     if (insertionIndex !== -1) {
@@ -289,5 +299,59 @@ const getTaskNumber = (currentIndex: number) => {
   }
 
   return `${mainNumber}.${subNumber}`;
+};
+
+// Component mapping
+const contentComponents = {
+  fill_gaps: MoleculeMultipleTaskFill,
+  word_bank: MoleculeMultipleTaskWordBank,
+  video: VideoTask,
+  audio: AudioTask,
+  image: BankGallery
+} as const;
+
+const questionComponents = {
+  multiple_choice: MoleculeMultipleChoiceQuestion,
+  true_false: MoleculeMultipleTaskTrueFalse
+} as const;
+
+// Helper functions
+const getQuestionComponent = (contentType: string) => {
+  return questionComponents[contentType as keyof typeof questionComponents];
+};
+
+const getContentComponent = (contentType: string) => {
+  return contentComponents[contentType as keyof typeof contentComponents];
+};
+
+const getQuestions = (task: any) => {
+  return task.content_details.questions || task.categories;
+};
+
+const getComponentProps = (task: any, index: number) => {
+  const props = {
+    fill_gaps: (task: any) => ({
+      text: task.content_details.passages[0].text,
+      keywords: task.content_details.passages[0].keywords,
+      help_text: task.content_details.passages[0].help_text,
+      class: 'my-4'
+    }),
+    word_bank: (task: any) => ({
+      data: task.content_details.word_bank
+    }),
+    video: (task: any, index: number) => ({
+      task,
+      index: getTaskNumber(index)
+    }),
+    audio: (task: any) => ({
+      task
+    }),
+    image: (task: any) => ({
+      images: task.content_details.images
+    })
+  };
+
+  const propGetter = props[task.content_type as keyof typeof props];
+  return propGetter ? propGetter(task, index) : {};
 };
 </script>

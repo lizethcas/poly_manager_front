@@ -1,7 +1,7 @@
 <template>
   <div class="mt-4">
     <h4 class="font-bold mb-3">{{ question.statement }}</h4>
-    <div class="flex gap-4">
+    <div class="flex justify-evenly">
       <p class="px-4 py-2 rounded-md" 
          :class="{ 'bg-tarawera-200': question.stated === 'True' }">True</p>
       <p class="px-4 py-2 rounded-md" 

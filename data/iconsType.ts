@@ -7,5 +7,6 @@ export const IconType = {
   collection:"bi:collection-fill",
   imgGen: "hugeicons:ai-image",
   save: "mingcute:save-fill",
-  expand:"fe:expand"
+  expand:"fe:expand",
+  menu:"mdi-light:menu"
 };

@@ -126,10 +126,19 @@ const handlePreviewClick = (
   classId: number | undefined,
   courseId: number | undefined
 ) => {
-  if (classId && courseId) {
-    navigateTo(`/course/${courseId}/class/${classId}`);
-  } else {
+  if (!classId || !courseId) {
     console.error("Class ID or Course ID is undefined");
+    showError("Invalid class or course ID");
+    return;
+  }
+
+  try {
+    navigateTo(`/course/${courseId}/class/${classId}`, {
+      failOnError: true
+    });
+  } catch (error) {
+    console.error("Navigation error:", error);
+    showError("Error navigating to class preview");
   }
 };
 

@@ -17,7 +17,7 @@
             </div> 
         </header>
 
-        <main class="px-14 mb-4">
+        <main class="px-2 mb-4">
             <!-- Navigation tabs -->
             <NuxtLayout>
                 <nav class="flex justify-start gap-4 border-b border-gray-300">
@@ -70,6 +70,7 @@ const route = useRoute();
 
 const routeCourseId = route.params.courseId as string;
 
+console.log("routeCourseId", routeCourseId);
 // Use the shared query composable
 const { data: courses, isLoading, error } = useCoursesQuery()
 console.log(courses.value)
@@ -85,6 +86,7 @@ const currentCourse = computed(() => {
 
 const handleBackNavigation = () => {
   if (route.path.includes('/class/')) {
+    console.log("route.path", route.path);
     navigateTo(`/course/${routeCourseId}`);
   } else {
     navigateTo('/courses/');

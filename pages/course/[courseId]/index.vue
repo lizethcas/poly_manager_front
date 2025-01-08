@@ -1,7 +1,7 @@
 <template>
     <main class="py-4  text-title-color mb-6 md:w-full  ">
       
-      <div class="flex items-center  text-middele-gray">
+      <div class="flex items-center  text-middele-gray w-4/5 ">
         <p class="mr-4">total lessons {{ filteredData?.length || 0 }}</p>
         <div class="flex-grow border-t-2 border-dotted border-middele-gray"></div>
       </div>
@@ -13,8 +13,9 @@
       <div v-else-if="error">Error: {{ error.message }}</div>
       
       <!-- Show data -->
-       <div class="bg-white rounded-lg p-4 mb-2 shadow-sm relative">
-        <ClassCard v-if="data" :classes="data" />
+       <div class="bg-white rounded-lg p-4 mb-2 shadow-sm relative w-4/5">
+        <ClassCard v-if="filteredData && filteredData.length > 0" :classes="filteredData" />
+        <div v-else class="text-center text-md text-middele-gray">No classes created yet</div>
        </div>
       
       <AddCourseButton @handleAdd="handleAdd" :text="createClass.buttonText" />

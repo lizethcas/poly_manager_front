@@ -3,7 +3,7 @@
   <div class="md:w-4/5 px-4 w-full" v-if="userType === 'teacher'">
     
     <header class="text-title-color mb-4">
-      <h2 class="mt-4 font-bold text-m text-fuscous-gray-600">{{ homeData.subTitle }}</h2>
+      <h2 class=" font-bold text-m text-fuscous-gray-600">{{ homeData.subTitle }}</h2>
       <AddCourseButton @handleAdd="handleAdd" :text="createCourse.buttonText" />
     </header>
     <main

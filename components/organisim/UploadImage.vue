@@ -16,10 +16,11 @@
   </div>
   <div class="shadow-md shadow-fuscous-gray-300 rounded-lg p-4">
     <div class="flex items-center justify-between">
+      
       <InputFile
         fileType="audio"
         icon="true"
-        title="Auio file:"
+        title="Audio file:"
         @file-selected="data.audio = $event"
       />
       <div class="flex flex-col justify-between items-center">

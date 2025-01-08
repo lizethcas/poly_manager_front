@@ -15,7 +15,7 @@
             <label v-if="!icon" for="file-upload" class="min-w-[120px] text-middele-gray">File:</label>
             <div v-if="showPreview" :class="[
                 'rounded overflow-hidden',
-                fileType === 'video' ? 'w-64 h-36' : fileType === 'audio' ? 'w-3/6' : 'w-16 h-16'
+                fileType === 'video' ? 'w-64 h-36' : fileType === 'audio' ? '' : 'w-16 h-16'
             ]">
                 <slot></slot>
                 <!-- Image preview -->
@@ -24,7 +24,8 @@
                 <video v-if="fileType === 'video' && previewUrl" :src="previewUrl" controls
                     class="w-full h-full object-cover"></video>
                 <!-- Audio preview -->
-                <audio v-if="fileType === 'audio' && previewUrl" :src="previewUrl" controls class="w-full"></audio>
+                <audio v-if="fileType === 'audio' && previewUrl" :src="previewUrl" controls ></audio>
+                
                 <!-- File name for other types -->
                 <div v-if="!['image', 'video', 'audio'].includes(fileType) && fileName" class="text-sm">
                     {{ fileName }}
@@ -75,11 +76,8 @@ const taskStore = useTaskStore();
 // References
 const fileInput = ref(null);
 const previewUrl = ref(null);
-const fileType = ref(null);
+const fileType = ref("");
 const fileName = ref(null);
-
-
-
 // Trigger file input on button click
 const triggerFileUpload = () => {
     fileInput.value.click();

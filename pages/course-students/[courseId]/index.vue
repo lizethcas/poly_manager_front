@@ -1,5 +1,5 @@
 <template>
-  <div v-if="!isLoading" class="flex items-center">
+  <div v-if="!isLoading && currentCourse.length > 0" class="flex items-center">
     <img
       src="~/assets/images/back-button-round.webp"
       alt="regresar una pagina"

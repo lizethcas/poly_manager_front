@@ -65,5 +65,11 @@ export default defineNuxtConfig({
     prerender: {
       routes: ['/courses', '/student', '/dashboard', '/teacher']
     }
+  },
+  imports: {
+    dirs: [
+      'composables/**',
+      'components/**',
+    ]
   }
 });

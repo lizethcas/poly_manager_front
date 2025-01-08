@@ -343,6 +343,7 @@ watch(
   () => typeTask,
   (newValue) => {
     console.log("typeTask changed:", newValue);
+    console.log("data", data.value);
   },
   { immediate: true }
 );
@@ -511,26 +512,33 @@ const hasQuestionsWithAnswers = () => {
 };
 
 const handleSave = async () => {
-  
-  
   try {
     const formData = new FormData();
-    // Prepare content_details based on content type
-    let contentDetails;
-    if (data.value.content_type === "fill_gaps") {
-      contentDetails = { passages: data.value.content_details.passages };
-    } else if (data.value.content_type === "word_bank") {
-      contentDetails = { word_bank: data.value.content_details.word_bank };
-    } else {
-      contentDetails = { questions: data.value.content_details.questions };
-    }
-
+    
+    // Always include media files and transcription
     if (data.value.image) {
       formData.append("image", data.value.image);
     }
     if (data.value.audio) {
       formData.append("audio", data.value.audio);
-      formData.append("audio_transcription", data.value.audio_transcription);
+    }
+    // Always include audio_transcription even if empty
+    formData.append("audio_transcription", data.value.audio_transcription || "");
+
+    // Prepare content_details based on content type
+    let contentDetails;
+    if (data.value.content_type === "fill_gaps") {
+      contentDetails = { 
+        passages: data.value.content_details.passages,
+        questions: [] // Add empty questions array
+      };
+    } else if (data.value.content_type === "word_bank") {
+      contentDetails = { 
+        word_bank: data.value.content_details.word_bank,
+        questions: [] // Add empty questions array
+      };
+    } else {
+      contentDetails = { questions: data.value.content_details.questions };
     }
 
     // Append all data
@@ -540,16 +548,6 @@ const handleSave = async () => {
     formData.append("instructions", data.value.instructions);
     formData.append("content_details", JSON.stringify(contentDetails));
     formData.append("stats", String(data.value.stats));
-
-    // Debug log
-    console.log("Sending data:", {
-      class_id: data.value.class_id,
-      content_type: data.value.content_type,
-      tittle: data.value.tittle,
-      instructions: data.value.instructions,
-      content_details: contentDetails,
-      stats: data.value.stats,
-    });
 
     await mutateAsync(formData);
     success("Task saved successfully");

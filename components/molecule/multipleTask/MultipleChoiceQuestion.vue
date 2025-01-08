@@ -1,5 +1,5 @@
 <template>
-  <div class="mt-4 border-r-2 border-l-2 border-t-2 border-b-2 border-tarawera-200 rounded-[10px] p-2">
+  <div class=" w-full mt-4 border-r-2 border-l-2 border-t-2 border-b-2 border-tarawera-200 rounded-[10px] p-2" >
     <h4 class="font-bold">{{ question.question }}</h4>
     <div v-for="(answer, index) in question.answers || question.text_items" 
          :key="index"

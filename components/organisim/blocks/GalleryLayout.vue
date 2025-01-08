@@ -41,6 +41,7 @@
 
     <!-- Upload options -->
     <div class="flex mt-4 items-end gap-2">
+      
       <InputFile
         fileType="image"
         icon="true"

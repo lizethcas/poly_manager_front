@@ -191,4 +191,20 @@ watch(form, (newValue) => {
   console.log("form", newValue);
   isActive.value = Boolean(newValue.video || newValue.audio);
 });
+
+// Add proper interface for task prop if it's being used
+interface Task {
+  id: number;
+  class_id: number;
+  content_type: string;
+  tittle: string;
+  content_details: any;
+  // ... add other properties as needed
+}
+
+// Add props definition with proper type validation
+defineProps<{
+  index?: number;  // Make it optional but ensure it's a number
+  task?: Task;
+}>()
 </script>

@@ -13,7 +13,19 @@ export const useClassContents = (classId: string | string[]) => {
       const response = await axiosDashboard.get(
         `${apiRoutes.classContent}?class_id=${classId}`
       );
-      return response.data;
+      // Check if response.data has a 'data' property (common API structure)
+      const contents = Array.isArray(response.data) ? response.data : response.data.data;
+      
+      if (!Array.isArray(contents)) {
+        throw new Error('Invalid response format: expected an array');
+      }
+
+      return {
+        data: contents.map((content: any, index: number) => ({
+          ...content,
+          index
+        }))
+      };
     },
   });
 
