@@ -23,5 +23,5 @@ export const axiosDashboard = axios.create({
 });
 
 export const axiosChat = axios.create({
-  baseURL: isDevelopment ? baseURLs.development.chat : baseURLs.production.chat,
+  baseURL:  baseURLs.production.chat,
 });
