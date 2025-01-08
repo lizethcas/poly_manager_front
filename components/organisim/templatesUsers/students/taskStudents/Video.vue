@@ -1,5 +1,5 @@
 <template>
-  <div class="relative p-8 w-full min-h-[420px] my-4">
+  <div class="relative px-10 w-full min-h-[420px] my-4">
     <!-- Background image container -->
     <div
       v-if="task.image"
@@ -23,7 +23,7 @@
       <video
         v-if="task.video"
         :src="task.video"
-        class="w-[80%] aspect-video m-auto rounded-lg"
+        class="w-[90%] aspect-video m-auto rounded-lg"
         controls
         preload="metadata"
       >

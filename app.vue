@@ -68,7 +68,7 @@
         >
           <div>
             <NuxtLink to="/" class="flex items-center">
-              <span class="text-[#478ADF] font-bold text-md">polyAcademy</span>
+              <span class="text-primary-color font-bold text-md">polyAcademy</span>
             </NuxtLink>
           </div>
           <!-- Search bar -->

@@ -1,12 +1,12 @@
 <template v-if="data">
-  <div class="w-1/4 flex items-start justify-center" >
+  <div v-if="data.image" class="w-1/4 flex items-start justify-center">
     <img
       :src="data.image"
       alt="Question Image"
       class="w-full h-auto object-center rounded-[10px]"
     />
   </div>
-  <div class="w-full">
+  <div :class="{ 'w-full': true, 'w-3/4': data.image }">
     <audio
       v-if="data.audio"
       :src="data.audio"

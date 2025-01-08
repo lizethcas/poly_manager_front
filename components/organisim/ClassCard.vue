@@ -90,7 +90,7 @@ import { useGetCover } from "~/composables/useGetcover";
 import { useTaskStore } from "~/stores/task.store";
 import type { ClassData } from "~/interfaces/models/class.interface..model";
 import { useClassesQuery } from "~/composables/useClassesQuery";
-import { useToast } from "~/composables/useToast";
+import { useCustomToast } from "~/composables/useToast";
 
 const route = useRoute();
 const taskStore = useTaskStore();

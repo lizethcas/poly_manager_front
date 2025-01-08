@@ -37,7 +37,7 @@ export const interactiveTaskOptions: TaskOption[] = [
   }, */
   {
     name: "Categories",
-    type: "Categories",
+    type: "category",
   },
  /*  {
     name: "Matching",

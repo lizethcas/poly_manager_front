@@ -13,10 +13,8 @@ const baseURLs = {
 
 const isDevelopment = process.env.NODE_ENV === "development";
 
+
 // Create separate axios instances for different endpoints
-export const axiosDefault = axios.create({
-  baseURL: baseURLs.development.default,
-});
 
 export const axiosDashboard = axios.create({
   baseURL: isDevelopment

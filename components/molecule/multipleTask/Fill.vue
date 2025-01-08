@@ -1,28 +1,34 @@
 <template>
   <div>
-    <!-- Help text section if provided -->
-    <p v-if="help_text" class="text-sm text-gray-600 mb-2">Hint: {{ help_text }}</p>
-    <!-- Muestra el texto formateado con las keywords en negrita -->
-    <p v-html="formattedText"></p>
+    <!-- Loop through passages -->
+    <div v-for="(passage, index) in passages" :key="index" class="mb-4">
+      <!-- Help text section if provided -->
+      <p v-if="passage.help_text" class="text-sm text-gray-600 mb-2">
+        Hint: {{ passage.help_text }}
+      </p>
+      <!-- Display formatted text for each passage -->
+      <p v-html="getFormattedText(passage)"></p>
+    </div>
   </div>
 </template>
   
 <script setup lang="ts">
-import { computed } from 'vue';
-
-interface Props {
+interface Passage {
   text: string;
   keywords: string[];
   help_text: string;
 }
 
-// Define props and store them in a variable
+interface Props {
+  passages: Passage[];
+}
+
 const props = defineProps<Props>();
 
-// Now use props.keywords to access the keywords array
-const formattedText = computed(() => {
-  const replacement = props.keywords.map(keyword => `<b>${keyword}</b>`).join(" / ");
-  return props.text.replace("__1__", replacement);
-});
+// Function to format text for each passage
+const getFormattedText = (passage: Passage) => {
+  const replacement = passage.keywords.map(keyword => `<b>${keyword}</b>`).join(" / ");
+  return passage.text.replace("__1__", replacement);
+};
 </script>
   

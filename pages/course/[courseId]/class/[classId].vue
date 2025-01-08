@@ -36,7 +36,9 @@
             "
           >
             <div class="flex justify-start gap-2 my-2">
-              <p class="bg-tarawera-200 text-tarawera-800 px-2 py-1 rounded-md">
+              <p
+                class="bg-tarawera-100 text-primary-color px-2 py-1 rounded-md"
+              >
                 {{ getTaskNumber(index) }}
               </p>
               <h3 class="text-lg font-bold">
@@ -48,36 +50,47 @@
           <!-- Display content based on content_type -->
           <div class="text-sm text-fuscous-gray-700">
             <!-- Multiple Choice and True/False with Media -->
-            <div 
-              v-if="['multiple_choice', 'category'].includes(task.content_type) || 
-                    (task.content_type === 'true_false' && (task.image || task.audio))"
+            <div
+              v-if="
+                [
+                  'multiple_choice',
+                  'category',
+                  'true_false',
+                  'fill_gaps',
+                  'word_bank',
+                  'category',
+                ].includes(task.content_type) &&
+                (task.image || task.audio)
+              "
               class="flex gap-2"
             >
               <MoleculeMultipleTaskLayout
                 v-if="task.image || task.audio"
                 :data="task"
               >
-                <component 
+                <component
                   :is="getQuestionComponent(task.content_type)"
                   v-for="(question, index) in getQuestions(task)"
                   :key="index"
                   :question="question"
                   :index="index"
                 />
+                <component
+                  :is="getContentComponent(task.content_type)"
+                  v-bind="getComponentProps(task, index)"
+                />
               </MoleculeMultipleTaskLayout>
-              <component 
-                v-else
-                :is="getQuestionComponent(task.content_type)"
-                v-for="(question, index) in getQuestions(task)"
-                :key="index"
-                :question="question"
-                :index="index"
-              />
             </div>
 
             <!-- Standard Multiple Choice and True/False -->
-            <div v-else-if="['true_false', 'multiple_choice'].includes(task.content_type)">
-              <component 
+            <div
+              v-else-if="
+                ['true_false', 'multiple_choice', 'category'].includes(
+                  task.content_type
+                )
+              "
+            >
+              <component
                 :is="getQuestionComponent(task.content_type)"
                 v-for="(question, index) in task.content_details.questions"
                 :key="index"
@@ -221,7 +234,6 @@ const {
   error,
 } = useClassContents(classId);
 
-console.log("classTasks", classTasks);
 // Update the watch to use the new variable name
 watch(classTasks, (newTasks) => {
   if (newTasks?.data) {
@@ -229,7 +241,6 @@ watch(classTasks, (newTasks) => {
     showEditNavigation.value = false;
 
     const currentData = [...newTasks.data];
-    console.log("currentData", currentData);
 
     const insertionIndex = taskStore.insertionIndex;
     if (insertionIndex !== -1) {
@@ -307,20 +318,28 @@ const contentComponents = {
   word_bank: MoleculeMultipleTaskWordBank,
   video: VideoTask,
   audio: AudioTask,
-  image: BankGallery
+  image: BankGallery,
 } as const;
 
 const questionComponents = {
   multiple_choice: MoleculeMultipleChoiceQuestion,
-  true_false: MoleculeMultipleTaskTrueFalse
+  true_false: MoleculeMultipleTaskTrueFalse,
+  fill_gaps: MoleculeMultipleTaskFill,
+  category: MoleculeMultipleChoiceQuestion,
 } as const;
 
 // Helper functions
 const getQuestionComponent = (contentType: string) => {
-  return questionComponents[contentType as keyof typeof questionComponents];
+  const component =
+    questionComponents[contentType as keyof typeof questionComponents];
+  if (!component) {
+    console.warn(`No component found for content type: ${contentType}`);
+  }
+  return component;
 };
 
 const getContentComponent = (contentType: string) => {
+  console.log(contentType);
   return contentComponents[contentType as keyof typeof contentComponents];
 };
 
@@ -331,24 +350,22 @@ const getQuestions = (task: any) => {
 const getComponentProps = (task: any, index: number) => {
   const props = {
     fill_gaps: (task: any) => ({
-      text: task.content_details.passages[0].text,
-      keywords: task.content_details.passages[0].keywords,
-      help_text: task.content_details.passages[0].help_text,
-      class: 'my-4'
+      passages: task.content_details.passages,
+      class: "my-4",
     }),
     word_bank: (task: any) => ({
-      data: task.content_details.word_bank
+      data: task.content_details.word_bank,
     }),
     video: (task: any, index: number) => ({
       task,
-      index: getTaskNumber(index)
+      index: getTaskNumber(index),
     }),
     audio: (task: any) => ({
-      task
+      task,
     }),
     image: (task: any) => ({
-      images: task.content_details.images
-    })
+      images: task.content_details.images,
+    }),
   };
 
   const propGetter = props[task.content_type as keyof typeof props];

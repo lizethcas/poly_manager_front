@@ -24,7 +24,7 @@
               'px-1 text-sm',
               word.isKeyword ? ' rounded min-w-[20px] inline-block' : ''
             ]"
-          >{{ word.isKeyword ? '__' : word.text }}</span>
+          >{{ word.isKeyword ? '___' : word.text }}</span>
         </template>
       </p>
     </div>

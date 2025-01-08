@@ -19,8 +19,8 @@ export default {
         "tarawera-700": "#0063FF",
         "tarawera-800": "##165c74",
         "tarawera-600": "#0A8DB0",
-        "tarawera-200": "#A6F1FB",
-        "tarawera-100": "#D0F9FD",
+        "tarawera-200": "#d1f1ff",
+        "tarawera-100": "#d1f1ff",
         "tarawera-50": "#ECFEFF",
       
 

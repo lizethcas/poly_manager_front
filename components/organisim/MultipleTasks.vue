@@ -283,6 +283,17 @@ watch(
         question: q.text,
         text_items: q.answers.map((a) => ({ text: a.text })),
       }));
+      // Add task instructions, image and audio for category type
+      if (taskInstructions.value) {
+        data.value.tittle = taskInstructions.value.title || "";
+        data.value.instructions = taskInstructions.value.instructions || "";
+      }
+      if (files.value.image) {
+        data.value.image = files.value.image;
+      }
+      if (files.value.audio) {
+        data.value.audio = files.value.audio;
+      }
     }
 
     if (typeTask === "true_false") {
