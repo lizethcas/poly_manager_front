@@ -7,7 +7,7 @@ const baseURLs = {
   },
   production: {
     dashboard: "https://dploy-production.up.railway.app/dashboard/api/",
-    chat: "https://dploy-production.up.railway.app/chat",
+    chat: "https://dploy-production.up.railway.app/chat/",
   },
 };
 
