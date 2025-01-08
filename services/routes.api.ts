@@ -2,6 +2,9 @@
 import { axiosDashboard, axiosDefault } from "./axios.config";
 
 export const apiRoutes = {
+  chat: {
+    chatAi: "chat-ai/",
+  },
   classContent: "class-contents/",
   courses: "courses/",
   classes: {

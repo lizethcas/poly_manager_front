@@ -58,6 +58,9 @@
 
 <script setup>
 import { ref, nextTick } from 'vue'
+import { useMutation } from '@tanstack/vue-query'
+import { axiosChat } from '@/services/axios.config'
+import { apiRoutes } from '~/services/routes.api'
 
 const messages = ref([])
 const userMessage = ref('')
@@ -71,6 +74,28 @@ const scrollToBottom = () => {
     })
 }
 
+const chatMutation = useMutation({
+  mutationFn: (message) => {
+    return axiosChat.post(apiRoutes.chat.chatAi, { message })
+  },
+  onSuccess: (data) => {
+    messages.value.push({
+      type: 'ai',
+      text: data.data.response
+    })
+    scrollToBottom()
+  },
+  onError: () => {
+    messages.value.push({
+      type: 'error',
+      text: 'Error al enviar el mensaje. Por favor, intenta de nuevo.'
+    })
+  },
+  onSettled: () => {
+    isTyping.value = false
+  }
+})
+
 const sendMessage = async () => {
     if (!userMessage.value.trim()) return
     
@@ -82,36 +107,10 @@ const sendMessage = async () => {
     const messageToSend = userMessage.value
     userMessage.value = ''
     
-    try {
-        isTyping.value = true
-        scrollToBottom()
-
-        const response = await fetch('http://localhost:8000/chat/chat-ai/', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({ message: messageToSend })
-        })
-        
-        const data = await response.json()
-        isTyping.value = false
-        
-        messages.value.push({
-            type: 'ai',
-            text: data.response
-        })
-        
-        scrollToBottom()
-        
-    } catch (error) {
-        console.error('Error:', error)
-        isTyping.value = false
-        messages.value.push({
-            type: 'error',
-            text: 'Error al enviar el mensaje. Por favor, intenta de nuevo.'
-        })
-    }
+    isTyping.value = true
+    scrollToBottom()
+    
+    chatMutation.mutate(messageToSend)
 }
 
 const formatMessage = (text) => {
