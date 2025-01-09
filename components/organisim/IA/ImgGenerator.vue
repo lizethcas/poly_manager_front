@@ -84,7 +84,7 @@ import { axiosDashboard } from "~/services/axios.config";
 import IconMolecule from "~/components/atomos/Icon.vue";
 import { IconType } from "~/data/iconsType";
 import MoleculeInput from "~/components/molecule/Input.vue";
-import { useToast } from "~/composables/useToast";
+import { useCustomToast } from "~/composables/useToast";
 import { useTaskStore } from "~/stores/task.store";
 
 const taskStore = useTaskStore();

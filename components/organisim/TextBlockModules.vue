@@ -36,9 +36,9 @@ import { createBaseTaskData } from "~/interfaces/task.interface";
 import { useRoute } from "vue-router";
 import { useClassContentMutation } from '~/composables/useClassContentMutation';
 import InfoBox from '~/components/molecule/multipleTask/InfoBox.vue';
-import { useToast } from "~/composables/useToast";
+import { useCustomToast } from "~/composables/useToast";
 
-const toast = useToast();
+const toast = useCustomToast();
 const taskStore = useTaskStore();
 const route = useRoute();
 const mutation = useClassContentMutation();
