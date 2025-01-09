@@ -1,6 +1,6 @@
 <template>
   <NuxtLayout>
-    <DashboardLayout :navigation-routes="navigationRoutes.student" />
+    <DashboardLayout :navigation-routes="navigationRoutes.admin" />
   </NuxtLayout>
 </template>
 
@@ -10,10 +10,11 @@ import { navigationRoutes } from '~/data/routes'
 
 const route = useRoute()
 const router = useRouter()
+
 // Add navigation guard to redirect to /admin/courses
 onMounted(() => {
-  if (route.path === '/student') {
-    router.push('/student/classes')
+  if (route.path === '/admin') {
+    router.push('/admin/dashboard')
   }
 })
 </script>

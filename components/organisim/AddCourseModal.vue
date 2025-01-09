@@ -69,7 +69,7 @@ const classMutation = useClassMutation();
 
 // Propiedades del modal
 const { title, showExtraElements } = defineProps<ModalProps>();
-
+const routeCourseId = route.params.courseId;
 // Opciones para los selects (categorías y niveles)
 const combinedOptions = [
     { options: createCourse.categorys, title: createCourse.label_select[0] },
@@ -109,10 +109,11 @@ const handleSave = async () => {
         return;
     }
 
-    const formType = route.name === 'course-courseId' ? 'class' : 'course';
-
+    const formType = route.path === `/admin/course-${routeCourseId}/lessons` ? 'class' : 'course';
+    console.log(route.path);
     try {
         if (formType === 'class') {
+            console.log(formType);
             const requestData = {
                 class_name: formData.value.course_name,
                 description: formData.value.description,
