@@ -1,8 +1,4 @@
-// Importar el paquete por defecto
-import Toastification from 'vue-toastification'
-
-// Acceder a la función useToast desde el paquete
-const { useToast: useVueToast } = Toastification()
+import { useToast as useVueToast } from 'vue-toastification'
 
 export const useCustomToast = () => {
   const toast = useVueToast()
