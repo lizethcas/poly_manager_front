@@ -59,12 +59,13 @@ import transformKey from '~/utils/stringTransformations'
 import { useRoute } from 'vue-router';
 import { useCourseMutation } from '~/composables/useCourseMutation';
 import { useClassMutation } from '~/composables/useClassMutation';
-
+import { useCustomToast } from "~/composables/useToast";
 
 const route = useRoute();
 const { bulletPoints, formData, handleEmit, updateFormField, resetForm } = useFormData();
 const courseMutation = useCourseMutation();
 const classMutation = useClassMutation();
+const toast = useCustomToast();
 
 
 // Propiedades del modal
@@ -121,6 +122,7 @@ const handleSave = async () => {
                 cover: formData.value.cover
             };
             await classMutation.mutateAsync(requestData);
+            toast.success('Class created successfully');
         } else {
             const requestData = {
                 course_name: formData.value.course_name,
@@ -131,10 +133,12 @@ const handleSave = async () => {
                 cover: formData.value.cover
             };
             await courseMutation.mutateAsync(requestData);
+            toast.success('Course created successfully');
         }
         resetForm();
-        closeModal();
+        emits("closeModal");
     } catch (error) {
+        toast.error('Error creating course/class');
         console.error('Error creating course/class:', error);
         // Handle error appropriately
     }

@@ -139,7 +139,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, watch } from "vue";
+import { ref, watch, computed } from "vue";
 /* Components */
 import InputTask from "../molecule/InputTask.vue";
 import TextAreaTask from "../molecule/TextAreaTask.vue";
@@ -172,9 +172,6 @@ const newWordBank = ref("");
 const { getType } = useGetTypeTask();
 const { success, error: showError } = useToast();
 
-watch(taskType, (newValue) => {
-  console.log("typeTask changed:", newValue);
-});
 
 const { 
   mutateAsync,
@@ -251,11 +248,14 @@ const data = ref({
     ordering: [] as Ordering[],
     word_bank: [] as WordBank[],
   },
+  content_type: "multiple_choice",
   image: null as File | null,
   audio: null as File | null,
   video_transcription: null as string | null,
   audio_transcription: "",
 });
+
+
 
 watch(
   select,
@@ -351,8 +351,20 @@ watch(
 );
 
 watch(
-  () => typeTask,
+  taskType,
   (newValue) => {
+    // Map typeTask to the correct content_type
+    const contentTypeMap = {
+      'multiple_choice': 'multiple_choice',
+      'true_false': 'true_false',
+      'ordering': 'ordering',
+      'category': 'category',
+      'fill_gaps': 'fill_gaps',
+      'word_bank': 'word_bank',
+      
+    };
+    
+    data.value.content_type = contentTypeMap[newValue] || 'multiple_choice';
     console.log("typeTask changed:", newValue);
     console.log("data", data.value);
   },
@@ -509,7 +521,6 @@ const updateOptionIsCorrect = (
 const hasQuestionsWithAnswers = () => {
   return questions.value.every((question) => {
     if (typeTask === "true_false") {
-      console.log("aqui");
       // For true_false, only check if statement exists
       return question.statement?.trim() !== "";
     }
@@ -551,7 +562,7 @@ const handleSave = async () => {
     } else {
       contentDetails = { questions: data.value.content_details.questions };
     }
-
+  
     // Append all data
     formData.append("class_id", String(data.value.class_id));
     formData.append("content_type", data.value.content_type);

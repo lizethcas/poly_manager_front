@@ -13,7 +13,7 @@
         v-if="course.cover"
         :src="getCoverUrl(course.cover)"
         alt=""
-        class="rounded-md object-cover min-w-20 max-h-20 w-full h-full"
+        class="rounded-md object-cover h-20 w-20"
       />
     </div>
 
