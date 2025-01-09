@@ -303,7 +303,6 @@ const handleShowEditNavigation = (index: number) => {
   selectedTaskIndex.value = index;
   if (classTasks.value?.data) {
     selectedTask.value = classTasks.value.data[index];
-    console.log("Selected Task:", selectedTask.value);
   }
   showEditNavigation.value = true;
   taskStore.setInsertionIndex(index);
@@ -315,7 +314,6 @@ const handleAddBlock = () => {
 };
 
 const getTaskNumber = (currentIndex: number) => {
-  console.log(currentIndex);
   if (!classTasks.value?.data) return "";
 
   let mainNumber = 1;
@@ -367,7 +365,6 @@ const getQuestionComponent = (contentType: string) => {
 };
 
 const getContentComponent = (contentType: string) => {
-  console.log(contentType);
   return contentComponents[contentType as keyof typeof contentComponents];
 };
 
