@@ -40,12 +40,13 @@
                 class="bg-tarawera-100 text-primary-color px-2 py-1 rounded-md"
               >
                 {{ getTaskNumber(index) }}
+                
               </p>
-              <h3 class="text-lg font-bold">
+              <h3 class="text-lg font-semibold">
                 {{ capitalizeFirstLetter(task.tittle) }}
               </h3>
             </div>
-            <p>{{ task.instructions }}</p>
+            <p class="text-sm font-semibold">{{ task.instructions }}</p>
           </div>
           <!-- Display content based on content_type -->
           <div class="text-sm text-fuscous-gray-700">
@@ -166,12 +167,34 @@
       </BaseTaskModal>
     </div>
 
+    <!-- Floating scroll buttons -->
+    <div class="fixed bottom-8 right-8 flex flex-col gap-2 z-50">
+      <button 
+        v-if="showUpButton"
+        @click="scrollToPreviousSection"
+        class="bg-primary-color text-white p-3 rounded-full shadow-lg hover:bg-tarawera-700 transition-colors"
+      >
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 10l7-7m0 0l7 7m-7-7v18" />
+        </svg>
+      </button>
+      <button 
+        v-if="showDownButton"
+        @click="scrollToNextSection"
+        class="bg-primary-color text-white p-3 rounded-full shadow-lg hover:bg-tarawera-700 transition-colors"
+      >
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 14l-7 7m0 0l-7-7m7 7V3" />
+        </svg>
+      </button>
+    </div>
+
     <!-- Rest of your existing template code... -->
   </div>
 </template>
 
 <script setup lang="ts">
-import { ref, watch } from "vue";
+import { ref, watch, onMounted, onUnmounted } from "vue";
 import { useModal } from "~/composables/useModal";
 import EditClassNavigation from "~/components/organisim/EditClassNavigation.vue";
 import BaseTaskModal from "~/components/organisim/BaseTaskModal.vue";
@@ -200,6 +223,7 @@ import TextBlockModules from "~/components/organisim/TextBlockModules.vue";
 import GalleryLayout from "~/components/organisim/blocks/GalleryLayout.vue";
 import InfoBoxStudent from "~/components/organisim/templatesUsers/students/taskStudents/InfoBoxStudent.vue";
 import BankGallery from "~/components/organisim/templatesUsers/students/taskStudents/BankGallery.vue";
+import TextBlockStudent from '~/components/organisim/templatesUsers/students/taskStudents/TextBlockStudent.vue';
 
 const taskStore = useTaskStore();
 const route = useRoute();
@@ -291,15 +315,18 @@ const handleAddBlock = () => {
 };
 
 const getTaskNumber = (currentIndex: number) => {
+  console.log(currentIndex);
   if (!classTasks.value?.data) return "";
 
   let mainNumber = 1;
   let subNumber = 0;
 
   for (let i = 0; i <= currentIndex; i++) {
-    if (classTasks.value.data[i]?.tittle !== "") {
+    if (classTasks.value.data[i]?.tittle !== "" && classTasks.value.data[i]?.content_type !== 'info_box') {
       subNumber++;
       if (i === currentIndex) {
+       
+   
         return `${mainNumber}.${subNumber}`;
       }
     }
@@ -319,6 +346,7 @@ const contentComponents = {
   video: VideoTask,
   audio: AudioTask,
   image: BankGallery,
+  text_block: TextBlockStudent,
 } as const;
 
 const questionComponents = {
@@ -366,9 +394,60 @@ const getComponentProps = (task: any, index: number) => {
     image: (task: any) => ({
       images: task.content_details.images,
     }),
+    text_block: (task: any) => ({
+      taskData: task.content_details.text_block,
+    }),
   };
 
   const propGetter = props[task.content_type as keyof typeof props];
   return propGetter ? propGetter(task, index) : {};
+};
+
+// Modified scroll function with viewport height tracking
+const currentScrollPosition = ref(0);
+
+const showUpButton = ref(false);
+const showDownButton = ref(true);
+
+// Update scroll position tracking
+onMounted(() => {
+  window.addEventListener('scroll', updateScrollButtons);
+});
+
+onUnmounted(() => {
+  window.removeEventListener('scroll', updateScrollButtons);
+});
+
+const updateScrollButtons = () => {
+  const scrollPosition = window.scrollY;
+  const windowHeight = window.innerHeight;
+  const documentHeight = document.documentElement.scrollHeight;
+
+  // Show up button if not at top
+  showUpButton.value = scrollPosition > 200;
+
+  // Show down button if not at bottom
+  showDownButton.value = scrollPosition + windowHeight < documentHeight - 100;
+};
+
+const scrollToPreviousSection = () => {
+  const viewportHeight = window.innerHeight;
+  currentScrollPosition.value = Math.max(0, currentScrollPosition.value - viewportHeight);
+
+  window.scrollTo({
+    top: currentScrollPosition.value,
+    behavior: 'smooth'
+  });
+};
+
+const scrollToNextSection = () => {
+  const viewportHeight = window.innerHeight;
+  const maxScroll = document.documentElement.scrollHeight - viewportHeight;
+  currentScrollPosition.value = Math.min(maxScroll, currentScrollPosition.value + viewportHeight);
+
+  window.scrollTo({
+    top: currentScrollPosition.value,
+    behavior: 'smooth'
+  });
 };
 </script>

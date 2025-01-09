@@ -37,7 +37,7 @@
           <!-- Content Section -->
           <div class="flex-1">
             <!-- Header with Title and Counter -->
-            <template class="flex flex-col justify-between h-full">
+            <template class="flex flex-col justify-between h-20 pb-2">
               <div class="flex items-center justify-between mb-2">
                 <h3 class="font-medium text-gray-900 text-xs sm:text-base">
                   Lesson {{ index }}. {{ classItem.class_name }}
@@ -47,7 +47,7 @@
                   class="text-sm px-2 py-1 bg-gray-100 rounded-full flex items-center gap-2"
                 >
                   <Icon name="bi:collection-fill" size="14" />
-                  {{ index  }}/{{ props.classes.length }}
+                  {{ index }}/{{ props.classes.length }}
                 </div>
               </div>
 
@@ -55,7 +55,9 @@
               <div class="flex flex-wrap gap-2">
                 <button
                   class="action-btn"
-                  @click="handlePreviewClick(classItem.id, Number(routeCourseId))"
+                  @click="
+                    handlePreviewClick(classItem.id, Number(routeCourseId))
+                  "
                 >
                   <Icon name="material-symbols:edit-outline" size="14" />
                   <span class="text-xs">edit</span>
@@ -101,7 +103,7 @@ const props = defineProps<{
 }>();
 
 // Move useToast to the top level
-const { success, error: showError } = useToast();
+const { showSuccess, showError } = useCustomToast();
 
 // Add computed property for filtered classes
 const filteredClasses = computed(() => {
@@ -122,7 +124,7 @@ const openModalHandler = () => {
   console.log("open modal");
 };
 
-const handlePreviewClick = (
+const handlePreviewClick = async (
   classId: number | undefined,
   courseId: number | undefined
 ) => {
@@ -133,9 +135,7 @@ const handlePreviewClick = (
   }
 
   try {
-    navigateTo(`/course/${courseId}/class/${classId}`, {
-      failOnError: true
-    });
+    await navigateTo(`/course/${courseId}/class/${classId}`);
   } catch (error) {
     console.error("Navigation error:", error);
     showError("Error navigating to class preview");
@@ -146,11 +146,9 @@ const handleDelete = async (classId: number) => {
   if (confirm("Are you sure you want to delete this class?")) {
     try {
       await deleteClass(classId);
-      success("Class deleted successfully");
-     
+      showSuccess("Class deleted successfully");
     } catch (error) {
       console.error("Error deleting class:", error);
-      
       showError("Error deleting class");
     }
   }

@@ -1,4 +1,4 @@
-import type { CourseForm } from '~/interfaces/modal.interface';
+/* import type { CourseForm } from '~/interfaces/modal.interface';
 import { useCourseStore } from '@/stores/courseStore';
 
 export const findItem = (courseId: string, item: CourseForm[]) => {
@@ -7,3 +7,4 @@ export const findItem = (courseId: string, item: CourseForm[]) => {
 }
 
 
+ */

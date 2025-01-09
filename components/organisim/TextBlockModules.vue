@@ -6,14 +6,14 @@
         type="text_area"
         size="xl"
         container-class="py-2"
-        @update:modelValue="taskData.content_details[0].text = $event"
+        @update:modelValue="taskData.content_details.text_block.text = $event"
       />
     </template>
 
     <template v-else-if="taskTitle == 'info_box'">
       <InfoBox
-        v-model="taskData.content_details[0].info_type"
-        :type="taskData.content_details[0].info_type"
+        v-model="taskData.content_details.info_type"
+        :type="taskData.content_details.info_type"
       />
     </template>
 
@@ -36,7 +36,9 @@ import { createBaseTaskData } from "~/interfaces/task.interface";
 import { useRoute } from "vue-router";
 import { useClassContentMutation } from '~/composables/useClassContentMutation';
 import InfoBox from '~/components/molecule/multipleTask/InfoBox.vue';
+import { useToast } from "~/composables/useToast";
 
+const toast = useToast();
 const taskStore = useTaskStore();
 const route = useRoute();
 const mutation = useClassContentMutation();
@@ -58,8 +60,8 @@ interface InfoBoxContent {
 const taskData = ref({
   ...createBaseTaskData(String(route.params.classId), title.value),
   content_details: title.value === 'Plain Text'
-    ? [{ text: '', columns: 1 } as TextContent]
-    : [{ info_type: 'attention' } as InfoBoxContent]
+    ? {text_block: { text: '', columns: 1 } }
+    : { info_type: 'attention'  }
 });
 
 watch(
@@ -73,7 +75,7 @@ watch(
       };
       if (taskTitle.value === 'info_box') {
         isActive.value = true;
-      } else { 
+      } else {
         isActive.value = false;
       }
     }
@@ -83,47 +85,46 @@ watch(
 
 watch(title, (newTask) => {
   taskTitle.value = newTask === "Plain Text" ? "text_block" : "info_box";
-  
+
   taskData.value = {
     ...createBaseTaskData(String(route.params.classId), taskTitle.value),
     content_details: taskTitle.value === 'text_block'
-      ? [{ text: '', columns: 1 }]
-      : [{ info_type: 'attention' }]
+      ? {text_block: { text: '', columns: 1 } }
+      : { info_type: 'attention'  }
   };
 });
 
-watch(
-  taskData,
-  (newTask) => {
-    console.log("Task Data:", JSON.parse(JSON.stringify(newTask)));
-  },
-  { deep: true }
-);
-
-watch(taskData.value.content_details, (newTask) => {
-  if (newTask[0].text != "") {
-    isActive.value = true;
+watch(() => taskData.value.content_details, (newTask) => {
+  if (taskTitle.value === 'text_block') {
+    isActive.value = newTask.text_block.text !== "";
   } else {
-    isActive.value = false;
+    isActive.value = true;
   }
-});
+}, { deep: true });
 
 const handleSave = async () => {
   try {
     const payload = {
       class_id: String(route.params.classId),
       content_type: taskTitle.value.toLowerCase().replace(' ', '_'),
-      content_details: JSON.stringify(taskData.value.content_details),
+      content_details: taskData.value.content_details,
       tittle: taskData.value.tittle,
       instructions: taskData.value.instructions,
       stats: taskData.value.stats
     };
 
-    await mutation.mutateAsync(payload);
-    handleCancel();
-    
+    const response = await mutation.mutateAsync(payload);
+    if (response.status === 'success') {
+      if (response.data.status !== 'error') {
+        toast.success('Class content created successfully');
+        handleCancel();
+      } else {
+        toast.error('Error creating class content');
+      }
+    }
   } catch (error) {
     console.error('Error saving task:', error);
+    toast.error('Error creating class content');
   }
 };
 
@@ -131,7 +132,7 @@ const handleCancel = () => {
   taskStore.addTask("modal", { modal: false });
   taskData.value = {
     ...createBaseTaskData(String(route.params.classId), taskTitle.value),
-    content_details: [{ text: '', columns: 1 }],
+    content_details: { text_block: { text: '', columns: 1 } },
   };
 };
 </script>

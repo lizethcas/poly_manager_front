@@ -2,7 +2,7 @@
   <!-- Attention Box -->
   <div 
     class="relative rounded-3xl p-8 border-[3px] border-orange-400 bg-white  mx-auto"
-    v-show="task.content_details[0].info_type === 'attention'"
+    v-show="task.content_details.info_type === 'attention'"
     role="alert"
     aria-labelledby="attention-title"
   >
@@ -24,7 +24,7 @@
   </div>
 
   <!-- Grammar Box -->
-  <div class="relative rounded-2xl p-8 border-2 border-green-400" v-show="task.content_details[0].info_type === 'grammar'">
+  <div class="relative rounded-2xl p-8 border-2 border-green-400" v-show="task.content_details.info_type === 'grammar'">
     <!-- Modified semi-circle container -->
     <div class="absolute -left-12 top-1/2 transform -translate-y-1/2">
       <div class="relative w-12 h-20 bg-white border-2 border-r-0 border-green-400 rounded-l-full flex items-center">
@@ -40,7 +40,7 @@
   </div>
 
   <!-- Tip Box -->
-  <div class="relative rounded-2xl p-8 border-2 border-blue-400" v-show="task.content_details[0].info_type === 'tip'">
+  <div class="relative rounded-2xl p-8 border-2 border-blue-400" v-show="task.content_details.info_type === 'tip'">
     <!-- Modified semi-circle container to match grammar box -->
     <div class="absolute -left-12 top-1/2 transform -translate-y-1/2">
       <div class="relative w-12 h-20 bg-white border-2 border-r-0 border-blue-400 rounded-l-full flex items-center">
@@ -61,7 +61,9 @@ defineProps<{
   task: {
     instructions: string;
     tittle: string;
-    content_details: Array<{ info_type: string }>;
+    content_details: {
+      info_type: string;
+    };
   };
 }>();
 </script>
