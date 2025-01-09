@@ -22,6 +22,7 @@
     "@unhead/vue": "^1.11.11",
     "axios": "^1.7.7",
     "lodash": "^4.17.21",
+    "notyf": "^3.10.0",
     "nuxt": "^3.14.159",
     "pinia": "^2.2.6",
     "pinia-plugin-persistedstate": "^4.1.3",

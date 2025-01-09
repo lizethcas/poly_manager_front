@@ -92,7 +92,8 @@ import { useGetCover } from "~/composables/useGetcover";
 import { useTaskStore } from "~/stores/task.store";
 import type { ClassData } from "~/interfaces/models/class.interface..model";
 import { useClassesQuery } from "~/composables/useClassesQuery";
-import { useCustomToast } from "~/composables/useToast";
+import { useNotify } from '~/composables/useNotify'
+const { success, error } = useNotify()
 
 const route = useRoute();
 const taskStore = useTaskStore();
@@ -101,9 +102,6 @@ const courseId = route.params.courseId as string;
 const props = defineProps<{
   classes: ClassData[];
 }>();
-
-// Move useToast to the top level
-const { showSuccess, showError } = useCustomToast();
 
 // Add computed property for filtered classes
 const filteredClasses = computed(() => {
@@ -130,15 +128,15 @@ const handlePreviewClick = async (
 ) => {
   if (!classId || !courseId) {
     console.error("Class ID or Course ID is undefined");
-    showError("Invalid class or course ID");
+    error("Invalid class or course ID");
     return;
   }
 
   try {
     await navigateTo(`/course/${courseId}/class/${classId}`);
-  } catch (error) {
-    console.error("Navigation error:", error);
-    showError("Error navigating to class preview");
+  } catch (err) {
+    console.error("Navigation error:", err);
+    error("Error navigating to class preview");
   }
 };
 
@@ -146,10 +144,10 @@ const handleDelete = async (classId: number) => {
   if (confirm("Are you sure you want to delete this class?")) {
     try {
       await deleteClass(classId);
-      showSuccess("Class deleted successfully");
-    } catch (error) {
-      console.error("Error deleting class:", error);
-      showError("Error deleting class");
+      success("Class deleted successfully");
+    } catch (err) {
+      console.error("Error deleting class:", err);
+      error("Error deleting class");
     }
   }
 };

@@ -84,26 +84,25 @@ import { axiosDashboard } from "~/services/axios.config";
 import IconMolecule from "~/components/atomos/Icon.vue";
 import { IconType } from "~/data/iconsType";
 import MoleculeInput from "~/components/molecule/Input.vue";
-import { useCustomToast } from "~/composables/useToast";
+import { useNotify } from '~/composables/useNotify'
+const { success, error } = useNotify()
 import { useTaskStore } from "~/stores/task.store";
 
 const taskStore = useTaskStore();
 const prompt = ref("");
 const imageUrl = ref("");
 const isLoading = ref(false);
-const toast = useToast();
 const showModal = ref(false);
 
 const emit = defineEmits(["close-modal"]);
 
 const generateImage = async () => {
   if (!prompt.value.trim()) {
-    toast.error("Por favor, ingresa una descripción");
+    error("Por favor, ingresa una descripción");
     return;
   }
 
   isLoading.value = true;
-
   imageUrl.value = "";
 
   try {
@@ -114,10 +113,10 @@ const generateImage = async () => {
     if (response.data.url) {
       imageUrl.value = response.data.url;
     } else {
-      toast.error("Error al generar la imagen");
+      error("Error al generar la imagen");
     }
   } catch (err) {
-    toast.error("Error al generar la imagen");
+    error("Error al generar la imagen");
   } finally {
     isLoading.value = false;
   }
@@ -126,7 +125,6 @@ const generateImage = async () => {
 const saveImage = () => {
   taskStore.addTask("img_gen", imageUrl.value);
   console.log(taskStore.getTask("img_gen"));
-  toast.success("Image saved to tasks");
-  
+  success("Image saved to tasks");
 };
 </script>

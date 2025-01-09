@@ -149,7 +149,7 @@ import { useDragAnDrop } from "~/composables/useDragAndDrop";
 import { useTaskStore } from "~/stores/task.store";
 import { useClassContentMutation } from "~/composables/useClassContentMutation";
 import { useGetTypeTask } from "~/composables/useGetTypeTask";
-import { useCustomToast } from "~/composables/useToast";
+import { useNotify } from '~/composables/useNotify'
 /* Interfaces */
 import type {
   Question,
@@ -170,7 +170,7 @@ const value = ref("");
 const isActive = ref(false);
 const newWordBank = ref("");
 const { getType } = useGetTypeTask();
-const toast = useCustomToast();
+const { success, error } = useNotify()
 
 
 const { 
@@ -572,18 +572,17 @@ const handleSave = async () => {
     formData.append("stats", String(data.value.stats));
 
     await mutateAsync(formData);
-    toast.success("Task saved successfully");
+    success("Task saved successfully");
     taskStore.addTask("modal", { modal: false });
-  } catch (error) {
-    console.error("Error preparing data:", error);
-    toast.error("Error saving task");
-    throw error;
+  } catch (err) {
+    console.error("Error preparing data:", err);
+    error("Error saving task");
+    throw err;
   }
 };
 
 const handleCancel = () => {
-  const { info } = useToast();
   taskStore.addTask("modal", { modal: false });
-  info("Task cancelled");
+  
 };
 </script>

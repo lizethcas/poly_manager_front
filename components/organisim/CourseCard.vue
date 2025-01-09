@@ -133,7 +133,6 @@ const { getLevelColor } = useGetColor();
 const { getCoverUrl } = useGetCover();
 const taskStore = useTaskStore();
 const classes = taskStore.getTask("classes");
-console.log(props.coursesData);
 const activeDropdown = ref<number | null>(null);
 
 // Improved click outside handler

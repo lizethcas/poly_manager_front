@@ -59,14 +59,13 @@ import transformKey from '~/utils/stringTransformations'
 import { useRoute } from 'vue-router';
 import { useCourseMutation } from '~/composables/useCourseMutation';
 import { useClassMutation } from '~/composables/useClassMutation';
-import { useCustomToast } from "~/composables/useToast";
+import { useNotify } from '~/composables/useNotify'
+const { success, error } = useNotify()
 
 const route = useRoute();
 const { bulletPoints, formData, handleEmit, updateFormField, resetForm } = useFormData();
 const courseMutation = useCourseMutation();
 const classMutation = useClassMutation();
-const toast = useCustomToast();
-
 
 // Propiedades del modal
 const { title, showExtraElements } = defineProps<ModalProps>();
@@ -106,7 +105,7 @@ const defaultLevel = createCourse.levels[0];
 // Update handleSave function
 const handleSave = async () => {
     if (!formData.value?.course_name?.trim()) {
-        alert('El nombre es obligatorio');
+        error('El nombre es obligatorio');
         return;
     }
 
@@ -122,7 +121,7 @@ const handleSave = async () => {
                 cover: formData.value.cover
             };
             await classMutation.mutateAsync(requestData);
-            toast.success('Class created successfully');
+            success('Class created successfully');
         } else {
             const requestData = {
                 course_name: formData.value.course_name,
@@ -133,14 +132,13 @@ const handleSave = async () => {
                 cover: formData.value.cover
             };
             await courseMutation.mutateAsync(requestData);
-            toast.success('Course created successfully');
+            success('Course created successfully');
         }
         resetForm();
         emits("closeModal");
-    } catch (error) {
-        toast.error('Error creating course/class');
-        console.error('Error creating course/class:', error);
-        // Handle error appropriately
+    } catch (err) {
+        error('Error creating course/class');
+        console.error('Error creating course/class:', err);
     }
 };
 

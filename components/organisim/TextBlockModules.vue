@@ -36,9 +36,9 @@ import { createBaseTaskData } from "~/interfaces/task.interface";
 import { useRoute } from "vue-router";
 import { useClassContentMutation } from '~/composables/useClassContentMutation';
 import InfoBox from '~/components/molecule/multipleTask/InfoBox.vue';
-import { useCustomToast } from "~/composables/useToast";
+import type { Notyf } from '~/interfaces/notify.interface';
 
-const toast = useCustomToast();
+const notyf = useNuxtApp().$notyf as Notyf;
 const taskStore = useTaskStore();
 const route = useRoute();
 const mutation = useClassContentMutation();
@@ -48,14 +48,6 @@ const isActive = ref(false);
 
 const taskInstructions = computed(() => taskStore.getTask("instructions"));
 
-interface TextContent {
-  text: string;
-  columns: number;
-}
-
-interface InfoBoxContent {
-  info_type: string;
-}
 
 const taskData = ref({
   ...createBaseTaskData(String(route.params.classId), title.value),
@@ -116,15 +108,15 @@ const handleSave = async () => {
     const response = await mutation.mutateAsync(payload);
     if (response.status === 'success') {
       if (response.data.status !== 'error') {
-        toast.success('Class content created successfully');
+        notyf.success('Class content created successfully');
         handleCancel();
       } else {
-        toast.error('Error creating class content');
+        notyf.error('Error creating class content');
       }
     }
   } catch (error) {
     console.error('Error saving task:', error);
-    toast.error('Error creating class content');
+    notyf.error('Error creating class content');
   }
 };
 
