@@ -12,7 +12,7 @@
   >
     <div class="relative flex items-center">
       <!-- Dots Menu -->
-      <button class="h-full px-4 cursor-grab flex items-center">
+      <button v-if="showDragIcon" class="h-full px-4 cursor-grab flex items-center">
         <Icon
           name="material-symbols:drag-indicator"
           size="24"
@@ -56,7 +56,9 @@
                 <button
                   class="action-btn"
                   @click="
-                    handlePreviewClick(classItem.id, Number(routeCourseId))
+                    navigateTo(
+                      routes.routesAdmin.class(routeCourseId, classItem.id)
+                    )
                   "
                 >
                   <Icon name="material-symbols:edit-outline" size="14" />
@@ -92,22 +94,26 @@ import { useGetCover } from "~/composables/useGetcover";
 import { useTaskStore } from "~/stores/task.store";
 import type { ClassData } from "~/interfaces/models/class.interface..model";
 import { useClassesQuery } from "~/composables/useClassesQuery";
+import { routes } from "~/data/routes";
 import { useNotify } from '~/composables/useNotify'
 const { success, error } = useNotify()
 
 const route = useRoute();
 const taskStore = useTaskStore();
 const courseId = route.params.courseId as string;
+console.log("courseId", courseId);
 // Define props
 const props = defineProps<{
   classes: ClassData[];
+  showDragIcon?: boolean;
 }>();
 
 // Add computed property for filtered classes
 const filteredClasses = computed(() => {
-  taskStore.addTask("classes", props.classes.length);
-
-  return props.classes.filter((classItem) => classItem.course_id == courseId);
+  if (!props.classes) return [];
+  return props.classes.filter((classItem) => {
+    return classItem && classItem.course_id && classItem.course_id.toString() === courseId;
+  });
 });
 
 const classesRef = ref(props.classes);
@@ -122,23 +128,7 @@ const openModalHandler = () => {
   console.log("open modal");
 };
 
-const handlePreviewClick = async (
-  classId: number | undefined,
-  courseId: number | undefined
-) => {
-  if (!classId || !courseId) {
-    console.error("Class ID or Course ID is undefined");
-    error("Invalid class or course ID");
-    return;
-  }
 
-  try {
-    await navigateTo(`/course/${courseId}/class/${classId}`);
-  } catch (err) {
-    console.error("Navigation error:", err);
-    error("Error navigating to class preview");
-  }
-};
 
 const handleDelete = async (classId: number) => {
   if (confirm("Are you sure you want to delete this class?")) {
@@ -151,6 +141,7 @@ const handleDelete = async (classId: number) => {
     }
   }
 };
+
 </script>
 
 <style scoped>

@@ -1,6 +1,7 @@
 <template>
     <main class="py-4  text-title-color mb-6 md:w-4/5  ">
       
+      
       <div class="flex items-center  text-middele-gray w-4/5 ">
         <p class="mr-4">total lessons {{ filteredData?.length || 0 }}</p>
         <div class="flex-grow border-t-2 border-dotted border-middele-gray"></div>
@@ -14,7 +15,7 @@
       
       <!-- Show data -->
        <div class="bg-white rounded-lg p-4 mb-2 shadow-sm relative w-full">
-        <ClassCard v-if="filteredData && filteredData.length > 0" :classes="filteredData" />
+        <ClassCard v-if="filteredData && filteredData.length > 0" :classes="filteredData" :showDragIcon="true" />
         <div v-else class="text-center text-md text-middele-gray">No classes created yet</div>
        </div>
       
@@ -40,12 +41,15 @@
 
   const route = useRoute();
   const courseId = route.params.courseId;
+ 
 
   const { data, isLoading, error, refetch: refresh } = useClassesQuery(courseId as string);
 
+  
   const filteredData = computed(() => {
     return data.value?.filter((item: any) => item.course_id == courseId) || [];
   });
+  console.log(filteredData.value)
 
   const { isOpen, openModal, closeModal } = useModal();
   

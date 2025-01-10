@@ -1,5 +1,5 @@
 // routes/apiRoutes.js
-import { axiosDashboard, axiosDefault } from "./axios.config";
+import { axiosDashboard } from "./axios.config";
 
 export const apiRoutes = {
   chat: {
@@ -10,6 +10,7 @@ export const apiRoutes = {
   classes: {
     getByCourseId: (courseId: string | string[]) =>
       `/classes/?courseId=${courseId}`,
+    getById: (classId: number) => `classes/${classId}/`,
     create: `classes/`,
     delete: (classId: number) => `classes/${classId}/`,
   },

@@ -10,6 +10,7 @@ export const useClassesQuery = (courseId: string) => {
       }
 
       return response.data;
+      
     } catch (error: any) {
       console.error("Error fetching classes:", error);
       throw error;
@@ -42,4 +43,27 @@ export const useClassesQuery = (courseId: string) => {
     deleteClass: deleteClassMutation.mutate,
     isDeletingClass: deleteClassMutation.isPending,
   };
+};
+
+export const useClassByIdQuery = (classId: number) => {
+  const fetchClassById = async () => {
+    try {
+      const response = await get(apiRoutes.classes.getById(classId));
+      if (!response) {
+        throw new Error("Class not found");
+      }
+      return response;
+    } catch (error: any) {
+      console.error("Error fetching class:", error);
+      throw error;
+    }
+  };
+
+  return useQuery({
+    queryKey: ["class", classId],
+    queryFn: fetchClassById,
+    refetchOnMount: "always",
+    refetchOnWindowFocus: true,
+    staleTime: 0,
+  });
 };

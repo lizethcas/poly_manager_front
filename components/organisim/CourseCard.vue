@@ -111,6 +111,7 @@ import { useGetColor } from "~/composables/useGetColor";
 import { useGetCover } from "~/composables/useGetcover";
 import { useTaskStore } from "~/stores/task.store";
 import { IconType } from "~/data/iconsType";
+import { routes } from '~/data/routes'
 
 // Updated Props interface with proper typing
 interface Course {
@@ -149,7 +150,7 @@ const navigateToCourse = (courseId: number) => {
   // Verificar que el ID existe antes de navegar
   const course = props.coursesData?.find((c) => c.id === courseId);
   if (course) {
-    navigateTo(`/admin/course-${courseId}`);
+    navigateTo(routes.routesAdmin.course(courseId.toString()));
   } else {
     console.error("Curso no encontrado");
   }

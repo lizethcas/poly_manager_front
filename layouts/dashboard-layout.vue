@@ -1,5 +1,5 @@
 <template>
-  <div class="min-h-screen bg-gray-50 flex my-10">
+  <div class="min-h-screen bg-gray-50 flex my-10 w-[90%] ">
     <!-- Update sidebar with mobile responsive classes -->
     <div
       :class="`${
@@ -61,7 +61,7 @@
       </header>
 
       <!-- Main Content with Right Sidebar Layout -->
-      <div class="flex relative mt-5 w-4/5">
+      <div class="flex relative mt-5 ">
         <!-- Main Content -->
         <main class="flex-1 lg:px-4 min-h-screen w-full">
           <NuxtPage />
@@ -137,7 +137,7 @@ const props = defineProps<{
 // Default navigation routes if none provided
 const defaultRoutes: NavigationRoute[] = [
   {
-    path: '/dashboard',
+    path: '/admin/dashboard',
     name: 'Dashboard',
     icon: 'material-symbols:dashboard-outline'
   },
@@ -145,8 +145,13 @@ const defaultRoutes: NavigationRoute[] = [
     path: '/admin/courses',
     name: 'Courses',
     icon: 'material-symbols:menu-book-outline',
-    userType: 'teacher',
-    onClick: true
+   
+  },
+  {
+    path: '/admin/students',
+    name: 'Students',
+    icon: 'material-symbols:person-outline',
+   
   }
 ];
 

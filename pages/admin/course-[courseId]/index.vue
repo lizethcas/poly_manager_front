@@ -10,85 +10,49 @@
 
   <!-- El contenido del curso una vez cargado -->
   <div v-if="courses">
-    <header class="text-title-color mb-4 flex items-center">
-      <img
-        src="~/assets/images/back-button-round.webp"
-        alt="regresar una pagina"
-        class="w-8 h-8 cursor-pointer items-center m-2 my-4"
-        @click="handleBackNavigation"
-      />
-      <div class="w-4/5">
-        <OrganismCourseCard :coursesData="currentCourse" />
-      </div>
-    </header>
-
-    <main class="px-2 mb-4">
-      <!-- Navigation tabs -->
-      <NuxtLayout>
-        <nav class="flex justify-start gap-4 border-b border-gray-300">
-          <ul class="flex gap-8">
-            <li>
-              <NuxtLink
-                :to="`/admin/course-${routeCourseId}/lessons`"
-                class="relative pb-2 font-bold text-gray-60 hover:text-tarawera-700"
-                :class="{
-                  'text-primary-color underline-active':
-                    $route.path === `/admin/course-${routeCourseId}/classes`,
-                }"
-              >
-                Curriculum
-              </NuxtLink>
-            </li>
-            <li>
-              <NuxtLink
-                :to="`/admin/course-${routeCourseId}/students`"
-                class="relative pb-2 font-medium text-gray-60 hover:text-tarawera-700"
-                :class="{
-                  'text-tarawera-700 underline-active':
-                    $route.path === `/admin/course-${routeCourseId}/students`,
-                }"
-              >
-                Students
-              </NuxtLink>
-            </li>
-            <li>
-              <NuxtLink
-                :to="`/admin/course-${routeCourseId}/statistics`"
-                class="relative pb-2 font-medium text-gray-60 hover:text-tarawera-700"
-                :class="{
-                  'text-tarawera-700 underline-active':
-                    $route.path === `/admin/course-${routeCourseId}/statistics`,
-                }"
-              >
-                Stats
-              </NuxtLink>
-            </li>
-          </ul>
-        </nav>
-
-        <!-- Render the route components here -->
-        <NuxtPage />
-      </NuxtLayout>
+    <ContentLayout>
+      <OrganismCourseCard :coursesData="currentCourse" />
+    </ContentLayout>
+    <nav>
+      <ul>
+        <li>
+          <NuxtLink to="/admin/course-19/classes">Classes</NuxtLink>
+        </li>
+      </ul>
+    </nav>
+    <main>
+      <Classes />
     </main>
+  </div>
+  <div v-else>
+    <p>No courses found</p>
+    <ClientOnly>
+      {{ redirectToCourses() }}
+    </ClientOnly>
   </div>
 </template>
 
 <script setup lang="ts">
+definePageMeta({
+  layout: "dashboard-layout",
+});
 import { computed } from "vue";
-import { useRoute, useRouter } from "vue-router";
+import { useRoute } from "vue-router";
 import { useCoursesQuery } from "~/composables/useCourseQuery";
-import type { CourseForm } from "~/interfaces/modal.interface";
 import OrganismCourseCard from "~/components/organisim/CourseCard.vue";
+import Classes from "~/pages/admin/course-[courseId]/classes.vue";
+import ContentLayout from "~/layouts/contentLayout.vue";
+import type { CourseForm } from "~/interfaces/modal.interface";
+import { routes } from "~/data/routes";
 
 const route = useRoute();
-const router = useRouter()
+
 const routeCourseId = route.params.courseId as string;
 
 console.log("routeCourseId", routeCourseId);
 // Use the shared query composable
 const { data: courses, isLoading, error } = useCoursesQuery();
-
-
+console.log(courses.value);
 // Get the specific course using computed
 
 // Get only the current course based on courseId
@@ -99,12 +63,12 @@ const currentCourse = computed(() => {
   );
 });
 
-const handleBackNavigation = () => {
-  if (route.path.includes("/admin/course/")) {
-    console.log("route.path", route.path);
-    navigateTo(`/admin/course/${routeCourseId}`);
-  } else {
-    navigateTo("/admin/courses/");
-  }
+// Add this function to handle the redirect
+const redirectToCourses = () => {
+  setTimeout(() => {
+    navigateTo(routes.routesAdmin.courses);
+  }, 2000); // Redirect after 2 seconds
 };
+
+
 </script>
