@@ -1,5 +1,5 @@
 <template>
-    <main class="py-4  text-title-color mb-6 md:w-4/5  ">
+    <div class="py-4  text-title-color mb-6  ">
       
       
       <div class="flex items-center  text-middele-gray w-4/5 ">
@@ -28,7 +28,7 @@
         </div>
       </div>
   
-    </main>
+    </div>
   </template>
   <script setup lang="ts">
   import AddCourseModal from '~/components/organisim/AddCourseModal.vue';

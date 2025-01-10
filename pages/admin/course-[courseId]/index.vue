@@ -9,7 +9,7 @@
   </div>
 
   <!-- El contenido del curso una vez cargado -->
-  <div v-if="courses">
+  <div v-if="courses" class="w-4/5">
     <ContentLayout>
       <OrganismCourseCard :coursesData="currentCourse" />
     </ContentLayout>
