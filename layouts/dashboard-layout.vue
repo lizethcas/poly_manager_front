@@ -10,7 +10,7 @@
 
       <!-- Navigation Links -->
       <nav
-        v-if="!hideNavigation"
+      
         class="overflow-y-auto h-[calc(100vh-64px)] mt-6"
       >
         <div class="px-4 space-y-2">
@@ -37,31 +37,34 @@
     <!-- Main Content Area -->
     <div class="flex-1 lg:ml-48">
       <!-- Header -->
-      <header
-        class="fixed top-0 right-0 lg:left-64 left-0 flex items-center justify-between h-12 px-6 bg-white shadow-sm z-20"
-      >
-        <div>
-          <NuxtLink to="/" class="flex items-center">
-            <span class="text-primary-color font-bold text-md"
-              >polyAcademy</span
-            >
-          </NuxtLink>
-        </div>
-        <!-- Search bar -->
-        <div class="flex-1 max-w-2xl px-4">
-          <SearchInput class="w-full" />
-        </div>
+      <header class="fixed top-0 right-0 lg:left-64 left-0 flex flex-col h-auto bg-white shadow-sm z-20">
+        <div class="flex items-center justify-between h-12 px-6">
+          <div>
+            <NuxtLink to="/" class="flex items-center">
+              <span class="text-primary-color font-bold text-md"
+                >polyAcademy</span
+              >
+            </NuxtLink>
+          </div>
+          <!-- Search bar -->
+          <div class="flex-1 max-w-2xl px-4">
+            <SearchInput class="w-full" />
+          </div>
 
-        <!-- User Profile -->
-        <UserProfile
-          :profileImage="user.profileImage"
-          :userName="user.name"
-          :userRole="user.role"
-        />
+          <!-- User Profile -->
+          <UserProfile
+            :profileImage="user.profileImage"
+            :userName="user.name"
+            :userRole="user.role"
+          />
+        </div>
+        
+        <!-- New slot for course navigation -->
+        <slot name="header-content"></slot>
       </header>
 
       <!-- Main Content with Right Sidebar Layout -->
-      <div class="flex relative mt-5 ">
+      <div class="flex relative mt-5 w-4/5">
         <!-- Main Content -->
         <main class="flex-1 lg:px-4 min-h-screen w-full">
           <NuxtPage />
@@ -93,7 +96,6 @@ import IconMolecule from "~/components/atomos/Icon.vue";
 import { IconType } from "~/data/iconsType";
 import { useRoute } from "vue-router";
 
-const taskStore = useTaskStore();
 const isSidebarOpen = ref(false);
 
 const route = useRoute();
@@ -111,15 +113,6 @@ const user = {
   role: "Content Administrator",
 };
 
-const navigateToDashboard = (userType: string) => {
-  taskStore.addTask("userType", userType);
-  // Close sidebar on mobile after navigation
-  isSidebarOpen.value = false;
-};
-
-const hideNavigation = computed(() => {
-  return ["/login", "/"].includes(route.path);
-});
 
 interface NavigationRoute {
   path: string;
@@ -129,13 +122,8 @@ interface NavigationRoute {
   onClick?: boolean;
 }
 
-// Define props
-const props = defineProps<{
-  navigationRoutes?: NavigationRoute[];
-}>();
-
-// Default navigation routes if none provided
-const defaultRoutes: NavigationRoute[] = [
+// Define admin routes (renamed from defaultRoutes)
+const adminRoutes: NavigationRoute[] = [
   {
     path: '/admin/dashboard',
     name: 'Dashboard',
@@ -145,16 +133,38 @@ const defaultRoutes: NavigationRoute[] = [
     path: '/admin/courses',
     name: 'Courses',
     icon: 'material-symbols:menu-book-outline',
-   
   },
   {
     path: '/admin/students',
     name: 'Students',
     icon: 'material-symbols:person-outline',
-   
   }
 ];
 
-// Use provided routes or fall back to defaults
-const navigationRoutes = computed(() => props.navigationRoutes || defaultRoutes);
+// Define student routes
+const studentRoutes: NavigationRoute[] = [
+  {
+    path: '/student/courses',
+    name: 'My Courses',
+    icon: 'material-symbols:menu-book-outline'
+  },
+  {
+    path: '/student/classes',
+    name: 'My Classes',
+    icon: 'material-symbols:class-outline'
+  },
+  {
+    path: '/student/progress',
+    name: 'My Progress',
+    icon: 'material-symbols:trending-up-outline'
+  }
+];
+
+// Fix the navigationRoutes computed property to avoid infinite recursion
+const navigationRoutes = computed(() => {
+  // Temporarily hardcoded for testing - you'll need to add proper user role checking
+  const isAdmin = route.path.startsWith('/admin'); // Replace with actual user role check
+  return isAdmin ? adminRoutes : studentRoutes;
+});
 </script>
+

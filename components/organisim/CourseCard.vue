@@ -150,7 +150,7 @@ const navigateToCourse = (courseId: number) => {
   // Verificar que el ID existe antes de navegar
   const course = props.coursesData?.find((c) => c.id === courseId);
   if (course) {
-    navigateTo(routes.routesAdmin.course(courseId.toString()));
+    navigateTo(routes.routesAdmin.classes(courseId.toString()));
   } else {
     console.error("Curso no encontrado");
   }

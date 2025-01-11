@@ -146,6 +146,13 @@ const handleDelete = async (classId: number) => {
 
 <style scoped>
 .action-btn {
-  @apply flex items-center flex-wrap hover:bg-gray-100 rounded-lg transition-colors;
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  border-radius: 0.5rem;
+  transition-property: color, background-color;
+}
+.action-btn:hover {
+  background-color: rgb(243 244 246);
 }
 </style>

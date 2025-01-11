@@ -19,7 +19,7 @@
 
         <main class="px-2 mb-4">
             <!-- Navigation tabs -->
-            <NuxtLayout>
+            <NuxtLayout name="content-layout">
                 <nav class="flex justify-start gap-4 border-b border-gray-300">
                     <ul class="flex gap-8">
                         <li>
@@ -58,6 +58,10 @@
 
 
 <script setup lang="ts">
+definePageMeta({
+  layout: 'dashboard-layout'
+})
+
 import { computed } from 'vue';
 import { useRoute } from 'vue-router';
 import { useGetColor } from '~/composables/useGetColor';

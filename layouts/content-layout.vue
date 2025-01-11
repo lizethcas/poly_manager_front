@@ -12,22 +12,20 @@
       <slot></slot>
     </div>
   </header>
+  
 </template>
 <script setup lang="ts">
 import { useRoute, useRouter } from "vue-router";
-import { routes } from "~/data/routes";
 const route = useRoute();
-const router = useRouter();
 
 const courseId = route.params.courseId;
 console.log(route.path);
 
 const handleRoute = () => {
-  if (route.path.includes("class")) {
-    console.log("router", router);
-    return router.back();
+  if (route.path.includes('/class/')) {
+    navigateTo(`/admin/course-${courseId}`);
   } else {
-    return router.back();
+    navigateTo('/admin/courses/');
   }
 };
 </script>

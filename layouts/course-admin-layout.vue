@@ -1,42 +1,81 @@
 <template>
-  <div class="flex">
-    <!-- Sidebar Navigation -->
-    <nav class="w-64 min-h-screen bg-white border-r border-gray-200 p-4">
-      <div class="space-y-4">
-        <NuxtLink 
-          :to="`/admin/course-${$route.params.courseId}`"
-          class="block px-4 py-2 rounded-lg hover:bg-gray-100"
-          :class="{ 'bg-gray-100': $route.path === `/admin/course-${$route.params.courseId}` }"
-        >
-          General
-        </NuxtLink>
-        <NuxtLink 
-          :to="`/admin/course-${$route.params.courseId}/content`"
-          class="block px-4 py-2 rounded-lg hover:bg-gray-100"
-          :class="{ 'bg-gray-100': $route.path.includes('/content') }"
-        >
-          Contenido
-        </NuxtLink>
-        <NuxtLink 
-          :to="`/admin/course-${$route.params.courseId}/students`"
-          class="block px-4 py-2 rounded-lg hover:bg-gray-100"
-          :class="{ 'bg-gray-100': $route.path.includes('/students') }"
-        >
-          Estudiantes
-        </NuxtLink>
-        <NuxtLink 
-          :to="`/admin/course-${$route.params.courseId}/settings`"
-          class="block px-4 py-2 rounded-lg hover:bg-gray-100"
-          :class="{ 'bg-gray-100': $route.path.includes('/settings') }"
-        >
-          Configuración
-        </NuxtLink>
-      </div>
-    </nav>
+  <div>
+    <!-- Contenedor de cargando que ocupa toda la página -->
+    <div
+      v-if="isLoading"
+      class="fixed inset-0 flex items-center justify-center bg-gray-800 bg-opacity-50 z-50"
+    >
+      <p class="text-title-color text-2xl">Cargando...</p>
+    </div>
 
-    <!-- Main Content -->
-    <div class="flex-1 p-8">
-      <slot />
+    <!-- Contenido principal del layout -->
+    <div v-else>
+      <!-- Navbar Persistente -->
+      <nav class="flex gap-8 border-b border-gray-300 mt-6 px-8">
+        <ul class="flex gap-8">
+          <li>
+            <NuxtLink
+              :to="routes.routesAdmin.classes(routeCourseId)"
+              class="relative pb-2 font-bold text-gray-60 hover:text-tarawera-700"
+              :class="{
+                'text-primary-color underline-active':
+                  $route.path === `/admin/course-${routeCourseId}/classes`,
+              }"
+            >
+              Curriculum
+            </NuxtLink>
+          </li>
+          <li>
+            <NuxtLink
+              :to="routes.routesAdmin.students[1](routeCourseId)"
+              class="relative pb-2 font-medium text-gray-60 hover:text-tarawera-700"
+              :class="{
+                'text-tarawera-700 underline-active':
+                  $route.path === `/admin/course-${routeCourseId}/students`,
+              }"
+            >
+              Students
+            </NuxtLink>
+          </li>
+          <li>
+            <NuxtLink
+              :to="routes.routesAdmin.statistics(routeCourseId)"
+              class="relative pb-2 font-medium text-gray-60 hover:text-tarawera-700"
+              :class="{
+                'text-tarawera-700 underline-active':
+                  $route.path === `/admin/course-${routeCourseId}/statistics`,
+              }"
+            >
+              Stats
+            </NuxtLink>
+          </li>
+        </ul>
+      </nav>
+
+      <!-- Contenido dinámico de la ruta -->
+      <div class="p-8">
+        <NuxtPage />
+      </div>
     </div>
   </div>
-</template> 
+</template>
+
+<script setup lang="ts">
+import { useRoute } from "vue-router";
+import { routes } from "~/data/routes";
+
+const route = useRoute();
+const routeCourseId = route.params.courseId as string;
+
+// Simula un estado de carga para el ejemplo
+const isLoading = false;
+</script>
+
+<style lang="postcss" scoped>
+.nav-link {
+  @apply px-4 py-2 rounded-lg transition-colors hover:text-primary-color;
+}
+.nav-link-active {
+  @apply bg-primary-color text-white;
+}
+</style>

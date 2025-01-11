@@ -47,20 +47,15 @@ import { useCoursesQuery } from "~/composables/useCourseQuery";
 import { useRouter } from "vue-router";
 
 const { isOpen, openModal, closeModal } = useModal();
-const router = useRouter();
 
 // Use the courseQuery composable
 const { data: courses, isLoading, error, refetch } = useCoursesQuery();
 
-onMounted(() => {
-  router.push("/admin/dashboard");
-});
+
 
 const handleAdd = () => {
   openModal();
 };
 
-definePageMeta({
-  layout: "dashboard-layout",
-});
+
 </script>

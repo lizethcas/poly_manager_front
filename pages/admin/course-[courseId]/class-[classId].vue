@@ -1,5 +1,5 @@
 <template>
-  <div class="w-4/5">
+  <div >
     <ContentLayout>
       <ClassCard :classes="[classData]" :showDragIcon="false" />
     </ContentLayout>
@@ -19,7 +19,7 @@ definePageMeta({
 });
 import ClassCard from "~/components/organisim/ClassCard.vue";
 import EditClassNavigation from "~/components/organisim/EditClassNavigation.vue";
-import ContentLayout from "~/layouts/contentLayout.vue";
+import ContentLayout from "~/layouts/content-layout.vue";
 import { useClassByIdQuery } from "~/composables/useClassesQuery";
 import Loading from "~/components/organisim/alerts/Loading.vue";
 import Error from "~/components/organisim/alerts/Error.vue";
