@@ -31,17 +31,23 @@ import BaseTaskModal from "~/components/organisim/BaseTaskModal.vue";
 import ContentLayout from "~/layouts/content-layout.vue";
 import Loading from "~/components/organisim/alerts/Loading.vue";
 import Error from "~/components/organisim/alerts/Error.vue";
-
+import { useTaskStore } from "~/stores/task.store";
 import { useClassByIdQuery } from "~/composables/useClassesQuery";
 import { useDataMenu } from "~/composables/useDataMenu";
 
+const taskStore = useTaskStore();
 const { getDataMenu } = useDataMenu();
+const modal = taskStore.getTask("modal")
 const route = useRoute();
 const classId = Number(route.params.classId);
 const isModalOpen = ref(false)
 const modalTitle = ref('')
 const modalIcon = ref('')
 
+// Add a watch to handle modal state changes
+watch(() => taskStore.getTask("modal"), (newValue) => {
+  isModalOpen.value = newValue?.modal ?? false
+}, { immediate: true })
 
 const showModal = (label: string, name: string) => {
   isModalOpen.value = true
@@ -50,6 +56,7 @@ const showModal = (label: string, name: string) => {
 }
 
 const closeModal = () => {
+ 
   isModalOpen.value = false
 }
 

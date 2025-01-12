@@ -67,7 +67,9 @@ import { useTaskStore } from "~/stores/task.store";
 import { useMutation, useQueryClient } from "@tanstack/vue-query";
 import { apiRoutes } from "~/services/routes.api";
 import { axiosDashboard } from "~/services/axios.config";
+import { useNotify } from '~/composables/useNotify'
 
+const { notify } = useNotify();
 const queryClient = useQueryClient();
 const route = useRoute();
 const taskStore = useTaskStore();
@@ -117,10 +119,10 @@ const classContentMutation = useMutation({
     return response.data;
   },
   onSuccess: (data) => {
-    console.log("Content saved successfully:", data);
+    notify.success("Content saved successfully");
   },
   onError: (error) => {
-    console.error("Error saving content:", error);
+    notify.error("Error saving content");
   },
 });
 
