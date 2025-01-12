@@ -109,7 +109,7 @@ const handleSave = async () => {
         return;
     }
 
-    const formType = route.path === `/admin/course-${routeCourseId}` ? 'class' : 'course';
+    const formType = route.path === `/admin/course-${routeCourseId}/classes` ? 'class' : 'course';
     console.log(route.path);
     try {
         if (formType === 'class') {

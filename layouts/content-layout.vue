@@ -16,16 +16,18 @@
 </template>
 <script setup lang="ts">
 import { useRoute, useRouter } from "vue-router";
+import { routes } from "~/data/routes";
 const route = useRoute();
 
 const courseId = route.params.courseId;
+const classId = route.params.classId;
 console.log(route.path);
 
 const handleRoute = () => {
-  if (route.path.includes('/class/')) {
-    navigateTo(`/admin/course-${courseId}`);
+  if (route.path.includes(`/class-${classId}`)) {
+    navigateTo(routes.routesAdmin.classes(courseId));
   } else {
-    navigateTo('/admin/courses/');
+    navigateTo(routes.routesAdmin.courses);
   }
 };
 </script>
