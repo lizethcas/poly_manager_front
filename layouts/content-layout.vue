@@ -19,8 +19,8 @@ import { useRoute, useRouter } from "vue-router";
 import { routes } from "~/data/routes";
 const route = useRoute();
 
-const courseId = route.params.courseId;
-const classId = route.params.classId;
+const courseId = route.params.courseId as string;
+const classId = route.params.classId as string;
 console.log(route.path);
 
 const handleRoute = () => {
@@ -28,6 +28,6 @@ const handleRoute = () => {
     navigateTo(routes.routesAdmin.classes(courseId));
   } else {
     navigateTo(routes.routesAdmin.courses);
-  }
+  } 
 };
 </script>

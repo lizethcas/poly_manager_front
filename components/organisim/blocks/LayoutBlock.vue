@@ -8,7 +8,7 @@
     container-class="py-2"
   />
 
-  <NuxtLayout>
+  <NuxtLayout name="none">
     <TaskSelector />
   </NuxtLayout>
 </template>

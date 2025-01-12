@@ -1,11 +1,13 @@
 <template>
     <ul
         class=" text-center  flex-wrap rounded-md p-2 flex w-full mx-auto justify-evenly bottom-6 shadow-lg bg-white left-0 right-0">
-        <li v-for="icon in icons" :key="icon.name" class="flex flex-col items-center" @click="$emit('open-modal', icon.label, icon.name)">
+        <li v-for="icon in icons" :key="icon.name" class="flex flex-col items-center" @click="handleClick(icon.label, icon.name)">
             <Icon :name="icon.name" size="20" class="text-primary-color hover:text-tarawera-700 cursor-pointer text-xs" />
             <p class="text-[0.7rem] text-primary-color hover:text-tarawera-700 cursor-pointer max-w-14">{{ icon.label }}</p>
         </li>
     </ul>
+
+    
 </template>
 <script setup lang="ts">
 
@@ -62,10 +64,15 @@ const icons = [
         name: 'bxs:ruler',
         label: 'Dividers'
     }, */
-    {
+    /* {
         name: 'icon-park-solid:down-c',
         label: 'Continue'
-    }
+    } */
 ]   
 
+const emit = defineEmits(['open-modal'])
+
+const handleClick = (label: string, name: string) => {
+    emit('open-modal', label, name)
+}
 </script>

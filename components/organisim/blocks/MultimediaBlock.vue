@@ -1,5 +1,5 @@
 <template>
-  <NuxtLayout>
+  <NuxtLayout name="none">
     <OrganisimVideoBlock />
     <!-- <TaskSelector :taskTitle="taskTitle" /> -->
   </NuxtLayout>

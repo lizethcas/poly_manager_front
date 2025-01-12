@@ -11,9 +11,11 @@
       <!-- Main Content -->
       <div class="flex-1 mt-6">
         <!-- Modal Header -->
-        <div class="flex justify-between items-center mb-4 border-b-[1px] sticky top-0 bg-white z-10">
+        <div
+          class="flex justify-between items-center mb-4 border-b-[1px] sticky top-0 bg-white z-10"
+        >
           <div class="flex items-center gap-2 m-2">
-            <Icon :name="icon" size="30" class="text-primary-color " />
+            <Icon :name="icon" size="30" class="text-primary-color" />
             <h2 class="text-m font-bold text-primary-color">{{ title }}</h2>
           </div>
           <img
@@ -47,7 +49,13 @@
                 v-model="formData.instructions"
               />
             </div>
-            <slot></slot>
+
+            <div class="pb-10">
+              <component
+                :is="getCurrentComponent(title)"
+                :selectedTask="taskTitle"
+              />
+            </div>
           </div>
 
           <!-- Slot for specific content -->
@@ -62,8 +70,10 @@
 <script setup lang="ts">
 import { ref } from "vue";
 import { useTaskStore } from "~/stores/task.store";
-
+import { useGetComponent } from "~/composables/useGetComponent";
 import InteractiveTask from "./InteractiveTask.vue";
+
+const { getCurrentComponent } = useGetComponent();
 
 defineProps({
   isOpen: Boolean,
@@ -102,9 +112,8 @@ const emit = defineEmits(["update:modelValue", "close"]);
 const handleTaskSelection = (task: TaskMenuItem) => {
   taskStore.addTask("taskTitle", task.name);
   taskStore.addTask("typeTask", task.type);
-
   taskTitle.value = task.name;
+  console.log(taskTitle.value);
   console.log(taskStore.getTask("typeTask"));
-  
 };
 </script>
