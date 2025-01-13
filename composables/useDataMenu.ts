@@ -3,6 +3,7 @@ import  {
   multimediaBlockOptions,
   textBlockOptions,
   galletyLayoutOptions,
+  chatGptTaskOptions,
 } from "~/data/interactiveTask";
 
 export const useDataMenu = () => {
@@ -26,6 +27,9 @@ export const useDataMenu = () => {
     }
     if (label === "Gallery layout") {
       return galletyLayoutOptions;
+    }
+    if (label === "AI chat") {
+      return chatGptTaskOptions;
     }
     return [];
   };

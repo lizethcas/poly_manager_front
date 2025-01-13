@@ -26,7 +26,7 @@
           />
         </div>
         <div class="flex gap-4">
-          <div class="w-48 bg-gray-100 p-4 rounded-lg max-h-[calc(95vh-6rem)] overflow-y-auto sticky top-6">
+          <div class="w-48 bg-gray-100 p-4 rounded-lg max-h-100vh overflow-y-auto sticky top-6">
             <InteractiveTask
               :menuItems="menuItems"
               @select-task="handleTaskSelection"
@@ -59,6 +59,7 @@
                 :is="getCurrentComponent(title)"
                 :selectedTask="taskTitle"
               />
+              <IaChatGPT />
             </div>
           </div>
 
