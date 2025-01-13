@@ -12,7 +12,7 @@
       <div class="flex-1 mt-6">
         <!-- Modal Header -->
         <div
-          class="flex justify-between items-center mb-4 border-b-[1px] sticky top-0 bg-white z-10"
+          class="flex justify-between items-center  border-b-[1px] sticky top-0 bg-white z-10"
         >
           <div class="flex items-center gap-2 m-2">
             <Icon :name="icon" size="30" class="text-primary-color" />
@@ -26,7 +26,7 @@
           />
         </div>
         <div class="flex gap-4">
-          <div class="w-48 bg-gray-100 p-4 rounded-lg h-fit sticky top-1">
+          <div class="w-48 bg-gray-100 p-4 rounded-lg max-h-[calc(95vh-6rem)] overflow-y-auto sticky top-6">
             <InteractiveTask
               :menuItems="menuItems"
               @select-task="handleTaskSelection"
@@ -34,10 +34,12 @@
           </div>
           <div class="flex-1">
             <!-- Common Fields -->
-            <div class="space-y-4 mb-6">
+            <div class="space-y-4 my-6">
               <MoleculeInput
                 :title="'Title'"
                 type="text"
+                label="false"
+                :placeholder="'Enter the heading'"
                 class="text-md"
                 v-model="formData.title"
               />
@@ -47,6 +49,8 @@
                 :size="taskTitle === 'Info Box' ? 'xl' : 'lg'"
                 class="text-md"
                 v-model="formData.instructions"
+                :placeholder="'Enter the task description'"
+                label="false"
               />
             </div>
 

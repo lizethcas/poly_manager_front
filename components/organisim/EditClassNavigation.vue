@@ -36,10 +36,10 @@ const icons = [
         name: 'solar:gallery-bold',
         label: 'Gallery layout'
     },
-/*     {
+    {
         name: 'mingcute:ai-fill',
         label: 'AI chat'
-    }, */
+    },
     {
         name: 'mdi:multimedia',
         label: 'Multimedia block'

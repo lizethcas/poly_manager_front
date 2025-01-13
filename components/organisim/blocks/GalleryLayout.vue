@@ -7,10 +7,10 @@
       <div
         v-for="(item, index) in formData.content_details"
         :key="index"
-        class="flex gap-4"
+        class="flex gap-4 items-center"
       >
         <!-- Image preview -->
-        <div class="w-24 h-24" v-if="item.preview">
+        <div class="w-52 h-52" v-if="item.preview">
           <img
             :src="item.preview"
             class="w-full h-full object-cover rounded-lg"
@@ -18,16 +18,20 @@
           />
         </div>
         <!-- Form fields -->
-        <div class="flex-1 flex flex-col gap-2">
+        <div class="flex-1 flex flex-col gap-2 items-center">
           <MoleculeInput
             title="Title"
             type="text"
+            label="false"
+            :placeholder="'Enter the heading'"
             class="text-md"
             v-model="item.title"
           />
           <MoleculeInput
             title="Description"
             type="text_area"
+            label="false"
+            :placeholder="'Enter the description for the image'"
             :size="'md'"
             v-model="item.description"
             class="text-md"

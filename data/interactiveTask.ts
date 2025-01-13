@@ -87,3 +87,10 @@ export const galletyLayoutOptions : TaskOption[] = [
     type: "images",
   },
 ]
+
+export const chatGptTaskOptions : TaskOption[] = [
+  {
+    name: "Scenarios",
+    type: "scenarios",
+  },
+]

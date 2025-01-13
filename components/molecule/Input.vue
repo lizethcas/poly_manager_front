@@ -3,10 +3,11 @@
   <div :class="['gap-4 mb-4 w-full', containerClass]">
     <label v-if="!label" class="min-w-[70px] text-middele-gray text-sm">{{ props.title }}</label>
     <UInput v-if="type == 'text'" :type="type"  class="w-full" v-model="inputValue"
-      :required="props.required" />
+      :required="props.required" :placeholder="placeholder" />
     <textarea  v-if="type == 'text_area'" :size="size || 'xl'" :value="modelValue"
       @input="handleInput"
       ref="textareaRef"
+      :placeholder="placeholder"
       :class="['w-full resize-none p-3 border border-gray-300 rounded-md text-base', getHeightClass]"/>
   </div>
 </template>
@@ -20,6 +21,7 @@ const props = defineProps({
   title: String,
   type: String,
   modelValue: String,
+  placeholder: String,
   required: {
     type: Boolean,
     default: false
