@@ -3,10 +3,12 @@ export const IconType = {
   info: "flat-color-icons:info",
   add: "icon-park-solid:add",
   eye: "mdi:eye-outline",
-  students:"mdi:people",
-  collection:"bi:collection-fill",
+  students: "mdi:people",
+  collection: "bi:collection-fill",
   imgGen: "hugeicons:ai-image",
   save: "mingcute:save-fill",
-  expand:"fe:expand",
-  menu:"mdi-light:menu"
+  expand: "fe:expand",
+  menu: "mdi-light:menu",
+  next: "ooui:previous-rtl",
+  previous: "ooui:previous-ltr",
 };

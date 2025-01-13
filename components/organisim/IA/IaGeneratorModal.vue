@@ -20,7 +20,7 @@
           />
           <!-- Image Generator content -->
           <ImgGenerator 
-            @image-generated="handleGeneratedImage" 
+            
             @close-modal="$emit('update:modelValue', false)"
           />
         </div>
@@ -43,8 +43,6 @@ defineProps({
 
 const emit = defineEmits(['update:modelValue', 'image-generated']);
 
-const handleGeneratedImage = (imageUrl: string) => {
-  emit('image-generated', imageUrl);
-  emit('update:modelValue', false);
-};
+
+
 </script>

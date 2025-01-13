@@ -84,8 +84,8 @@ import { axiosDashboard } from "~/services/axios.config";
 import IconMolecule from "~/components/atomos/Icon.vue";
 import { IconType } from "~/data/iconsType";
 import MoleculeInput from "~/components/molecule/Input.vue";
-import { useNotify } from '~/composables/useNotify'
-const { success, error } = useNotify()
+import { useNotify } from "~/composables/useNotify";
+const { success, error } = useNotify();
 import { useTaskStore } from "~/stores/task.store";
 
 const taskStore = useTaskStore();
@@ -124,7 +124,6 @@ const generateImage = async () => {
 
 const saveImage = () => {
   taskStore.addTask("img_gen", imageUrl.value);
-  console.log(taskStore.getTask("img_gen"));
   success("Image saved to tasks");
 };
 </script>
