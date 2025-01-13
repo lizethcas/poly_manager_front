@@ -1,13 +1,13 @@
 <template>
   <Loading v-if="isLoading" />
   <Error v-if="error" :error="error" :message="error.message" />
-  <TaskList v-if="!isLoading && !error" class="my-4">
+  <TaskList v-if="!isLoading && !error && classTasks?.data.tittle !== ''" class="my-4" >
     <template #default="{ task, index }">
-      <Tasks :content_type="task.content_type" :task="task" :index="index" />
+      <Tasks :content_type="task.content_type" :task="task" :index="index"  />
     </template>
   </TaskList>
 
-  <div v-for="(task, index) in classTasks?.data" :key="index" class="">
+  <div v-else v-for="(task, index) in classTasks?.data" :key="index" class="">
     <Tasks :content_type="task.content_type" :task="task" :index="index" />
   </div>
 </template>
