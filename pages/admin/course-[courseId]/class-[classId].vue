@@ -3,7 +3,6 @@
     <ContentLayout>
       <ClassCard :classes="[classData]" :showDragIcon="false" />
     </ContentLayout>
-    <EditClassNavigation  @open-modal="showModal"/>
     <BaseTaskModal
       v-if="isModalOpen"
       :is-open="isModalOpen"
@@ -13,6 +12,9 @@
       :menuItems="getDataMenu(modalTitle)"
     />
   </div>
+  <ContentTeacher />
+  <EditClassNavigation  @open-modal="showModal"/>
+
   <Loading v-if="isLoading" />
   <Error
     v-if="error"
@@ -29,6 +31,7 @@ import ClassCard from "~/components/organisim/ClassCard.vue";
 import EditClassNavigation from "~/components/organisim/EditClassNavigation.vue";
 import BaseTaskModal from "~/components/organisim/BaseTaskModal.vue";
 import ContentLayout from "~/layouts/content-layout.vue";
+import ContentTeacher from "~/components/organisim/templatesUsers/teachers/contenTeacher.vue";
 import Loading from "~/components/organisim/alerts/Loading.vue";
 import Error from "~/components/organisim/alerts/Error.vue";
 import { useTaskStore } from "~/stores/task.store";
@@ -37,7 +40,6 @@ import { useDataMenu } from "~/composables/useDataMenu";
 
 const taskStore = useTaskStore();
 const { getDataMenu } = useDataMenu();
-const modal = taskStore.getTask("modal")
 const route = useRoute();
 const classId = Number(route.params.classId);
 const isModalOpen = ref(false)

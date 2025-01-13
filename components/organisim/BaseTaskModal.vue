@@ -113,7 +113,6 @@ const handleTaskSelection = (task: TaskMenuItem) => {
   taskStore.addTask("taskTitle", task.name);
   taskStore.addTask("typeTask", task.type);
   taskTitle.value = task.name;
-  console.log(taskTitle.value);
-  console.log(taskStore.getTask("typeTask"));
+ 
 };
 </script>

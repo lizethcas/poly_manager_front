@@ -1,7 +1,7 @@
 <template >
   <!-- Attention Box -->
   <div 
-    class="relative rounded-3xl p-8 border-[3px] border-orange-400 bg-white  mx-auto"
+    class="relative rounded-3xl p-8 border-[3px] border-orange-400 bg-white  mx-auto mt-16"
     v-show="task.content_details.info_type === 'attention'"
     role="alert"
     aria-labelledby="attention-title"
