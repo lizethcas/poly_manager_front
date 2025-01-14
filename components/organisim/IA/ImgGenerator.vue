@@ -96,6 +96,13 @@ const showModal = ref(false);
 
 const emit = defineEmits(["close-modal"]);
 
+const props = defineProps({
+  source: {
+    type: String,
+    required: true
+  }
+});
+
 const generateImage = async () => {
   if (!prompt.value.trim()) {
     error("Por favor, ingresa una descripción");
@@ -123,7 +130,7 @@ const generateImage = async () => {
 };
 
 const saveImage = () => {
-  taskStore.addTask("img_gen", imageUrl.value);
+  taskStore.addTask("img_gen", { url: imageUrl.value, source: props.source });
   success("Image saved to tasks");
 };
 </script>

@@ -8,9 +8,7 @@ export const useClassesQuery = (courseId: string) => {
       if (!response) {
         throw new Error("No classes found");
       }
-
-      return response.data;
-      
+      return response.data;  
     } catch (error: any) {
       console.error("Error fetching classes:", error);
       throw error;

@@ -5,7 +5,7 @@ import TextBlockModules from "~/components/organisim/TextBlockModules.vue";
 import MultimediaBlock from "~/components/organisim/blocks/MultimediaBlock.vue";
 import KnowledgeCheckBlock from "~/components/organisim/KnowledgeCheckBlock.vue";
 import GalleryLayout from "~/components/organisim/blocks/GalleryLayout.vue";
-import IaChatGPT from "~/components/organisim/blocks/IaChatGPT.vue";
+import AiChatGPT from "~/components/organisim/blocks/AiChatGPT.vue";
 
 
 export const useGetComponent = () => {
@@ -29,7 +29,7 @@ export const useGetComponent = () => {
       case "gallery layout":
         return GalleryLayout;
       case "ai chat":
-        return IaChatGPT;
+        return AiChatGPT;
       default:
         console.warn(`No component found for label: ${label}`);
         return null;

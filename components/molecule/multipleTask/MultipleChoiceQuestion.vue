@@ -4,7 +4,7 @@
     <div v-for="(answer, index) in question.answers || question.text_items" 
          :key="index"
          :class="{ 'flex justify-start': answer.isCorrect, 'bg-tarawera-200': answer.isCorrect }"
-         class="rounded-[10px]">
+         class="rounded-[10px] mt-2">
       <p class="m-1">{{ answer.text }}</p>
     </div>
   </div>

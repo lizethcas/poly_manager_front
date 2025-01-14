@@ -69,6 +69,7 @@
     <IaGeneratorModal
       v-model="showImageGenerator"
       @image-generated="handleGeneratedImage"
+      source="gallery"
     />
 
     <div class="flex items-center gap-2 py-4 text-sm">
@@ -117,13 +118,15 @@ const formData = ref({
 });
 
 watch(taskImgGen, (newValue) => {
-  formData.value.content_details.push({
-    title: "",
-    description: "",
-    image: newValue,
-    preview: newValue,
-    showPreview: true,
-  });
+  if (newValue?.source === 'gallery') {
+    formData.value.content_details.push({
+      title: "",
+      description: "",
+      image: newValue.url,
+      preview: newValue.url,
+      showPreview: true,
+    });
+  }
 });
 
 watch(

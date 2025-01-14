@@ -4,6 +4,7 @@ const baseURLs = {
   development: {
     dashboard: "http://localhost:8000/dashboard/api/",
     chat: "http://localhost:8000/chat/",
+   
   },
   production: {
     dashboard: "https://dploy-production.up.railway.app/dashboard/api/",
@@ -25,3 +26,10 @@ export const axiosDashboard = axios.create({
 export const axiosChat = axios.create({
   baseURL: isDevelopment ? baseURLs.development.chat : baseURLs.production.chat,
 });
+
+export default {
+  axiosDashboard,
+  axiosChat
+};
+
+

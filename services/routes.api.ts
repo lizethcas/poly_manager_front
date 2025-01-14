@@ -5,6 +5,11 @@ export const apiRoutes = {
   chat: {
     chatAi: "chat-ai/",
   },
+  scenarios: {
+    getAll: "scenarios/",
+    create: "scenarios/",
+    getById: (id: string) => `scenarios/${id}/`,
+  },
   classContent: "class-contents/",
   courses: "courses/",
   classes: {
@@ -23,6 +28,11 @@ export const get = async (route: string) => {
 
 export const del = async (url: string) => {
   return await axiosDashboard.delete(url);
+};
+
+export const post = async (route: string, data: any) => {
+  const response = await axiosDashboard.post(route, data);
+  return response.data;
 };
 
 

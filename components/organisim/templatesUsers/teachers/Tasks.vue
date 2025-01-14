@@ -1,5 +1,5 @@
 <template>
-  <div class="text-sm text-fuscous-gray-700 bg-white p-4 rounded-md my-4">
+  <div class="text-sm text-fuscous-gray-700 bg-white  pb-4 rounded-md ">
     <!-- Multiple Choice and True/False with Media -->
     <div
       v-if="
@@ -100,6 +100,7 @@ const getQuestionComponent = (contentType: string) => {
 };
 
 const getContentComponent = (contentType: string) => {
+  console.log(contentType);
   return contentComponents[contentType as keyof typeof contentComponents];
 };
 const getQuestions = (task: any) => {

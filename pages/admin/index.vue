@@ -1,5 +1,5 @@
 <template>
-  <div class=" px-4 w-4/5">
+  <div class=" px-4 ">
     <header class="text-title-color mb-4">
       <h2 class="font-bold text-m text-fuscous-gray-600">
         {{ homeData.subTitle }}
