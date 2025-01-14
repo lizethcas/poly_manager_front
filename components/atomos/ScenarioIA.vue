@@ -5,69 +5,53 @@
       <p class="form-step">1 Set the Scene:</p>
       <label for="name" class="form-label">Name Scenario</label>
       <input type="text" id="name" name="name" class="form-input" v-model="formData.name" />
-      <label for="type" class="form-label">Type Scenario</label>
-      <select name="type" id="type" class="form-select">
-        <option value="real">Real</option>
-        <option value="fantasy">Fantasy</option>
-        <option value="historical">Historical</option>
-      </select>
-      <label for="location" class="form-label">Location</label>
-      <input type="text" id="location" name="location" class="form-input" v-model="formData.location" />
-      <label for="description_scenario" class="form-label">Description Scenario</label>
-      <textarea id="description_scenario" name="description_scenario" class="form-input" v-model="formData.description" />
+      
+      <label for="description" class="form-label">Description</label>
+      <textarea id="description" name="description" class="form-input" v-model="formData.description" />
+
+      <label for="cover" class="form-label">Cover Image</label>
+      <input type="file" id="cover" name="cover" @change="handleCoverUpload" accept="image/*" />
     </div>
+
     <div class="flex flex-col gap-2" id="section-form">
-      <p>2 Lesson Goals and Objectives:</p>
-      <p>This activity aims to help the student:</p>
+      <p>2 Goals and Objectives:</p>
       <div>
-        <label for="goal">Goal</label>
+        <label for="goal">Goals</label>
         <input type="text" v-for="(goal, index) in goals" :key="index" :id="'goal' + index" v-model="goals[index]" />
       </div>
       <button @click="addGoal">Add Goal</button>
-      <p>Use vocabulary and key expressions learned in the lesson, including:</p>
+
       <div>
-        <label for="vocabulary">Vocabulary</label>
-        <input type="text" v-for="(vocab, index) in vocabularies" :key="index" :id="'vocabulary' + index" v-model="vocabularies[index]" />
+        <label for="objectives">Objectives</label>
+        <input type="text" v-for="(objective, index) in objectives" :key="index" :id="'objective' + index" v-model="objectives[index]" />
       </div>
-      <button @click="addVocabulary">Add Vocabulary</button>
-      <div>
-        <label for="key_expressions">Key Expressions</label>
-        <input type="text" v-for="(keyExpression, index) in keyExpressions" :key="index" :id="'key_expression' + index" v-model="keyExpressions[index]" />
-      </div>
-      <button @click="addKeyExpression">Add Key Expression</button>
-      <label for="additional_info_objectives">Additional Information</label>
-      <input type="text" id="additional_info_objectives" name="additional_info_objectives" />
+      <button @click="addObjective">Add Objective</button>
     </div>
+
     <div class="flex flex-col gap-2" id="section-form">
-      <p>3 Roles</p>
-      <div>
-        <p>Estudent</p>
-        <p>Level student</p>
-        <label for="limitations_student">Limitaciones </label>
-        <input type="text" id="limitations_student" name="limitations_student" v-model="formData.limitations_student" />
-        <label for="role_student">Role student</label>
-        <input type="text" id="role_student" name="role_student" v-model="formData.role_student" />
-      </div>
-      <div>
-        <p>Polly</p>
-        <label for="role_polly">Role polly</label>
-        <input type="text" id="role_polly" name="role_polly" v-model="formData.role_polly" />
-        <div>
-          <label for="instructions_polly">Instrucciones</label>
-          <input type="text" v-for="(instruction, index) in instructions" :key="index" :id="'instructions_polly' + index" v-model="instructions[index]" />
-        </div>
-        <button @click="addInstructions">Add Instructions</button>
-        <div>
-          <label for="limitations_polly">Limitaciones</label>
-          <input type="text" v-for="(limitation, index) in limitations" :key="index" :id="'limitations_polly' + index" v-model="limitations[index]" />
-        </div>
-        <button @click="addLimitationsPolly">Add Limitations</button>
-        <div>
-          <label for="finish_conversation">Finish conversation</label>
-          <input type="text" id="finish_conversation" name="finish_conversation" />
-        </div>
-      </div>
+      <p>3 Conversation Details:</p>
+      <label for="conversation_starter">Conversation Starter</label>
+      <textarea id="conversation_starter" v-model="formData.conversation_starter" />
+
+      <label for="end_conversation">End Conversation</label>
+      <textarea id="end_conversation" v-model="formData.end_conversation" />
+
+      <label for="end_conversation_saying">End Conversation Saying</label>
+      <textarea id="end_conversation_saying" v-model="formData.end_conversation_saying" />
+
+      <label for="feedback">Feedback</label>
+      <textarea id="feedback" v-model="formData.feedback" />
     </div>
+
+    <div class="flex flex-col gap-2" id="section-form">
+      <p>4 Role Information:</p>
+      <label for="role_student">Student Role</label>
+      <textarea id="role_student" v-model="formData.role_student" class="form-input" required />
+
+      <label for="role_polly">Polly Role</label>
+      <textarea id="role_polly" v-model="formData.role_polly" class="form-input" required />
+    </div>
+
     <div class="mt-4">
       <button type="submit" class="submit-button" @click="submitScenario">
         Guardar Escenario
@@ -84,96 +68,100 @@ export default {
   props: {
     classId: {
       type: [Number, String],
-      required: true
+      required: true,
+      default: 1
     }
   },
   data() {
     return {
       goals: [''],
+      objectives: [''],
       vocabularies: [''],
       keyExpressions: [''],
-      instructions: [''],
-      limitations: [''],
       formData: {
         name: '',
-        type: 'real',
-        location: '',
         description: '',
-        limitations_student: '',
+        conversation_starter: '',
+        end_conversation: '',
+        end_conversation_saying: '',
+        feedback: '',
         role_student: '',
         role_polly: '',
-        finish_conversation: '',
       },
-      classId: '1',
+      coverFile: null,
     };
   },
   methods: {
     addGoal() {
       this.goals.push(''); 
     },
-    addVocabulary() {
-      this.vocabularies.push(''); 
+    addObjective() {
+      this.objectives.push('');
     },
-    addKeyExpression() {
-      this.keyExpressions.push(''); 
-    },
-    addInstructions() {
-      this.instructions.push(''); 
-    },
-    addLimitationsPolly() {
-      this.limitations.push(''); 
+    handleCoverUpload(event) {
+      this.coverFile = event.target.files[0];
     },
     async submitScenario() {
-      console.log('Iniciando el proceso de envío del escenario...');
-      const scenarioData = {
-        class_model: parseInt(this.classId),
-        name: this.formData.name,
-        type: this.formData.type,
-        location: this.formData.location,
-        description: this.formData.description,
-        goals: this.goals.filter(goal => goal.trim() !== ''),
-        vocabulary: this.vocabularies.filter(vocab => vocab.trim() !== ''),
-        key_expressions: this.keyExpressions.filter(expr => expr.trim() !== ''),
-        limitations_student: this.formData.limitations_student,
-        role_student: this.formData.role_student,
-        role_polly: this.formData.role_polly,
-        instructions_polly: this.instructions.filter(instr => instr.trim() !== ''),
-        limitations_polly: this.limitations.filter(limit => limit.trim() !== ''),
-      };
+      const formData = new FormData();
+      
+      // Convertir classId a número
+      formData.append('class_model', Number(this.classId));
+      
+      // Datos básicos
+      formData.append('name', this.formData.name);
+      formData.append('description', this.formData.description);
+      
+      // Roles (requeridos)
+      formData.append('role_student', this.formData.role_student);
+      formData.append('role_polly', this.formData.role_polly);
+      
+      // Cover si existe
+      if (this.coverFile) {
+        formData.append('cover', this.coverFile);
+      }
 
-      console.log('Datos del escenario a enviar:', scenarioData);
+      // Arrays como JSON
+      formData.append('goals', JSON.stringify(this.goals.filter(g => g.trim())));
+      formData.append('objectives', JSON.stringify(this.objectives.filter(o => o.trim())));
+      formData.append('vocabulary', JSON.stringify(this.vocabularies.filter(v => v.trim())));
+      formData.append('key_expressions', JSON.stringify(this.keyExpressions.filter(k => k.trim())));
+
+      // Campos de conversación
+      formData.append('conversation_starter', this.formData.conversation_starter);
+      formData.append('end_conversation', this.formData.end_conversation);
+      formData.append('end_conversation_saying', this.formData.end_conversation_saying);
+      formData.append('feedback', this.formData.feedback);
 
       try {
-        const response = await axiosInstance.post('scenarios/', scenarioData);
-        console.log('Respuesta del servidor:', response.data);
-
-        if (response.data) {
-          console.log('Escenario creado exitosamente:', response.data);
-          this.$emit('scenario-created', response.data);
-          this.resetForm();
-        }
+        const response = await axiosInstance.post('scenarios/', formData, {
+          headers: {
+            'Content-Type': 'multipart/form-data'
+          }
+        });
+        
+        console.log('Escenario creado exitosamente:', response.data);
+        this.$emit('scenario-created', response.data);
+        this.resetForm();
       } catch (error) {
         console.error('Error al crear el escenario:', error.response?.data || error);
-        // Aquí podrías manejar los errores, por ejemplo mostrando una notificación
       }
     },
     resetForm() {
       console.log('Reiniciando el formulario...');
       this.formData = {
         name: '',
-        type: 'real',
-        location: '',
         description: '',
-        limitations_student: '',
+        conversation_starter: '',
+        end_conversation: '',
+        end_conversation_saying: '',
+        feedback: '',
         role_student: '',
         role_polly: '',
-        finish_conversation: '',
       };
       this.goals = [''];
+      this.objectives = [''];
       this.vocabularies = [''];
       this.keyExpressions = [''];
-      this.instructions = [''];
-      this.limitations = [''];
       console.log('Formulario reiniciado.');
     }
   }
