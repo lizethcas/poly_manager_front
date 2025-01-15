@@ -6,7 +6,10 @@
           <NuxtLink to="/">polyAcademy</NuxtLink>
         </li>
         <li>
-          <NuxtLink to="/login">login</NuxtLink>
+          <NuxtLink to="/login">Login in</NuxtLink>
+        </li>
+        <li>
+          <NuxtLink to="/register">register</NuxtLink>
         </li>
       </ul>
     </nav>

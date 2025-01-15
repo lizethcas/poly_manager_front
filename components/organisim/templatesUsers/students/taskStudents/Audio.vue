@@ -1,5 +1,5 @@
 <template>
-  <div class="bg-white rounded-lg p-4 shadow-sm mb-4">
+  <div class="bg-white rounded-lg px-4 shadow-sm mb-4">
     <!-- Title section -->
     <div class="flex items-center justify-between mb-3">
       <h3 class="text-lg font-medium">{{ task.title || "" }}</h3>
