@@ -104,7 +104,13 @@ export default {
     async submitScenario() {
       const formData = new FormData();
       
-      // Convertir classId a número
+      // Asegurarse de que classId no esté vacío
+      if (!this.classId) {
+        console.error('El ID de clase es requerido.');
+        return; // Detener la ejecución si classId no está presente
+      }
+      
+      // Convertir classId a número y enviarlo como class_model
       formData.append('class_model', Number(this.classId));
       
       // Datos básicos
@@ -120,11 +126,11 @@ export default {
         formData.append('cover', this.coverFile);
       }
 
-      // Arrays como JSON
-      formData.append('goals', JSON.stringify(this.goals.filter(g => g.trim())));
-      formData.append('objectives', JSON.stringify(this.objectives.filter(o => o.trim())));
-      formData.append('vocabulary', JSON.stringify(this.vocabularies.filter(v => v.trim())));
-      formData.append('key_expressions', JSON.stringify(this.keyExpressions.filter(k => k.trim())));
+      // Enviar goals y objectives como texto en lugar de JSON
+      formData.append('goals', this.goals.filter(g => g.trim()).join(','));
+      formData.append('objectives', this.objectives.filter(o => o.trim()).join(','));
+      formData.append('vocabulary', this.vocabularies.filter(v => v.trim()).join(','));
+      formData.append('key_expressions', this.keyExpressions.filter(k => k.trim()).join(','));
 
       // Campos de conversación
       formData.append('conversation_starter', this.formData.conversation_starter);

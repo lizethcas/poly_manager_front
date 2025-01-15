@@ -66,13 +66,14 @@
               </span>
               Courses teacher
             </NuxtLink>
-            <!--  <NuxtLink 
+            
+           <NuxtLink to="/students"
                             class="flex items-center px-4 py-2 text-gray-700 hover:bg-gray-100 rounded-md">
                             <span class="mr-3">
                                 <i class="fas fa-users"></i>
                             </span>
                             Students
-                        </NuxtLink> -->
+                        </NuxtLink>
             <!-- Add more menu items as needed -->
 
             
@@ -82,6 +83,14 @@
              <div @click="openImgCropPopup" class="cursor-pointer">Img Crop</div>
              <div @click="openImgGenPopup" class="cursor-pointer">Img Gen</div>
              <div @click="openImgBanckPopup" class="cursor-pointer">Img Banck</div>
+             <div @click="openMatchingPairsPopup" class="cursor-pointer">MatchingPairs</div>
+             <div @click="openMultipleChoicePopup" class="cursor-pointer">Multiple Choice</div>
+             <div @click="openCreateStudentPopup" class="cursor-pointer">Create Student</div>
+             <div @click="openListStudentsPopup" class="cursor-pointer">List Students</div>
+             <div @click="openChatAIPopup" class="cursor-pointer">Chat AI</div>
+             <div @click="openNoteStudentPopup" class="cursor-pointer">My Notes</div>
+             <div @click="openWordsStudentPopup" class="cursor-pointer">My Words</div>
+             <div @click="openTextToSpeechPopup" class="cursor-pointer">Text to Speech</div>
           </div>
         </nav>
       </div>
@@ -148,6 +157,62 @@
         <button @click="closeImgBanckPopup">Cerrar</button>
       </div>
     </div>
+
+    <div v-if="isMatchingPairsPopupOpen" class="popup-overlay" @click="closeMatchingPairsPopup">
+      <div class="popup-content" @click.stop>
+        <MatchingPairs />
+        <button @click="closeMatchingPairsPopup">Cerrar</button>
+      </div>
+    </div>
+
+    <div v-if="isMultipleChoicePopupOpen" class="popup-overlay" @click="closeMultipleChoicePopup">
+      <div class="popup-content" @click.stop>
+        <MultipleChoiceStudent />
+        <button @click="closeMultipleChoicePopup">Cerrar</button>
+      </div>
+    </div>
+
+    <div v-if="isCreateStudentPopupOpen" class="popup-overlay" @click="closeCreateStudentPopup">
+      <div class="popup-content" @click.stop>
+        <CreateStudent />
+        <button @click="closeCreateStudentPopup">Cerrar</button>
+      </div>
+    </div>
+
+    <div v-if="isListStudentsPopupOpen" class="popup-overlay" @click="closeListStudentsPopup">
+      <div class="popup-content" @click.stop>
+        <ListStudents />
+        <button @click="closeListStudentsPopup">Cerrar</button>
+      </div>
+    </div>
+
+    <div v-if="isChatAIPopupOpen" class="popup-overlay" @click="closeChatAIPopup">
+      <div class="popup-content" @click.stop>
+        <ChatAI />
+        <button @click="closeChatAIPopup">Cerrar</button>
+      </div>
+    </div>
+
+    <div v-if="isNoteStudentPopupOpen" class="popup-overlay" @click="closeNoteStudentPopup">
+      <div class="popup-content" @click.stop>
+        <NoteStudent />
+        <button @click="closeNoteStudentPopup">Cerrar</button>
+      </div>
+    </div>
+
+    <div v-if="isWordsStudentPopupOpen" class="popup-overlay" @click="closeWordsStudentPopup">
+      <div class="popup-content" @click.stop>
+        <WordsStudent />
+        <button @click="closeWordsStudentPopup">Cerrar</button>
+      </div>
+    </div>
+
+    <div v-if="isTextToSpeechPopupOpen" class="popup-overlay" @click="closeTextToSpeechPopup">
+      <div class="popup-content" @click.stop>
+        <TextToSpeech />
+        <button @click="closeTextToSpeechPopup">Cerrar</button>
+      </div>
+    </div>
   </NuxtLayout>
 </template>
 
@@ -160,6 +225,14 @@ import TextToFormat from '~/components/atomos/TextToFormat.vue';
 import ImgCrop from '~/components/atomos/ImgCrop.vue';
 import ImgGen from '~/components/atomos/ImgGen.vue';
 import ImgBanck from '~/components/atomos/ImgBanck.vue';
+import MatchingPairs from '~/components/atomos/MatchingPairs.vue';
+import MultipleChoiceStudent from "./components/organisim/templatesUsers/students/taskStudents/MultipleChoiceStudent.vue";
+import CreateStudent from "./components/organisim/templatesUsers/students/taskStudents/CreateStudent.vue";
+import ListStudents from "./components/organisim/templatesUsers/students/taskStudents/ListStudents.vue";
+import ChatAI from '~/components/atomos/ChatAI.vue';
+import NoteStudent from '~/components/organisim/templatesUsers/students/taskStudents/NoteStudent.vue';
+import WordsStudent from '~/components/organisim/templatesUsers/students/taskStudents/WordsStudent.vue';
+import TextToSpeech from '~/components/atomos/TextToSpech_.vue';
 const taskStore = useTaskStore();
 const isSidebarOpen = ref(false);
 const isPopupOpen = ref(false);
@@ -168,6 +241,14 @@ const isTextToFormatPopupOpen = ref(false);
 const isImgCropPopupOpen = ref(false);
 const isImgGenPopupOpen = ref(false);
 const isImgBanckPopupOpen = ref(false);
+const isMatchingPairsPopupOpen = ref(false);
+const isMultipleChoicePopupOpen = ref(false);
+const isCreateStudentPopupOpen = ref(false);
+const isListStudentsPopupOpen = ref(false);
+const isChatAIPopupOpen = ref(false);
+const isNoteStudentPopupOpen = ref(false);
+const isWordsStudentPopupOpen = ref(false);
+const isTextToSpeechPopupOpen = ref(false);
 
 const toggleSidebar = () => {
   isSidebarOpen.value = !isSidebarOpen.value;
@@ -209,6 +290,62 @@ const openImgBanckPopup = () => {
   isPopupOpen.value = false;
 };
 
+const openMatchingPairsPopup = () => {
+  isMatchingPairsPopupOpen.value = true;
+  isPopupOpen.value = false;
+};
+
+const openMultipleChoicePopup = () => {
+  isMultipleChoicePopupOpen.value = true;
+  isPopupOpen.value = false;
+};
+
+const openCreateStudentPopup = () => {
+  isCreateStudentPopupOpen.value = true;
+  isPopupOpen.value = false;
+};
+
+const openListStudentsPopup = () => {
+  isListStudentsPopupOpen.value = true;
+  isPopupOpen.value = false;
+};
+
+const openChatAIPopup = () => {
+  isChatAIPopupOpen.value = true;
+  isPopupOpen.value = false;
+};
+
+const openNoteStudentPopup = () => {
+  isNoteStudentPopupOpen.value = true;
+  isPopupOpen.value = false;
+};
+
+const openWordsStudentPopup = () => {
+  isWordsStudentPopupOpen.value = true;
+  isPopupOpen.value = false;
+};
+
+const openTextToSpeechPopup = () => {
+  isTextToSpeechPopupOpen.value = true;
+  isPopupOpen.value = false;
+};
+
+const closeWordsStudentPopup = () => {
+  isWordsStudentPopupOpen.value = false;
+};
+
+const closeNoteStudentPopup = () => {
+  isNoteStudentPopupOpen.value = false;
+};
+
+const closeListStudentsPopup = () => {
+  isListStudentsPopupOpen.value = false;
+};
+
+const closeMatchingPairsPopup = () => {
+  isMatchingPairsPopupOpen.value = false;
+};
+
 const closeImgBanckPopup = () => {
   isImgBanckPopupOpen.value = false;
 };
@@ -231,6 +368,22 @@ const closeImgCropPopup = () => {
 
 const closeImgGenPopup = () => {
   isImgGenPopupOpen.value = false;
+};
+
+const closeMultipleChoicePopup = () => {
+  isMultipleChoicePopupOpen.value = false;
+};
+
+const closeCreateStudentPopup = () => {
+  isCreateStudentPopupOpen.value = false;
+};
+
+const closeChatAIPopup = () => {
+  isChatAIPopupOpen.value = false;
+};
+
+const closeTextToSpeechPopup = () => {
+  isTextToSpeechPopupOpen.value = false;
 };
 
 </script>

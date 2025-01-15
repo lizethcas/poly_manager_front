@@ -1,25 +1,39 @@
-import { useQuery } from "@tanstack/vue-query";
-import axiosInstance from "~/services/axios.config";
-import { apiRoutes } from "~/services/routes.api";
+import { ref } from 'vue'
+import axiosInstance from '~/services/axios.config'
 
-export const useClassContents = (classId: string | string[]) => {
-  const {
-    data: classContents,
-    isLoading,
-    error,
-  } = useQuery({
-    queryKey: ["class-contents", classId],
-    queryFn: async () => {
-      const response = await axiosInstance.get(
-        `${apiRoutes.classContent}?class_id=${classId}`
-      );
-      return response.data;
-    },
-  });
+export function useClassContents(classId: string) {
+  const classContents = ref(null)
+  const isLoading = ref(true)
+  const error = ref(null)
+
+  const fetchClassContents = async () => {
+    try {
+      isLoading.value = true
+      const response = await axiosInstance.get(`/class-contents/?class_id=${classId}`)
+      console.log('Respuesta completa del servidor:', {
+        status: response.status,
+        headers: response.headers,
+        data: response.data
+      })
+      classContents.value = response.data
+    } catch (e) {
+      console.error('Error detallado:', {
+        message: e.message,
+        response: e.response?.data,
+        status: e.response?.status
+      })
+      error.value = e
+    } finally {
+      isLoading.value = false
+    }
+  }
+
+  // Ejecutar la función inmediatamente
+  fetchClassContents()
 
   return {
     classContents,
     isLoading,
-    error,
-  };
-}; 
+    error
+  }
+}

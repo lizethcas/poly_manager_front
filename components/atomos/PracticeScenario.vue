@@ -19,6 +19,13 @@
                      :key="index" 
                      :class="['message', message.role]">
                     <p>{{ message.content }}</p>
+                    <div v-if="message.role === 'assistant'" class="message-controls">
+                        <TextToSpeech 
+                            :key="`audio-${index}`"
+                            :initial-text="message.content"
+                            class="message-audio-controls"
+                        />
+                    </div>
                 </div>
             </div>
 
@@ -51,9 +58,13 @@
 <script>
 // Importar la configuración de URLs
 import axiosInstance from '@/services/axios.config';
+import TextToSpeech from './TextToSpech.vue'
 
 export default {
     name: 'PracticeScenario',
+    components: {
+        TextToSpeech
+    },
     props: {
         scenario: {
             type: Object,
@@ -68,7 +79,7 @@ export default {
             chatSocket: null,
             isRecording: false,
             mediaRecorder: null,
-            audioChunks: []
+            audioChunks: [],
         }
     },
     methods: {
@@ -76,32 +87,38 @@ export default {
             const roomName = 'lobby';
             const scenarioId = this.scenario.id;
             
-            // Obtener la base URL correcta
             const baseUrl = process.env.NODE_ENV === 'development' 
-                ? 'localhost:8000'  // URL de desarrollo de Django
-                : 'dploy-production.up.railway.app';  // URL de producción
+                ? 'localhost:8000'
+                : 'dploy-production.up.railway.app';
             
             const wsScheme = window.location.protocol === 'https:' ? 'wss://' : 'ws://';
             const wsUrl = `${wsScheme}${baseUrl}/ws/chat/${roomName}/${scenarioId}/`;
             
-            console.log('Intentando conectar WebSocket a:', wsUrl); // Debug
+            console.log('Intentando conectar WebSocket a:', wsUrl);
 
             this.chatSocket = new WebSocket(wsUrl);
 
             this.chatSocket.onopen = () => {
-                console.log('WebSocket conectado exitosamente'); // Debug
+                console.log('WebSocket conectado exitosamente');
             };
 
             this.chatSocket.onmessage = (e) => {
-                console.log('Mensaje recibido:', e.data); // Debug
+                console.log('Mensaje recibido:', e.data);
                 const data = JSON.parse(e.data);
-                this.chatHistory.push({
-                    role: 'assistant',
-                    content: data.message
-                });
-                this.$nextTick(() => {
-                    this.scrollToBottom();
-                });
+                
+                const isDuplicate = this.chatHistory.some(msg => 
+                    msg.role === 'assistant' && msg.content === data.message
+                );
+                
+                if (!isDuplicate) {
+                    this.chatHistory.push({
+                        role: 'assistant',
+                        content: data.message
+                    });
+                    this.$nextTick(() => {
+                        this.scrollToBottom();
+                    });
+                }
             };
 
             this.chatSocket.onclose = (e) => {
@@ -223,7 +240,7 @@ export default {
             } finally {
                 this.isLoading = false;
             }
-        }
+        },
     },
     mounted() {
         this.connectWebSocket();
@@ -320,5 +337,32 @@ button.recording {
     0% { opacity: 1; }
     50% { opacity: 0.7; }
     100% { opacity: 1; }
+}
+
+.audio-controls {
+    padding: 10px;
+    border-top: 1px solid #ddd;
+    background-color: #f9f9f9;
+}
+
+.message-controls {
+    margin-top: 5px;
+}
+
+.audio-button {
+    background-color: transparent;
+    color: #1976d2;
+    border: 1px solid #1976d2;
+    padding: 5px 10px;
+    font-size: 0.9em;
+    cursor: pointer;
+}
+
+.audio-button:hover {
+    background-color: #e3f2fd;
+}
+
+.message-audio-controls {
+    margin-top: 8px;
 }
 </style>
