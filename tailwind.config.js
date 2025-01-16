@@ -4,7 +4,6 @@ export default {
   theme: {
     extend: {
       colors: {
-
         /* text colors */
         "fuscous-gray-950": "#262626",
         "fuscous-gray-400": "#888888",
@@ -22,8 +21,6 @@ export default {
         "tarawera-200": "#d1f1ff",
         "tarawera-100": "#d1f1ff",
         "tarawera-50": "#ECFEFF",
-      
-
 
         /* Courses colors */
         "baby-steps-color": "#13A73C",
@@ -31,7 +28,7 @@ export default {
         "pre-intermediate-color": "#9747FF",
         "intermediate-color": "#1C5A69",
         "upper-intermediate-color": "#C1694F",
-        
+
         "light-gray": "#BEBBBB ",
         "deep-teal": "#0A394D",
         "light-grayish-blue": "#E1E8EF",
@@ -42,7 +39,6 @@ export default {
         "green-high": "#C2F6D0",
         "gray-high": "#76787A",
         "gray-light": "#BEBBBB",
-
       },
       fontSize: {
         sm: "0.857rem",
@@ -52,7 +48,6 @@ export default {
         xl: "2rem",
         "2xl": "2.5rem",
         "3rem": "3rem",
-
       },
       fontWeight: {
         thin: "100",
@@ -68,15 +63,15 @@ export default {
         black: "900",
       },
       animation: {
-        'pulse-subtle': 'pulse-subtle 2s cubic-bezier(0.4, 0, 0.6, 1) infinite',
+        "pulse-subtle": "pulse-subtle 2s cubic-bezier(0.4, 0, 0.6, 1) infinite",
       },
       keyframes: {
-        'pulse-subtle': {
-          '0%, 100%': { opacity: '1' },
-          '50%': { opacity: '0.7' },
+        "pulse-subtle": {
+          "0%, 100%": { opacity: "1" },
+          "50%": { opacity: "0.7" },
         },
       },
     },
   },
-  plugins: [],
+  plugins: [require("@tailwindcss/typography")],
 };

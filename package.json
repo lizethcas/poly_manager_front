@@ -40,6 +40,7 @@
   "devDependencies": {
     "@nuxtjs/google-fonts": "^3.2.0",
     "@nuxtjs/tailwindcss": "^6.12.2",
+    "@tailwindcss/typography": "^0.5.16",
     "autoprefixer": "^10.4.20",
     "nuxt-icon": "^1.0.0-beta.7",
     "postcss": "^8.4.49",
