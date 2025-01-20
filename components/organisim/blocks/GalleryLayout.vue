@@ -69,7 +69,7 @@
     <IaGeneratorModal
       v-model="showImageGenerator"
       @image-generated="handleGeneratedImage"
-      source="gallery"
+      :source="'gallery'"
     />
 
     <div class="flex items-center gap-2 py-4 text-sm">

@@ -71,6 +71,31 @@ export default {
           "50%": { opacity: "0.7" },
         },
       },
+      typography: (theme) => ({
+        DEFAULT: {
+          css: {
+            "--tw-prose-bullets": theme("colors.tarawera-600"),
+            h1: {
+              margin: 2,
+            },
+            h2: {
+              margin: 2,
+            },
+            h3: {
+              margin: 2,
+            },
+            p: {
+              margin: 0,
+            },
+            li: {
+              p: {
+                margin: 0,
+              },
+             
+            },
+          },
+        },
+      }),
     },
   },
   plugins: [require("@tailwindcss/typography")],

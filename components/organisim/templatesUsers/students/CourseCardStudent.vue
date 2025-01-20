@@ -5,15 +5,12 @@
     v-for="course in courses"
     :key="course.id"
     @click="navigateToCourse(course.id)"
-    class="w-full md:w-4/5 flex bg-white border rounded-xl cursor-pointer mt-2 hover:scale-105 transition-all duration-300 p-2"
+    class="w-full flex bg-white border rounded-xl cursor-pointer mt-2 hover:scale-105 transition-all duration-300 p-2"
   >
     <!-- Move "My Current Course" to the top -->
     <div class="flex flex-col w-full p-1">
-      <div class="flex justify-between"  v-show="route.path.includes('/course-students')">
-        <h2
-          class="text-fuscous-gray-600 font-bold text-lg mb-2 w-contain"
-          
-        >
+      <div class="flex justify-between" v-show="route.path.includes('/course')">
+        <h2 class="text-fuscous-gray-600 font-bold text-lg mb-2 w-contain">
           My Current Course:
         </h2>
         <div class="flex items-center gap-2 text-sm">
@@ -43,8 +40,8 @@
           </div>
 
           <NuxtLink
-            v-if="!route.path.includes('/course-students')"
-            :to="`/course-students/${course.id}`"
+          
+            :to="routes.routes.routesStudent.course(course.id)"
             class="text-blue-500 border-blue-500 text-xs hover:underline"
           >
             View the course details
@@ -85,19 +82,17 @@ import { useRoute } from "vue-router";
 import type { Course } from "~/interfaces/course.interface";
 import { useGetCover } from "~/composables/useGetcover";
 import { useGetColor } from "~/composables/useGetColor";
+import routes from "~/data/routes";
 
 const route = useRoute();
 
 const { getCoverUrl } = useGetCover();
 const { getLevelColor } = useGetColor();
 const navigateToCourse = (courseId: number) => {
-
   navigateTo(`/course-students/${courseId}`);
 };
 
 defineProps<{
   courses: Course[];
 }>();
-
-
 </script>

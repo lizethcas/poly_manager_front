@@ -13,10 +13,12 @@ export const routes = {
     statistics: (courseId: string) => `/admin/course-${courseId}/statistics`,
   },
   routesStudent: {
-    classes: "/student/classes",
+    classes: (courseId: string) => `/student/course-${courseId}/classes`,
     courses: "/student/courses",
     course: (courseId: string) => `/student/course-${courseId}`,
     progress: "/student/progress",
+    class: (courseId: string, classId: string) =>
+      `/student/course-${courseId}/class-${classId}`,
   },
 };
 
@@ -75,4 +77,10 @@ export const navigationRoutes = {
       userType: "student",
     },
   ],
+};
+
+// Add default export combining both exports
+export default {
+  routes,
+  navigationRoutes,
 };

@@ -64,7 +64,7 @@
       </header>
 
       <!-- Main Content with Right Sidebar Layout -->
-      <div class="flex relative mt-5 w-4/5">
+      <div class="flex relative mt-5" :class="mainContentWidth">
         <!-- Main Content -->
         <main class="flex-1 lg:px-4 min-h-screen w-full">
           <NuxtPage />
@@ -74,11 +74,10 @@
           class="w-80 fixed right-0 top-16 bottom-0 bg-white shadow-sm border-l border-gray-200 overflow-y-auto"
         >
           <div>
-            <div
-              class="flex flex-col w-full h-[500px] border border-gray-300 rounded-lg"
-            >
-              <Chat />
-            </div>
+         
+            
+            <!--   <Chat /> -->
+          
           </div>
         </div>
         <!-- Right Sidebar for Chat -->
@@ -143,28 +142,65 @@ const adminRoutes: NavigationRoute[] = [
 
 // Define student routes
 const studentRoutes: NavigationRoute[] = [
-  {
-    path: '/student/courses',
-    name: 'My Courses',
-    icon: 'material-symbols:menu-book-outline'
-  },
-  {
+{
     path: '/student/classes',
     name: 'My Classes',
     icon: 'material-symbols:class-outline'
   },
   {
+    path: '/student/courses',
+    name: 'My Courses',
+    icon: 'material-symbols:menu-book-outline'
+  },
+
+  {
     path: '/student/progress',
     name: 'My Progress',
     icon: 'material-symbols:trending-up-outline'
-  }
+  },
+  {
+    path: '/student/speaking_practice',
+    name: 'Speaking Practice',
+    icon: 'material-symbols:trending-up-outline'
+  },
+  
+  {
+    path: '/student/my_notes',
+    name: 'My Notes',
+    icon: 'material-symbols:trending-up-outline'
+  },
+  
+  {
+    path: '/student/my_notes',
+    name: 'My Notes',
+    icon: 'material-symbols:trending-up-outline'
+  },
+  
+  {
+    path: '/student/my_words',
+    name: 'My Words',
+    icon: 'material-symbols:trending-up-outline'
+  },
+  
+  {
+    path: '/student/my_profile',
+    name: 'My Profile',
+    icon: 'material-symbols:trending-up-outline'
+  },
+  
+
 ];
 
-// Fix the navigationRoutes computed property to avoid infinite recursion
+// Update the navigationRoutes computed property
 const navigationRoutes = computed(() => {
-  // Temporarily hardcoded for testing - you'll need to add proper user role checking
-  const isAdmin = route.path.startsWith('/admin'); // Replace with actual user role check
-  return isAdmin ? adminRoutes : studentRoutes;
+  // Check if the current route starts with /student
+  const isStudent = route.path.startsWith('/student');
+  return isStudent ? studentRoutes : adminRoutes;
+});
+
+const mainContentWidth = computed(() => {
+  const isStudentRoute = route.path.startsWith('/student');
+  return isStudentRoute ? 'w-4/5' : 'w-4/5';
 });
 </script>
 

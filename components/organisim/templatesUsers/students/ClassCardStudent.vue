@@ -1,12 +1,12 @@
 <template>
-  <div class="mt-4 flex flex-col items-end">
+  <div class="mt-4 flex flex-col pl-20">
     <div v-if="isPending">Loading...</div>
     <div v-else-if="error">Error: {{ error.message }}</div>
 
     <div
       v-for="(classItem, index) in classes"
       :key="classItem.id"
-      class="bg-white border rounded-lg shadow-sm hover:shadow-md transition-all duration-300 mb-4 flex  w-9/12"
+      class="bg-white border  rounded-lg shadow-sm hover:shadow-md transition-all duration-300 mb-4 flex w-full"
     >
       <div class="flex flex-col justify-between w-full">
         <div class="flex items-start gap-4 p-4">
@@ -29,7 +29,9 @@
           <!-- Right side image -->
         </div>
         <!-- Bottom status and actions -->
-        <div class="flex items-center justify-center gap-2 p-2 w-full bg-[#DFEAF9] rounded-b-lg">
+        <div
+          class="flex items-center justify-center gap-2 p-2 w-full bg-[#DFEAF9] rounded-b-lg"
+        >
           <div
             class="flex items-center gap-2 bg-gray-100 px-3 py-1 rounded-full"
           >
@@ -50,7 +52,7 @@
           </div>
           <NuxtLink
             class="text-blue-500 hover:underline"
-            :to="`/course-students/${classItem.course_id}/class-students/${classItem.id}`"
+            :to="routes.routesStudent.class(courseId, classItem.id)"
           >
             Repeat this class
           </NuxtLink>
@@ -68,16 +70,15 @@
 </template>
 
 <script setup lang="ts">
-import { useRoute, useRouter } from "vue-router";
+import { useRoute } from '#imports';
+import { routes } from '~/data/routes';
+
 const route = useRoute();
-const courseId = route.params.courseId as string;
+const courseId = route.params.courseid;
 import { useClassesQuery } from "~/composables/useClassesQuery";
 
 const { data: classes, isPending, error } = useClassesQuery(courseId);
 
-const router = useRouter();
 
-const handlePreviewClick = (classId: number, courseId: number) => {
-  navigateTo(`/course-students/${courseId}/class-students/${classId}`);
-};
+
 </script>
