@@ -1,6 +1,6 @@
 <template>
   <div class="my-4">
-    <p class="text-sm">{{ taskData.text }}</p>
+    <p class="text-md">{{ taskData.text }}</p>
   </div>
 </template>
 <script lang="ts" setup>
@@ -15,6 +15,8 @@ interface Props {
 }
 
 defineProps<Props>();
+
+
 
 
 

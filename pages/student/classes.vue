@@ -24,12 +24,12 @@
   
   const route = useRoute();
   const courseId = route.params.courseid;
-  console.log(courseId);
+
   const { data: courses, isLoading, error } = useCoursesQuery();
   
   // Get only the current course based on courseId
   const currentCourse = computed(() => {
-    if (!courses.value) return null;
+    if (!courses.value) return [];
     return courses.value.filter(
       (course: Course) => course.id === Number(courseId)
     );

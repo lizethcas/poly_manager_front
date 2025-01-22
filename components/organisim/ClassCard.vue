@@ -99,9 +99,8 @@ import { useNotify } from '~/composables/useNotify'
 const { success, error } = useNotify()
 
 const route = useRoute();
-const taskStore = useTaskStore();
 const courseId = route.params.courseId as string;
-console.log("courseId", courseId);
+const classItem = ref<ClassData | null>(0);
 // Define props
 const props = defineProps<{
   classes: ClassData[];
@@ -125,7 +124,7 @@ const { onDragOver, onDrop, onDragStart } = useDragAnDrop(classesRef);
 const { deleteClass, isDeletingClass } = useClassesQuery(courseId);
 
 const openModalHandler = () => {
-  console.log("open modal");
+  navigateTo(routes.routesStudent.class(routeCourseId, classItem.id));
 };
 
 

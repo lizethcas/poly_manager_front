@@ -1,31 +1,18 @@
 <template>
-  <ListScenarios />
-  <div v-if="classTasks">
+  <!--   <ListScenarios /> -->
+  <div v-if="classTasks" class="bg-white rounded-xl pb-4">
     <div v-for="(task, index) in classTasks.data">
       <div class="mt-4 relative">
-        <!-- <p
-          v-if="!editTask || editingIndex !== index"
-          class="absolute top-2 right-4 text-sm text-gray-500 hover:text-gray-700 cursor-pointer"
-          @click="handleEditTask(task, index)"
+        <div
+          class="pr-4"
+          v-if="
+            task.tittle !== '' &&
+            task.content_type !== 'video' &&
+            task.content_type !== 'info_box' &&
+            (route.path.includes('/student') ? currentTaskIndex >= index : true)
+          "
         >
-          editar
-        </p>
-        <p
-          v-else
-          class="absolute top-2 right-4 text-sm text-gray-500 hover:text-gray-700 cursor-pointer"
-          @click="handleSaveTask(task, index)"
-        >
-          aceptar
-        </p> -->
-        <div class="py-4 pr-4">
-          <div
-            v-if="
-              task.tittle !== '' &&
-              task.content_type !== 'video' &&
-              task.content_type !== 'info_box' &&
-              currentTaskIndex >= index
-            "
-          >
+          <div>
             <div class="flex justify-start gap-2 w-full">
               <p
                 class="bg-tarawera-100 text-primary-color px-2 py-1 rounded-md"
@@ -36,16 +23,19 @@
                 {{ capitalizeFirstLetter(task.tittle) }}
               </h3>
             </div>
-            <p class="text-md mt-2">
+            <p class="text-md mt-2 font-medium">
               {{ task.instructions }}
             </p>
           </div>
         </div>
         <div>
           <slot :task="task" :index="index" />
+         
         </div>
       </div>
+    
     </div>
+    <ListScenarios  />
   </div>
 
   <div v-else>
@@ -64,6 +54,7 @@ const {
   isLoading,
   error,
 } = useClassContents(route.params.classId as string);
+
 
 const editTask = ref(false);
 const editingIndex = ref(-1);

@@ -8,9 +8,9 @@
           :task="task"
           :index="index"
         />
-        <div v-if="currentTaskIndex === index" class="w-full flex justify-center">
+        <div v-if="currentTaskIndex === index && !isLastTask(index)" class="w-full flex justify-center">
           <button
-            class="text-white bg-[#2F71C5] px-2 py-1 rounded-xl m-auto w-1/2 hover:shadow-lg"
+            class="text-white bg-[#2F71C5] px-2 py-1 rounded-xl m-auto  w-1/3 hover:shadow-lg"
             @click="() => showNextTask(index)"
           >
             Continue
@@ -27,12 +27,14 @@ import ShowTaskStudent from "~/components/organisim/templatesUsers/students/Show
 import TaskList from "~/layouts/TaskList.vue";
 
 const currentTaskIndex = ref(0);
-const taskRefs = ref<HTMLElement[]>([]);
+const taskRefs = ref<(HTMLElement | null)[]>([]);
 
 const showNextTask = (index: number) => {
+  if (index < 0 || !taskRefs.value) return;
+  
   currentTaskIndex.value++;
-  // Wait for next tick to ensure new content is rendered
   nextTick(() => {
+    if (!taskRefs.value) return;
     const nextTask = taskRefs.value[index + 1];
     if (nextTask) {
       nextTask.scrollIntoView({ 
@@ -41,5 +43,10 @@ const showNextTask = (index: number) => {
       });
     }
   });
+};
+
+const isLastTask = (index: number) => {
+  if (!taskRefs.value) return false;
+  return index === taskRefs.value.length - 1;
 };
 </script>

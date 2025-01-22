@@ -1,6 +1,6 @@
 <template>
     
-  <div class="w-full">
+  <div class="w-full m-auto">
     <div 
       :class="[
         'grid gap-4',

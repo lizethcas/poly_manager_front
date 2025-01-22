@@ -4,7 +4,7 @@
     v-if="courses"
     v-for="course in courses"
     :key="course.id"
-    @click="navigateToCourse(course.id)"
+   
     class="w-full flex bg-white border rounded-xl cursor-pointer mt-2 hover:scale-105 transition-all duration-300 p-2"
   >
     <!-- Move "My Current Course" to the top -->
@@ -88,9 +88,7 @@ const route = useRoute();
 
 const { getCoverUrl } = useGetCover();
 const { getLevelColor } = useGetColor();
-const navigateToCourse = (courseId: number) => {
-  navigateTo(`/course-students/${courseId}`);
-};
+
 
 defineProps<{
   courses: Course[];

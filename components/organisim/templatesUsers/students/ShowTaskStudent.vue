@@ -24,14 +24,20 @@
     </MoleculeMultipleTaskLayout>
   </div>
 
-  <div v-else>
+  <div>
     <Component
       :is="getComponent(content_type)"
-      :task="task"
+      :task="
+        content_type === 'text_block' ? task.content_details.text_block : task
+      "
+      :taskData="
+        content_type === 'text_block' ? task.content_details.text_block : task
+      "
       :images="
         content_type === 'image' ? task.content_details?.images : undefined
       "
     />
+    <CategoryStudent />
   </div>
 </template>
 
@@ -43,6 +49,7 @@ import InfoBoxStudent from "~/components/organisim/templatesUsers/students/taskS
 import TextBlockStudent from "~/components/organisim/templatesUsers/students/taskStudents/TextBlockStudent.vue";
 import BankGallery from "~/components/organisim/templatesUsers/students/taskStudents/BankGallery.vue";
 import MoleculeMultipleTaskLayout from "~/layouts/MultipleTakLayout.vue";
+import CategoryStudent from "~/components/organisim/templatesUsers/students/taskStudents/CategoryStudent.vue";
 // Define props
 defineProps<{
   content_type: string;
@@ -55,11 +62,13 @@ const contentComponents = {
   audio: AudioTask,
   multiple_choice: MultipleChoiceStudent,
   info_box: InfoBoxStudent,
-  text: TextBlockStudent,
+  text_block: TextBlockStudent,
   image: BankGallery,
 } as const;
 
 const getComponent = (contentType: string) => {
+  console.log(contentType);
+
   return contentComponents[contentType as keyof typeof contentComponents];
 };
 </script>
