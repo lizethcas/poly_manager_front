@@ -5,7 +5,7 @@ import TextBlockModules from "~/components/organisim/TextBlockModules.vue";
 import MultimediaBlock from "~/components/organisim/blocks/MultimediaBlock.vue";
 import KnowledgeCheckBlock from "~/components/organisim/KnowledgeCheckBlock.vue";
 import GalleryLayout from "~/components/organisim/blocks/GalleryLayout.vue";
-import AiChatGPT from "~/components/organisim/blocks/AiChatGPT.vue";
+import AiChatGPT from "~/components/organisim/blocks/AiChatGpt.vue";
 
 
 export const useGetComponent = () => {
