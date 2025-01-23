@@ -1,40 +1,4 @@
 <template>
-<<<<<<< HEAD
-  <div class="login-container">
-    <form @submit.prevent="handleLogin" class="login-form">
-      <h2>Inicio de Sesión</h2>
-
-      <div class="form-group">
-        <label for="email">Correo Electrónico</label>
-        <input
-          type="email"
-          id="email"
-          v-model="formData.email"
-          required
-          placeholder="Ingrese su correo electrónico"
-        />
-      </div>
-
-      <div class="form-group">
-        <label for="password">Contraseña</label>
-        <input
-          type="password"
-          id="password"
-          v-model="formData.password"
-          required
-          placeholder="Ingrese su contraseña"
-        />
-      </div>
-
-      <div v-if="message" :class="['message', messageType]">
-        {{ message }}
-      </div>
-
-      <button type="submit" :disabled="isLoading">
-        {{ isLoading ? 'Iniciando sesión...' : 'Iniciar Sesión' }}
-      </button>
-    </form>
-=======
   <div class="page-container">
     <!-- Wave pattern container -->
     <div class="wave-pattern">
@@ -87,7 +51,6 @@
         </div>
       </form>
     </div>
->>>>>>> b62f8d624e19d918d9b55f9eff4091ae155049ff
   </div>
   <StudentLoginRecord ref="loginRecordRef" />
 </template>
@@ -212,7 +175,6 @@ button:hover {
   background-color: #45a049;
 }
 
-<<<<<<< HEAD
 button:disabled {
   background-color: #cccccc;
   cursor: not-allowed;
@@ -243,7 +205,8 @@ select {
   border: 1px solid #ddd;
   border-radius: 4px;
   background-color: white;
-=======
+}
+
 .page-container {
   position: relative;
   width: 100%;
@@ -331,6 +294,5 @@ select {
   background-color: rgba(255, 215, 0, 0.2);
   top: 70%;
   right: 30%;
->>>>>>> b62f8d624e19d918d9b55f9eff4091ae155049ff
 }
 </style>
