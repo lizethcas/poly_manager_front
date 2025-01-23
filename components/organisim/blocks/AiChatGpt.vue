@@ -193,14 +193,15 @@ const clearPreview = () => {
 // Add mutation for creating scenario
 const createScenarioMutation = useMutation({
   mutationFn: (data: typeof formData) => post(apiRoutes.scenarios.create, data),
-  onSuccess: () => {
+  onSuccess: (response) => {
+    console.log('Scenario creation response:', response);
     notify.success("Scenario created successfully");
     clearPreview();
     taskStore.addTask("modal", { open: false });
   },
   onError: (error) => {
+    console.error("Error details:", error);
     notify.error("Error creating scenario");
-    console.error("Error:", error);
   }
 });
 

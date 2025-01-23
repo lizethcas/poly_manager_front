@@ -21,10 +21,11 @@
           content_type === 'image' ? task.content_details?.images : undefined
         "
       />
+   
     </MoleculeMultipleTaskLayout>
   </div>
 
-  <div>
+  <div v-else>
     <Component
       :is="getComponent(content_type)"
       :task="
@@ -37,7 +38,7 @@
         content_type === 'image' ? task.content_details?.images : undefined
       "
     />
-    <CategoryStudent />
+   
   </div>
 </template>
 
@@ -50,7 +51,10 @@ import TextBlockStudent from "~/components/organisim/templatesUsers/students/tas
 import BankGallery from "~/components/organisim/templatesUsers/students/taskStudents/BankGallery.vue";
 import MoleculeMultipleTaskLayout from "~/layouts/MultipleTakLayout.vue";
 import CategoryStudent from "~/components/organisim/templatesUsers/students/taskStudents/CategoryStudent.vue";
-// Define props
+import WordBankStudent from "~/components/organisim/templatesUsers/students/taskStudents/WordBankStudent.vue";
+import TrueFalseStudent from "~/components/organisim/templatesUsers/students/taskStudents/TrueFalseStudent.vue";
+import FillGapsStudent from "~/components/organisim/templatesUsers/students/taskStudents/FillGapsStudent.vue";
+// Define props 
 defineProps<{
   content_type: string;
   task: any; // Consider creating a proper type for this
@@ -64,6 +68,10 @@ const contentComponents = {
   info_box: InfoBoxStudent,
   text_block: TextBlockStudent,
   image: BankGallery,
+  category: CategoryStudent,
+  true_false: TrueFalseStudent,
+  fill_gaps: FillGapsStudent,
+  word_bank: WordBankStudent,
 } as const;
 
 const getComponent = (contentType: string) => {

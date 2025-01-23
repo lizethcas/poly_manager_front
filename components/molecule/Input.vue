@@ -1,6 +1,6 @@
 <!-- MoleculeBaseInput.vue -->
 <template>
-  <div :class="[' mb-4 w-full', containerClass]">
+  <div :class="[' my-4 w-full', containerClass]">
     <label v-if="!label" class="min-w-[70px] text-middele-gray text-sm">{{
       props.title
     }}</label>

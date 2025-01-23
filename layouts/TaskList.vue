@@ -2,7 +2,7 @@
   <!--   <ListScenarios /> -->
   <div v-if="classTasks" class="bg-white rounded-xl pb-4">
     <div v-for="(task, index) in classTasks.data">
-      <div class="mt-4 relative">
+      <div class="mt-4 relative px-4">
         <div
           class="pr-4"
           v-if="
@@ -23,7 +23,7 @@
                 {{ capitalizeFirstLetter(task.tittle) }}
               </h3>
             </div>
-            <p class="text-md mt-2 font-medium">
+            <p class="text-md my-4 font-medium">
               {{ task.instructions }}
             </p>
           </div>

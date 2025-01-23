@@ -67,6 +67,7 @@ import VideoTask from "~/components/organisim/templatesUsers/students/taskStuden
 import BankGallery from "~/components/organisim/templatesUsers/students/taskStudents/BankGallery.vue";
 import InfoBoxStudent from "~/components/organisim/templatesUsers/students/taskStudents/InfoBoxStudent.vue";
 import TextBlockStudent from "~/components/organisim/templatesUsers/students/taskStudents/TextBlockStudent.vue";
+
 interface Props {
   content_type: string;
   task: any;
