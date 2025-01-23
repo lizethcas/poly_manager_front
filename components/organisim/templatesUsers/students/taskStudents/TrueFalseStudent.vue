@@ -1,19 +1,19 @@
 <template>
-  <div>
+  <div class="bg-gray-100 p-2 sm:p-4 rounded-lg">
     <div
       v-for="(question, index) in task.content_details.questions"
       :key="index"
       class="mb-4"
     >
-      <h2 class="text-md font-medium text-gray-700 mb-2">
+    <h2 class="text-sm sm:text-md font-medium text-gray-700 mb-2 ">
         <span class="font-bold">Question {{ index + 1 }}:</span>
         {{ question.statement }}
       </h2>
-      <div class="flex gap-2 bg-gray-50 p-4 rounded-lg">
+      <div class="flex flex-col sm:flex-row gap-2 bg-gray-50 p-2  rounded-lg">
         <button
           @click="selectAnswer(index, 'True')"
           :class="[
-            'px-6 py-1.5 rounded-full border transition-colors',
+            'px-4 sm:px-6 py-1.5 rounded-full border transition-colors w-full sm:w-auto',
             answers[index] === 'True'
               ? answers[index] === question.stated
                 ? 'bg-green-50 border-green-300 text-green-500'
@@ -26,7 +26,7 @@
         <button
           @click="selectAnswer(index, 'False')"
           :class="[
-            'px-6 py-1.5 rounded-full border transition-colors',
+            'px-4 sm:px-6 py-1.5 rounded-full border transition-colors w-full sm:w-auto',
             answers[index] === 'False'
               ? 'False' === question.stated
                 ? 'bg-green-50 border-green-300 text-green-500'
@@ -39,7 +39,7 @@
         <button
           @click="selectAnswer(index, 'Not stated')"
           :class="[
-            'px-6 py-1.5 rounded-full border transition-colors',
+            'px-4 sm:px-6 py-1.5 rounded-full border transition-colors w-full sm:w-auto',
             answers[index] === 'Not stated'
               ? 'Not stated' === question.stated
                 ? 'bg-green-50 border-green-300 text-green-500'

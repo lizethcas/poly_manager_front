@@ -11,7 +11,7 @@
       ].includes(task.content_type) &&
       (task.image || task.audio)
     "
-    class="flex gap-2"
+    class="flex gap-2 border-b border-gray-200 shadow-sm py-2 mb-4"
   >
     <MoleculeMultipleTaskLayout v-if="task.image || task.audio" :data="task">
       <Component
@@ -38,7 +38,7 @@
         content_type === 'image' ? task.content_details?.images : undefined
       "
     />
-   
+  
   </div>
 </template>
 

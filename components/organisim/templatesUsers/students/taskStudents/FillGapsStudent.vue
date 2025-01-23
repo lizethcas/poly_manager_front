@@ -1,5 +1,5 @@
 <template>
-  <div class="flex flex-col gap-2">
+  <div class="flex flex-col gap-2 bg-gray-100 p-4 rounded-lg">
     <!-- Sentences with text inputs -->
     <div class="space-y-2 flex flex-col">
       <div 

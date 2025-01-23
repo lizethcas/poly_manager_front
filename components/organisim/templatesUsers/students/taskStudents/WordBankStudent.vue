@@ -1,5 +1,5 @@
 <template>
-  <div class="flex flex-col gap-4">
+  <div class="flex flex-col gap-4 bg-gray-100 p-4 rounded-lg">
     <!-- Word bank container -->
     <div 
       class="flex flex-wrap gap-2 bg-fuscous-gray-100 rounded-lg p-2"
