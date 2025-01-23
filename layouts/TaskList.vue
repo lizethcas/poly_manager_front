@@ -1,68 +1,46 @@
 <template>
-  <ListScenarios />
-  <div v-if="classTasks">
+  <!--   <ListScenarios /> -->
+  <div v-if="classTasks" class="bg-white rounded-xl pb-4">
     <div v-for="(task, index) in classTasks.data">
-      <div class="bg-white rounded-md shadow-md mt-4 relative">
-        <p
-          v-if="!editTask || editingIndex !== index"
-          class="absolute top-2 right-4 text-sm text-gray-500 hover:text-gray-700 cursor-pointer"
-          @click="handleEditTask(task, index)"
+      <div class="mt-4 relative px-4">
+        <div
+          class="pr-4"
+          v-if="
+            task.tittle !== '' &&
+            task.content_type !== 'video' &&
+            task.content_type !== 'info_box' &&
+            (route.path.includes('/student') ? currentTaskIndex >= index : true)
+          "
         >
-          editar
-        </p>
-        <p
-          v-else
-          class="absolute top-2 right-4 text-sm text-gray-500 hover:text-gray-700 cursor-pointer"
-          @click="handleSaveTask(task, index)"
-        >
-          aceptar
-        </p>
-        <div class="pl-10 py-4 pr-4">
-          <div
-            class="flex justify-start gap-2 w-full"
-            v-if="
-              task.tittle !== '' &&
-              task.content_type !== 'video' &&
-              task.content_type !== 'info_box'
-            "
-          >
-            <p class="bg-tarawera-100 text-primary-color px-2 py-1 rounded-md">
-              {{ getTaskNumber(index) }}
-            </p>
-            <div class="w-full">
-              <input
-                v-if="editTask && editingIndex === index && task.tittle !== ''"
-                type="text"
-                v-model="task.tittle"
-                class="w-[90%] border border-gray-300 rounded-md px-2 py-1"
-              />
-              <h3 class="text-lg font-semibold" v-else>
+          <div>
+            <div class="flex justify-start gap-2 w-full">
+              <p
+                class="bg-tarawera-100 text-primary-color px-2 py-1 rounded-md"
+              >
+                {{ getTaskNumber(index) }}
+              </p>
+              <h3 class="text-lg font-semibold">
                 {{ capitalizeFirstLetter(task.tittle) }}
               </h3>
             </div>
+            <p class="text-md my-4 font-medium">
+              {{ task.instructions }}
+            </p>
           </div>
-          <input
-            v-if="editTask && editingIndex === index && task.tittle !== ''"
-            type="text"
-            v-model="task.instructions"
-            class="w-[90%] border border-gray-300 rounded-md px-2 py-1 text-sm mt-2"
-          />
-          <p class="text-sm font-semibold mt-2" v-else>
-            {{ task.instructions }}
-          </p>
         </div>
         <div>
           <slot :task="task" :index="index" />
+         
         </div>
       </div>
+    
     </div>
+    <ListScenarios  />
   </div>
 
   <div v-else>
     <pre>Aun no hay contenido para esta clase</pre>
   </div>
-  
-  
 </template>
 <script setup lang="ts">
 import { useCapitalizerLetter } from "~/composables/useCapitalizerLetter";
@@ -76,6 +54,7 @@ const {
   isLoading,
   error,
 } = useClassContents(route.params.classId as string);
+
 
 const editTask = ref(false);
 const editingIndex = ref(-1);
@@ -115,4 +94,9 @@ const handleSaveTask = (task: any, index: number) => {
   editingIndex.value = -1;
   // Here you would typically add logic to save the changes to your backend
 };
+
+// Add currentTaskIndex to props
+defineProps<{
+  currentTaskIndex?: number;
+}>();
 </script>

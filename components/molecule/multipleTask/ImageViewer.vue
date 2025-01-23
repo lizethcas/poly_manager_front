@@ -7,7 +7,7 @@
       @click="showModal = true"
     />
 
-    <div
+   <!--  <div
       class="absolute w-full bottom-0 left-0 flex bg-black/50 border-t border-white/50 px-2 rounded-b-[10px]"
     >
       <UTooltip text="Expand image">
@@ -35,7 +35,7 @@
       v-model="showModal"
 
     />
-  </div>
+  </div> 
 </template>
 
 <script setup lang="ts">

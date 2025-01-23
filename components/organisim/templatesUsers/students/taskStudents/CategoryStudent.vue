@@ -1,52 +1,59 @@
 <template>
+
   <draggable
     v-model="unassignedItems"
     tag="ul"
     group="categories"
     :item-key="(item) => item.text"
     animation="300"
-    class="flex flex-wrap gap-4 justify-center bg-gray-100 p-6 rounded-lg border border-gray-300 shadow-sm"
+    class="flex flex-wrap gap-2 justify-center bg-gray-200  rounded-md"
   >
     <template #item="{ element: item }">
-      <li class="bg-white border border-gray-300 px-4 py-2 rounded-md shadow-sm cursor-grab">
+      <li class="bg-white border-2 border-gray-300 px-2 rounded-md my-2 w-fit cursor-grab">
         {{ item.text }}
       </li>
     </template>
   </draggable>
 
-  <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 mt-6">
-    <div
-      v-for="question in questions"
-      :key="question.question"
-      class="border border-gray-300 p-6 rounded-lg shadow-md text-center bg-white"
+  <div class="w-full  mt-4">
+    <div class="w-full grid gap-4" 
+         :style="{
+           gridTemplateColumns: `repeat(${questions.length}, minmax(0, 1fr))`
+         }"
     >
-      <h2 class="text-lg font-semibold mb-4 text-gray-700">{{ question.question }}</h2>
-
-      <draggable
-        v-model="question.answers"
-        tag="ul"
-        group="categories"
-        :item-key="(item) => item.text"
-        animation="300"
-        class="flex flex-wrap gap-4 justify-center bg-gray-50 p-4 rounded-md min-h-[120px]"
+      <div
+        v-for="question in questions"
+        :key="question.question"
+        class="border-2 border-gray-300 p-4 rounded-md text-center h-60"
       >
-        <template #item="{ element: item }">
-          <li class="bg-gray-200 px-4 py-2 rounded-md shadow-sm cursor-grab">
-            {{ item.text }}
-          </li>
-        </template>
-      </draggable>
+        <h2 class="text-m font-bold mb-4">{{ question.question }}</h2>
+
+        <draggable
+          v-model="question.answers"
+          tag="ul"
+          group="categories"
+          :item-key="(item) => item.text"
+          animation="300"
+          class="flex flex-wrap gap-2 justify-center"
+        >
+          <template #item="{ element: item }">
+            <li class="bg-gray-200 px-2 py-1 rounded-md my-2 w-fit cursor-grab">
+              {{ item.text }}
+            </li>
+          </template>
+        </draggable>
+      </div>
     </div>
   </div>
 
-  <div class="mt-6 text-center">
+  <div class="mt-4 text-center">
     <button
       @click="checkResults"
-      class="bg-blue-500 text-white px-6 py-2 rounded-lg shadow hover:bg-blue-600"
+      class="bg-blue-500 text-white px-4 py-2 rounded-md hover:bg-blue-600"
     >
       Validar Respuestas
     </button>
-    <p v-if="isValid !== null" :class="{'text-green-600': isValid, 'text-red-600': !isValid}" class="mt-4 text-lg">
+    <p v-if="isValid !== null" :class="{'text-green-500': isValid, 'text-red-500': !isValid}" class="mt-4">
       {{ isValid ? '¡Todas las respuestas son correctas!' : 'Algunas respuestas son incorrectas. Revisa nuevamente.' }}
     </p>
   </div>
@@ -109,3 +116,16 @@ const checkResults = () => {
   );
 };
 </script>
+<style scoped>
+.grid-container {
+  width: 100%;
+}
+
+@media (min-width: 640px) {
+  template {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 1rem;
+  }
+}
+</style>

@@ -7,9 +7,9 @@
         class="w-10 h-10 rounded-full object-cover"
       />
     </div>
-    <div class="flex flex-col">
-      <h3 class="font-medium text-gray-900 text-sm">{{ userName }}</h3>
-      <span class="text-xs text-gray-500">{{ userRole }}</span>
+    <div class="flex flex-col md:flex">
+      <h3 class="font-medium text-gray-900 text-sm hidden md:block">{{ userName }}</h3>
+      <span class="text-xs text-gray-500 hidden md:block">{{ userRole }}</span>
     </div>
   </div>
 </template>

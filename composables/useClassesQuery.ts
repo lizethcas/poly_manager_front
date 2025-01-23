@@ -8,7 +8,7 @@ export const useClassesQuery = (courseId: string) => {
       if (!response) {
         throw new Error("No classes found");
       }
-      return response.data;  
+      return response.data;
     } catch (error: any) {
       console.error("Error fetching classes:", error);
       throw error;
@@ -19,7 +19,10 @@ export const useClassesQuery = (courseId: string) => {
 
   const deleteClassMutation = useMutation({
     mutationFn: async (classId: number) => {
+      console.log(classId)
       const response = await del(apiRoutes.classes.delete(classId));
+      console.log("Delete class response:", response); // Add this line to see the response
+
       return response.data;
     },
     onSuccess: () => {

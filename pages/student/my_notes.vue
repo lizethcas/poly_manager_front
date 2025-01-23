@@ -1,9 +1,7 @@
 <template>
-  <div>
-    <h1>Progress</h1>
-  </div>
+  <h1>my notes</h1>
 </template>
-<script setup lang="ts">
+<script>
 definePageMeta({
   layout: "dashboard-layout",
 });

@@ -20,7 +20,7 @@
           />
           <!-- Image Generator content -->
           <ImgGenerator 
-            
+            :source="source"
             @close-modal="$emit('update:modelValue', false)"
           />
         </div>
@@ -37,6 +37,10 @@ import ImgGenerator from "./ImgGenerator.vue";
 defineProps({
   modelValue: {
     type: Boolean,
+    required: true
+  },
+  source: {
+    type: String,
     required: true
   }
 });

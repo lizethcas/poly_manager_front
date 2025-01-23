@@ -11,15 +11,14 @@
     <div
       class="relative w-full max-w-4xl mx-auto rounded-lg overflow-hidden z-5"
     >
-      <div class="flex justify-start gap-2 my-2" v-show="task.tittle">
-        <p class="bg-tarawera-200 text-tarawera-800 px-2 py-1 rounded-md">
-          {{ index }}
-        </p>
+      <div class="flex flex-col w-contain justify-start gap-2 my-2 px-8" v-show="task.tittle">
+      
         <h3 class="text-lg font-bold bg-white text-tarawera-700 px-4">
           {{ capitalizeFirstLetter(task.tittle) }}
         </h3>
+        <p class="">{{ task.instructions}}</p>
       </div>
-      <p class="">{{ task.instructions}}</p>
+      
       <video
         v-if="task.video"
         :src="task.video"

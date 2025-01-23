@@ -1,5 +1,5 @@
 <template>
-  <div class="text-sm text-fuscous-gray-700 bg-white  pb-4 rounded-md ">
+  <div class="text-sm text-fuscous-gray-700pb-4 rounded-md ">
     <!-- Multiple Choice and True/False with Media -->
     <div
       v-if="
@@ -67,6 +67,7 @@ import VideoTask from "~/components/organisim/templatesUsers/students/taskStuden
 import BankGallery from "~/components/organisim/templatesUsers/students/taskStudents/BankGallery.vue";
 import InfoBoxStudent from "~/components/organisim/templatesUsers/students/taskStudents/InfoBoxStudent.vue";
 import TextBlockStudent from "~/components/organisim/templatesUsers/students/taskStudents/TextBlockStudent.vue";
+
 interface Props {
   content_type: string;
   task: any;
