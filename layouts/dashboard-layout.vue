@@ -49,6 +49,9 @@
           <!-- Search bar -->
           <div class="flex-1 max-w-2xl px-4">
             <SearchInput class="w-full" />
+            <NuxtLink to="/search" class="flex items-center">
+                <UIcon name="i-heroicons-magnifying-glass-20-solid" class="text-gray-500" />
+            </NuxtLink>
           </div>
 
           <!-- User Profile -->
@@ -68,6 +71,7 @@
         <!-- Main Content -->
         <main class="flex-1 lg:px-4 min-h-screen w-full">
           <NuxtPage />
+          <CalendarStudent v-if="isClassRoute" />
         </main>
         <div
           v-if="!isClassRoute"
@@ -95,12 +99,18 @@ import { useTaskStore } from "~/stores/task.store";
 import IconMolecule from "~/components/atomos/Icon.vue";
 import { IconType } from "~/data/iconsType";
 import { useRoute } from "vue-router";
+import CalendarStudent from "~/components/atomos/CalendarStudent.vue";
 
 const isSidebarOpen = ref(false);
 
 const route = useRoute();
+
+const isProgressRoute = computed(() => {
+  return route.path === '/student/progress'; // Verifica si la ruta es "My Progress"
+});
+
 const isClassRoute = computed(() => {
-  return /^\/course\/[^/]+\/class\/[^/]+$/.test(route.path);
+  return /^\/course\/[^/]+\/class\/[^/]+$/.test(route.path) || isProgressRoute.value;
 });
 
 const toggleSidebar = () => {
@@ -162,7 +172,7 @@ const studentRoutes: NavigationRoute[] = [
 
 // Fix the navigationRoutes computed property to avoid infinite recursion
 const navigationRoutes = computed(() => {
-  // Temporarily hardcoded for testing - you'll need to add proper user role checking
+  // Temporarily hardcoded for testing - you'll need to add proper user role check
   const isAdmin = route.path.startsWith('/admin'); // Replace with actual user role check
   return isAdmin ? adminRoutes : studentRoutes;
 });
