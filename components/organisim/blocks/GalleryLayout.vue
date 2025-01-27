@@ -1,111 +1,245 @@
 <template>
-  <draggable
-    v-model="unassignedItems"
-    tag="ul"
-    group="categories"
-    :item-key="(item) => item.text"
-    animation="300"
-    class="flex flex-wrap gap-4 justify-center bg-gray-100 p-6 rounded-lg border border-gray-300 shadow-sm"
-  >
-    <template #item="{ element: item }">
-      <li class="bg-white border border-gray-300 px-4 py-2 rounded-md shadow-sm cursor-grab">
-        {{ item.text }}
-      </li>
-    </template>
-  </draggable>
+  <div class="my-4">
+    <h2 class="text-md font-bold text-gray-700">Images</h2>
 
-  <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 mt-6">
-    <div
-      v-for="question in questions"
-      :key="question.question"
-      class="border border-gray-300 p-6 rounded-lg shadow-md text-center bg-white"
-    >
-      <h2 class="text-lg font-semibold mb-4 text-gray-700">{{ question.question }}</h2>
-
-      <draggable
-        v-model="question.answers"
-        tag="ul"
-        group="categories"
-        :item-key="(item) => item.text"
-        animation="300"
-        class="flex flex-wrap gap-4 justify-center bg-gray-50 p-4 rounded-md min-h-[120px]"
+    <!-- Gallery items list -->
+    <div class="space-y-4">
+      <div
+        v-for="(item, index) in formData.content_details"
+        :key="index"
+        class="flex gap-4"
       >
-        <template #item="{ element: item }">
-          <li class="bg-gray-200 px-4 py-2 rounded-md shadow-sm cursor-grab">
-            {{ item.text }}
-          </li>
-        </template>
-      </draggable>
+        <!-- Image preview -->
+        <div class="w-24 h-24" v-if="item.preview">
+          <img
+            :src="item.preview"
+            class="w-full h-full object-cover rounded-lg"
+            alt="Preview"
+          />
+        </div>
+        <!-- Form fields -->
+        <div class="flex-1 flex flex-col gap-2">
+          <MoleculeInput
+            title="Title"
+            type="text"
+            class="text-md"
+            v-model="item.title"
+          />
+          <MoleculeInput
+            title="Description"
+            type="text_area"
+            :size="'md'"
+            v-model="item.description"
+            class="text-md"
+          />
+        </div>
+        <button @click="removeImage(index)" class="text-red-500">
+          Eliminar
+        </button>
+      </div>
     </div>
-  </div>
 
-  <div class="mt-6 text-center">
-    <button
-      @click="checkResults"
-      class="bg-blue-500 text-white px-6 py-2 rounded-lg shadow hover:bg-blue-600"
-    >
-      Validar Respuestas
-    </button>
-    <p v-if="isValid !== null" :class="{'text-green-600': isValid, 'text-red-600': !isValid}" class="mt-4 text-lg">
-      {{ isValid ? '¡Todas las respuestas son correctas!' : 'Algunas respuestas son incorrectas. Revisa nuevamente.' }}
-    </p>
+    <!-- Upload options -->
+    <div class="flex mt-4 items-end gap-2">
+      
+      <InputFile
+        fileType="image"
+        icon="true"
+        @file-selected="addNewImage"
+        :showPreview="false"
+       
+      />
+
+      <!-- AI Image Generator Button -->
+
+      <IconMolecule
+        :name="IconType.imgGen"
+        :size="30"
+        @click="showImageGenerator = true"
+        color="text-purple-500 hover:text-purple-600"
+        class="mr-2 shimmer-effect transition-all duration-300"
+      />
+    </div>
+
+    <!-- AI Image Generator Modal -->
+    <IaGeneratorModal
+      v-model="showImageGenerator"
+      @image-generated="handleGeneratedImage"
+    />
+
+    <div class="flex items-center gap-2 py-4 text-sm">
+      <p>Include the stats</p>
+      <AtomosToggle v-model="formData.stats" />
+    </div>
+
+    <MoleculeActionButtons
+      @handleSave="handleSave"
+      @handleCancel="handleCancel"
+      :isActive="isFormValid"
+    />
   </div>
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted } from "vue";
-import draggable from "vuedraggable";
+import { ref, computed } from "vue";
+import { useTaskStore } from "~/stores/task.store";
+import { useRoute } from "vue-router";
+import { useClassContentMutation } from "~/composables/useClassContentMutation";
+import { createBaseTaskData } from "~/interfaces/task.interface";
+import ImgGenerator from "../IA/ImgGenerator.vue";
+import IconMolecule from "~/components/atomos/Icon.vue";
+import { IconType } from "~/data/iconsType";
+import IaGeneratorModal from "../IA/IaGeneratorModal.vue";
 
-const props = defineProps({
-  task: {
-    type: Object,
-    required: true,
+
+const route = useRoute();
+const taskStore = useTaskStore();
+const mutation = useClassContentMutation();
+const taskInstructions = computed(() => taskStore.getTask("instructions"));
+const taskImgGen = computed(() => taskStore.getTask("img_gen"));
+interface Image {
+  title: string;
+  description: string;
+  image: string;
+  preview: string;
+  showPreview: boolean;
+}
+
+
+
+const formData = ref({
+  ...createBaseTaskData(route.params.classId, "image"),
+  content_details: [] as Array<Image>,
+});
+
+watch(taskImgGen, (newValue) => {
+  formData.value.content_details.push({
+    title: "",
+    description: "",
+    image: newValue,
+    preview: newValue,
+    showPreview: true,
+  });
+});
+
+watch(
+  taskInstructions,
+  (newValue) => {
+    console.log(newValue);
+    formData.value.tittle = newValue.title || "";
+    formData.value.instructions = newValue.instructions || "";
   },
-});
 
-interface Question {
-  question: string;
-  answers: Answer[];
-}
+  { deep: true }
+);
 
-interface Answer {
-  text: string;
-  isCorrect: string;
-}
-
-const questions = ref<Question[]>([]);
-const unassignedItems = ref<Answer[]>([]);
-const isValid = ref<boolean | null>(null);
-
-onMounted(() => {
-  // Inicializar las preguntas
-  questions.value = props.task.content_details.questions.map((q: any) => ({
-    question: q.question,
-    answers: [],
-  }));
-
-  // Extraer y barajar respuestas sin asignar
-  const allItems: Answer[] = props.task.content_details.questions.flatMap((q: any) =>
-    q.answers.map((a: any) => ({
-      text: a.text,
-      isCorrect: q.question, // Vincular al nombre de la pregunta correcta
-    }))
+const isFormValid = computed(() => {
+  const images = formData.value.content_details;
+  return (
+    images.length > 0 && images.every((img) => img.title && img.description)
   );
-
-  unassignedItems.value = shuffleArray([...allItems]); // Crear copia segura y barajar
 });
 
-const shuffleArray = (array: Answer[]): Answer[] => {
-  for (let i = array.length - 1; i > 0; i--) {
-    const j = Math.floor(Math.random() * (i + 1));
-    [array[i], array[j]] = [array[j], array[i]];
+const handleSave = async () => {
+  try {
+    // Preparar las imágenes en el formato correcto
+    const images = formData.value.content_details.map((item) => ({
+      title: item.title,
+      description: item.description,
+      image: item.preview, // Mantener el preview completo
+    }));
+
+    const contentData = {
+      class_id: formData.value.class_id,
+      content_type: formData.value.content_type,
+      tittle: formData.value.tittle,
+      content_details: {
+        images: images,
+      },
+      stats: formData.value.stats,
+    };
+
+    console.log("Datos a enviar:", contentData);
+
+    // Validaciones
+    if (images.length === 0) {
+      throw new Error("Debe agregar al menos una imagen");
+    }
+
+    if (!images.every((img) => img.title && img.description && img.image)) {
+      throw new Error("Todas las imágenes deben tener título y descripción");
+    }
+
+    const response = await mutation.mutateAsync(contentData);
+    console.log("Respuesta del servidor:", response);
+
+    if (response.status === "success") {
+      taskStore.addTask("modal", { modal: false });
+      formData.value.content_details = [];
+      formData.value.stats = false;
+    } else {
+      throw new Error(response.message || "Error al guardar las imágenes");
+    }
+  } catch (error) {
+    console.error("Error al guardar la galería:", error);
+    alert(error.message || "Error al guardar las imágenes");
   }
-  return array;
 };
 
-const checkResults = () => {
-  isValid.value = questions.value.every((category) =>
-    category.answers.every((item) => item.isCorrect === category.question)
-  );
+// Método para agregar nueva imagen
+const addNewImage = async (file: File) => {
+  if (!(file instanceof File)) {
+    console.error("No es un objeto File válido:", file);
+    return;
+  }
+
+  try {
+    const preview = await getBase64(file);
+    formData.value.content_details.push({
+      title: "",
+      description: "",
+      image: file.name,
+      preview: preview,
+    });
+  } catch (error) {
+    console.error("Error al procesar la imagen:", error);
+  }
+};
+
+const removeImage = (index: number) => {
+  formData.value.content_details.splice(index, 1);
+};
+
+const getBase64 = (file: File): Promise<string> => {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.readAsDataURL(file);
+    reader.onload = () => resolve(reader.result as string);
+    reader.onerror = (error) => reject(error);
+  });
+};
+
+const handleCancel = () => {
+  taskStore.addTask("modal", { modal: false });
+  formData.value.content_details = [];
+  formData.value.stats = false;
+};
+
+// Add new refs
+const showImageGenerator = ref(false);
+
+// Add new method to handle generated images
+const handleGeneratedImage = async (imageUrl: string) => {
+  try {
+    formData.value.content_details.push({
+      title: "",
+      description: "",
+      image: imageUrl,
+      preview: imageUrl,
+    });
+    showImageGenerator.value = false;
+  } catch (error) {
+    console.error("Error al agregar la imagen generada:", error);
+  }
 };
 </script>

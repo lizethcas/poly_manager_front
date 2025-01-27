@@ -46,7 +46,7 @@
     </div>
   </div>
 
-  <div class="mt-4 text-center">
+<!--   <div class="mt-4 text-center">
     <button
       @click="checkResults"
       class="bg-blue-500 text-white px-4 py-2 rounded-md hover:bg-blue-600"
@@ -56,7 +56,7 @@
     <p v-if="isValid !== null" :class="{'text-green-500': isValid, 'text-red-500': !isValid}" class="mt-4">
       {{ isValid ? '¡Todas las respuestas son correctas!' : 'Algunas respuestas son incorrectas. Revisa nuevamente.' }}
     </p>
-  </div>
+  </div> -->
 </template>
 
 <script setup lang="ts">
@@ -127,5 +127,11 @@ const checkResults = () => {
     grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
     gap: 1rem;
   }
+}
+
+.touch-manipulation {
+  touch-action: manipulation;
+  -webkit-touch-callout: none;
+  -webkit-tap-highlight-color: transparent;
 }
 </style>

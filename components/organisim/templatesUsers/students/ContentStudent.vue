@@ -7,7 +7,7 @@
           :content_type="task.content_type"
           :task="task"
           :index="index"
-        />
+        /> 
         <div v-if="currentTaskIndex === index && !isLastTask(index)" class="w-full flex justify-center">
           <button
             class="text-white bg-[#2F71C5] px-2 py-1 rounded-xl m-auto  w-1/3 hover:shadow-lg"
