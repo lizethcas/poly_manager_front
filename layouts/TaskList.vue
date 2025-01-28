@@ -35,7 +35,8 @@
       </div>
     
     </div>
-    <ListScenarios  />
+    <ListScenarios v-if="route.path.includes('/admin')" />
+    <ScenarioListStudent v-if="route.path.includes('/student')" />
   </div>
 
   <div v-else>
@@ -45,6 +46,7 @@
 <script setup lang="ts">
 import { useCapitalizerLetter } from "~/composables/useCapitalizerLetter";
 import ListScenarios from "~/components/organisim/templatesUsers/teachers/ListScenarios.vue";
+import ScenarioListStudent from "~/components/organisim/templatesUsers/students/taskStudents/ScenarioListStudent.vue";
 import { useClassContents } from "~/composables/useClassContents";
 import { useRoute } from "vue-router";
 

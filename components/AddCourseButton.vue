@@ -19,8 +19,7 @@
 
 <script lang="ts" setup>
 const emit = defineEmits(["handleAdd"]);
-
-const props = defineProps({
+ defineProps({
   text: {
     type: String,
     required: true,

@@ -1,4 +1,4 @@
-<template>
+<template >
   <header
     class="fixed top-0 right-0 lg:left-64 left-0 flex flex-col h-auto bg-white shadow-sm z-20"
   >
@@ -29,7 +29,7 @@
   <!-- Main content -->
   <section class="flex justify-between w-full lg:mt-1">
     <main :class="[
-      'lg:pr-6 lg:pl-2 lg:my-10 transition-all duration-300',
+      'lg:pr-6 lg:pl-2 lg:my-10 transition-all duration-300 px-6',
       showAside ? 'lg:w-4/5 mt-24' : 'w-full mt-12',
     ]">
       <slot />

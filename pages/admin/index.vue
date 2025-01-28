@@ -48,7 +48,7 @@
   import { useTaskStore } from "~/stores/task.store";
   import { useCoursesQuery } from "~/composables/useCourseQuery";
 
-  const taskStore = useTaskStore();
+
 
   const { isOpen, openModal, closeModal } = useModal();
 

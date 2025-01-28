@@ -64,7 +64,7 @@
                   <Icon name="material-symbols:edit-outline" size="14" />
                   <span class="text-xs">edit</span>
                 </button>
-                <button class="action-btn" @click="openModalHandler">
+                <button class="action-btn" @click="openModalHandler(classItem.id)">
                   <Icon name="material-symbols:visibility-outline" size="14" />
                   <span class="text-xs">preview</span>
                 </button>
@@ -123,11 +123,9 @@ const { onDragOver, onDrop, onDragStart } = useDragAnDrop(classesRef);
 
 const { deleteClass, isDeletingClass } = useClassesQuery(courseId);
 
-const openModalHandler = () => {
-  navigateTo(routes.routesStudent.class(routeCourseId, classItem.id));
+const openModalHandler = (classId: number) => {
+  navigateTo(routes.routesStudent.class(routeCourseId, classId));
 };
-
-
 
 const handleDelete = async (classId: number) => {
   if (confirm("Are you sure you want to delete this class?")) {
