@@ -1,10 +1,10 @@
 <template>
   <div class="register-container">
     <form @submit.prevent="handleSubmit" class="register-form">
-      <h2>Register</h2>
+      <h2>Registro de Usuario</h2>
       
       <div class="form-group">
-        <label for="name">Full Name</label>
+        <label for="name">Nombre Completo</label>
         <input 
           type="text" 
           id="name" 
@@ -14,7 +14,7 @@
       </div>
 
       <div class="form-group">
-        <label for="email">Email</label>
+        <label for="email">Correo Electrónico</label>
         <input 
           type="email" 
           id="email" 
@@ -24,7 +24,7 @@
       </div>
 
       <div class="form-group">
-        <label for="password">Password</label>
+        <label for="password">Contraseña</label>
         <input 
           type="password" 
           id="password" 
@@ -33,23 +33,104 @@
         >
       </div>
 
-      <button type="submit">Register</button>
+      <div class="form-group">
+        <label for="profile_picture">Foto de Perfil</label>
+        <input 
+          type="file" 
+          id="profile_picture" 
+          @change="handleFileChange"
+          accept="image/*"
+        >
+      </div>
+
+      <div class="form-group">
+        <label for="userType">Tipo de Usuario</label>
+        <select 
+          id="userType" 
+          v-model="formData.userType" 
+          required
+        >
+          <option value="teacher">Profesor</option>
+          <option value="student">Estudiante</option>
+        </select>
+      </div>
+
+      <div v-if="message" :class="['message', messageType]">
+        {{ message }}
+      </div>
+
+      <button type="submit" :disabled="isLoading">
+        {{ isLoading ? 'Registrando...' : 'Registrar' }}
+      </button>
     </form>
   </div>
 </template>
 
 <script setup>
 import { ref } from 'vue'
+import { axiosDashboard } from '../services/axios.config'
 
 const formData = ref({
   name: '',
   email: '',
-  password: ''
+  password: '',
+  profile_picture: null,
+  userType: 'teacher'
 })
 
-const handleSubmit = () => {
-  // Handle form submission here
-  console.log(formData.value)
+const isLoading = ref(false)
+const message = ref('')
+const messageType = ref('')
+
+const handleFileChange = (event) => {
+  formData.value.profile_picture = event.target.files[0]
+}
+
+const handleSubmit = async () => {
+  isLoading.value = true
+  message.value = ''
+  
+  console.log('Iniciando el registro del usuario:', formData.value)
+
+  try {
+    const form = new FormData()
+    form.append('username', formData.value.name)
+    form.append('email', formData.value.email)
+    form.append('password', formData.value.password)
+    if (formData.value.profile_picture) {
+      form.append('profile_picture', formData.value.profile_picture)
+    }
+
+    const endpoint = formData.value.userType === 'teacher' ? 'teachers/' : 'students/create/'
+    console.log('Datos del formulario preparados para enviar:', form)
+
+    const response = await axiosDashboard.post(endpoint, form, {
+      headers: {
+        'Content-Type': 'multipart/form-data'
+      }
+    })
+
+    console.log('Respuesta del servidor:', response.data)
+
+    if (response.data.status === 'success') {
+      message.value = '¡Registro exitoso!'
+      messageType.value = 'success'
+      // Limpiar el formulario
+      formData.value = {
+        name: '',
+        email: '',
+        password: '',
+        profile_picture: null,
+        userType: 'teacher'
+      }
+    }
+  } catch (error) {
+    console.error('Error al registrar el usuario:', error)
+    message.value = error.response?.data?.message || 'Error al registrar el usuario'
+    messageType.value = 'error'
+  } finally {
+    isLoading.value = false
+  }
 }
 </script>
 
@@ -98,5 +179,37 @@ button {
 
 button:hover {
   background-color: #45a049;
+}
+
+.message {
+  margin: 10px 0;
+  padding: 10px;
+  border-radius: 4px;
+  text-align: center;
+}
+
+.success {
+  background-color: #d4edda;
+  color: #155724;
+  border: 1px solid #c3e6cb;
+}
+
+.error {
+  background-color: #f8d7da;
+  color: #721c24;
+  border: 1px solid #f5c6cb;
+}
+
+button:disabled {
+  background-color: #cccccc;
+  cursor: not-allowed;
+}
+
+select {
+  width: 100%;
+  padding: 8px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  background-color: white;
 }
 </style>

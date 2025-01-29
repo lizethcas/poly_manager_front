@@ -63,6 +63,9 @@
           <!-- Search bar -->
           <div class="flex-1 max-w-2xl px-4 hidden sm:block">
             <SearchInput class="w-full" />
+            <NuxtLink to="/search" class="flex items-center">
+                <UIcon name="i-heroicons-magnifying-glass-20-solid" class="text-gray-500" />
+            </NuxtLink>
           </div>
 
           <!-- User Profile -->
@@ -100,6 +103,7 @@
 
         <main class="flex-1 mt-2  w-full">
           <NuxtPage />
+          <CalendarStudent v-if="isClassRoute" />
         </main>
         <div
           v-if="!isClassRoute"
@@ -127,7 +131,7 @@ const isSidebarOpen = ref(false);
 const route = useRoute();
 const router = useRouter();
 const isClassRoute = computed(() => {
-  return /^\/course\/[^/]+\/class\/[^/]+$/.test(route.path);
+  return /^\/course\/[^/]+\/class\/[^/]+$/.test(route.path) || isProgressRoute.value;
 });
 
 const toggleSidebar = () => {
