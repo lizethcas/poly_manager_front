@@ -19,6 +19,14 @@
             <Icon :name="route.icon" size="20" />
             {{ route.name }}
           </NuxtLink>
+          <NuxtLink 
+            to="/login" 
+            @click.prevent="handleLogout" 
+            class="flex items-start text-gray-700 hover:bg-gray-100 rounded-md"
+          >
+            <Icon name="material-symbols:logout" size="20" />
+            Logout
+          </NuxtLink>
         </div>
       </nav>
     </div>
@@ -110,11 +118,14 @@
 import { ref, computed } from "vue";
 import UserProfile from "~/components/organisim/UserProfile.vue";
 
-import { useRoute } from "vue-router";
+import { useRoute, useRouter } from "vue-router";
+import { post } from '~/services/routes.api';
+import { apiRoutes } from '~/services/routes.api';
 
 const isSidebarOpen = ref(false);
 
 const route = useRoute();
+const router = useRouter();
 const isClassRoute = computed(() => {
   return /^\/course\/[^/]+\/class\/[^/]+$/.test(route.path);
 });
@@ -209,4 +220,16 @@ const mainContentWidth = computed(() => {
   const isStudentRoute = route.path.startsWith("/student");
   return isStudentRoute ? "w-full lg:w-4/5" : "w-full lg:w-4/5";
 });
+
+const handleLogout = async () => {
+  try {
+    await post(apiRoutes.logout, {});
+    // Clear any stored auth tokens or user data
+    localStorage.removeItem('token'); // Adjust based on your auth storage method
+    // Redirect to login page
+    router.push('/login');
+  } catch (error) {
+    console.error('Error during logout:', error);
+  }
+};
 </script>

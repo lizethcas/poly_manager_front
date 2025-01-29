@@ -18,16 +18,14 @@
         class="w-38"
         alt="Virtual teacher assistant"
       />
-      <div class="welcome-card">
+      <div class="prose lg:prose-xl bg-white rounded-lg p-4 max-w-2xl text-center">
         <h2 class="welcome-title">Let's talk!</h2>
         <div class="welcome-content">
-          <h3>🎉 Welcome to the Party! 🎉</h3>
-          <p>
-            Imagina que estás en una fiesta animada. Ves a alguien a quien
-            quieres conocer. Comienza por saludar, presentarte y preguntarle su
-            nombre. Luego revisaré tu gramática y pronunciación.
+          <h3 class="text-m font-bold">🎉 {{ scenario.name }} 🎉</h3>
+          <p class="text-base">
+            {{ scenario.description }}
           </p>
-          <button @click="startChat" class="start-button">START</button>
+          <button @click="startChat" class="start-button m-auto">START</button>
         </div>
       </div>
     </div>
@@ -42,13 +40,13 @@
         class="max-w-82"
         alt="Virtual teacher assistant"
       />
-      <div class="scenario-info">
+     <!--  <div class="scenario-info">
         <h1>{{ scenario.name }}</h1>
         <p class="location">{{ scenario.location }}</p>
         <p class="description">{{ scenario.description }}</p>
-      </div>
+      </div> -->
 
-      <div class="chat-container">
+      <div class="chat-container w-full">
         <div class="chat-messages" ref="chatMessages">
           <div
             v-for="(message, index) in chatHistory"
@@ -57,6 +55,28 @@
           >
             <div class="message-content">
               {{ message.content }}
+              <!-- Add control buttons inside the last assistant message -->
+              <div 
+                v-if="canEndConversation && index === chatHistory.length - 1 && message.role === 'assistant'"
+                class="message-controls"
+              >
+                <button 
+                  @click="endConversation"
+                  class="message-control-button"
+                  :disabled="isLoading"
+                >
+                  <i class="fas fa-check mr-1"></i>
+                  Finish
+                </button>
+                <button 
+                  class="message-control-button"
+                  @click="startOver"
+                  :disabled="isLoading"
+                >
+                  <i class="fas fa-undo mr-1"></i>
+                  Start over
+                </button>
+              </div>
             </div>
           </div>
         </div>
@@ -65,8 +85,9 @@
           <textarea
             v-model="userMessage"
             @keyup.enter="sendMessage"
-            placeholder="Escribe tu mensaje..."
+            placeholder="Message..."
             rows="3"
+            class="bg-white opacity-50 focus:outline-none rounded-lg"
           ></textarea>
           <div class="input-buttons">
             <button @click="sendMessage" :disabled="isLoading || !chatSocket">
@@ -110,6 +131,7 @@ export default {
       mediaRecorder: null,
       audioChunks: [],
       chatStarted: false,
+      canEndConversation: false,
     };
   },
   methods: {
@@ -136,12 +158,21 @@ export default {
       };
 
       this.chatSocket.onmessage = (e) => {
-        console.log("Mensaje recibido:", e.data); // Debug
+        console.log("Mensaje recibido:", e.data);
         const data = JSON.parse(e.data);
         this.chatHistory.push({
           role: "assistant",
           content: data.message,
         });
+        
+        // Actualizar el estado de canEndConversation y mostrar en consola
+        if (data.can_end !== undefined) {
+          this.canEndConversation = data.can_end;
+          console.log("Estado actual de can_end:", data.can_end);
+        } else {
+          console.log("can_end no definido en el mensaje");
+        }
+        
         this.$nextTick(() => {
           this.scrollToBottom();
         });
@@ -286,6 +317,24 @@ export default {
       this.chatStarted = true;
       this.connectWebSocket();
     },
+
+    async endConversation() {
+      if (!this.chatSocket) return;
+      
+      try {
+        this.isLoading = true;
+        this.chatSocket.send(
+          JSON.stringify({
+            message: "end_conversation",
+            type: "end_conversation"
+          })
+        );
+      } catch (error) {
+        console.error("Error al finalizar la conversación:", error);
+      } finally {
+        this.isLoading = false;
+      }
+    },
   },
   mounted() {
     // Remove the automatic WebSocket connection
@@ -326,68 +375,45 @@ export default {
 .message {
   margin-bottom: 15px;
   display: flex;
-  max-width: 80%;
+  width: 100%;
   position: relative;
 }
 
 .message.user {
-  margin-left: auto;
+  justify-content: flex-end;
+  padding-right: 15px;
 }
 
 .message.assistant {
-  margin-right: auto;
+  justify-content: flex-start;
+  padding-left: 15px;
 }
 
 .message-content {
   padding: 12px 16px;
-  border-radius: 15px;
+  border-radius: 20px;
   font-size: 14px;
   line-height: 1.4;
   position: relative;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  max-width: 70%;
 }
 
 .message.user .message-content {
-  background-color: #dcf8c6;
+  background-color: #DCF8C6;
   color: #303030;
-  border-radius: 15px 0px 15px 15px;
-}
-
-.message.user .message-content::after {
-  content: "";
-  position: absolute;
-  right: -10px;
-  top: 0;
-  width: 0;
-  height: 0;
-  border: 10px solid transparent;
-  border-left-color: #dcf8c6;
-  border-right: 0;
-  border-top: 0;
+  border-radius: 20px 20px 3px 20px;
 }
 
 .message.assistant .message-content {
-  background-color: white;
+  background-color: #E8E8E8;
   color: #303030;
-  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
-  border-radius: 0px 15px 15px 15px;
-}
-
-.message.assistant .message-content::after {
-  content: "";
-  position: absolute;
-  left: -10px;
-  top: 0;
-  width: 0;
-  height: 0;
-  border: 10px solid transparent;
-  border-right-color: white;
-  border-left: 0;
-  border-top: 0;
+  border-radius: 20px 20px 20px 3px;
 }
 
 .chat-input {
+  
   padding: 15px;
-  border-top: 1px solid #ddd;
   display: flex;
   gap: 10px;
 }
@@ -444,7 +470,7 @@ button.recording {
 }
 
 .welcome-card {
-  background: white;
+  background: rgba(255, 255, 255, 0.911);
   padding: 2rem;
   border-radius: 12px;
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
@@ -486,5 +512,54 @@ button.recording {
 
 .start-button:hover {
   background: #357abd;
+}
+
+.finish-button {
+  background-color: #4CAF50;
+  color: white;
+  padding: 10px 20px;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background-color 0.3s;
+}
+
+.finish-button:hover {
+  background-color: #45a049;
+}
+
+.finish-button:disabled {
+  background-color: #cccccc;
+  cursor: not-allowed;
+}
+
+.message-controls {
+  display: flex;
+  gap: 0.5rem;
+  margin-top: 0.5rem;
+  justify-content: center;
+}
+
+.message-control-button {
+  background-color: rgba(255, 255, 255, 0.2);
+  backdrop-filter: blur(4px);
+  border: 1px solid rgba(255, 255, 255, 0.4);
+  color: #333;
+  padding: 0.25rem 0.75rem;
+  border-radius: 9999px;
+  font-size: 0.875rem;
+  transition: all 0.2s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.message-control-button:hover {
+  background-color: rgba(255, 255, 255, 0.3);
+  border-color: rgba(255, 255, 255, 0.6);
+}
+
+.message-control-button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
 }
 </style>

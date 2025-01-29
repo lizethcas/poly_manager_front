@@ -96,6 +96,7 @@
           preview
         </button>
         <button
+          @click.stop="openEditModal(course)"
           class="text-blue-500 px-4 py-1 rounded-full border border-blue-500 text-xs"
         >
           edit
@@ -112,6 +113,7 @@ import { useGetCover } from "~/composables/useGetcover";
 import { useTaskStore } from "~/stores/task.store";
 import { IconType } from "~/data/iconsType";
 import { routes } from '~/data/routes'
+import { ref } from 'vue';
 
 // Updated Props interface with proper typing
 interface Course {
@@ -136,6 +138,11 @@ const taskStore = useTaskStore();
 const classes = taskStore.getTask("classes");
 const activeDropdown = ref<number | null>(null);
 
+// Add these new refs and emits
+const showEditModal = ref(false);
+const selectedCourse = ref<Course | null>(null);
+const emit = defineEmits(['openModal']);
+
 // Improved click outside handler
 onMounted(() => {
   document.addEventListener("click", (e: Event) => {
@@ -154,5 +161,14 @@ const navigateToCourse = (courseId: number) => {
   } else {
     console.error("Curso no encontrado");
   }
+};
+
+// Add this new method
+const openEditModal = (course: Course) => {
+  selectedCourse.value = course;
+  emit('openModal', {
+    course,
+    mode: 'edit'
+  });
 };
 </script>

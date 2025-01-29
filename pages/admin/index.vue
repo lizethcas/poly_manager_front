@@ -1,5 +1,5 @@
 <template>
-  <div class=" px-4 ">
+  <div class="px-4">
     <header class="text-title-color mb-4">
       <h2 class="font-bold text-m text-fuscous-gray-600">
         {{ homeData.subTitle }}
@@ -35,27 +35,36 @@
 </template>
 
 <script lang="ts" setup>
-    definePageMeta({
-  layout: "dashboard-layout"
+definePageMeta({
+  layout: "dashboard-layout",
+  middleware: ["auth"],
 });
-  import { useModal } from "~/composables/useModal";
-  import { createCourse } from "~/data/cardModal";
-  import homeData from "~/data/home.data";
-  import AddCourseModal from "~/components/organisim/AddCourseModal.vue";
-  import OrganismCourseCard from "~/components/organisim/CourseCard.vue";
-  import Loading from "~/components/organisim/alerts/Loading.vue";
-  import Error from "~/components/organisim/alerts/Error.vue";
-  import { useTaskStore } from "~/stores/task.store";
-  import { useCoursesQuery } from "~/composables/useCourseQuery";
+import { useModal } from "~/composables/useModal";
+import { createCourse } from "~/data/cardModal";
+import homeData from "~/data/home.data";
+import AddCourseModal from "~/components/organisim/AddCourseModal.vue";
+import OrganismCourseCard from "~/components/organisim/CourseCard.vue";
+import Loading from "~/components/organisim/alerts/Loading.vue";
+import Error from "~/components/organisim/alerts/Error.vue";
+import { useTaskStore } from "~/stores/task.store";
+import { useCoursesQuery } from "~/composables/useCourseQuery";
 
+const { isOpen, openModal, closeModal } = useModal();
 
+// Use the courseQuery composable
+const { data: courses, isLoading, error, refetch } = useCoursesQuery();
 
-  const { isOpen, openModal, closeModal } = useModal();
+const handleAdd = () => {
+  openModal();
+};
 
-  // Use the courseQuery composable
-  const { data: courses, isLoading, error, refetch } = useCoursesQuery();
+// Add middleware to check auth and redirect
+const router = useRouter();
+const { $auth } = useNuxtApp();
 
-  const handleAdd = () => {
-    openModal();
-  };
+onMounted(() => {
+  if (!$auth?.currentUser) {
+    router.push('/login');
+  }
+});
 </script>

@@ -2,6 +2,8 @@
 import { axiosDashboard } from "./axios.config";
 
 export const apiRoutes = {
+  login: "login/",
+  logout: "logout/",
   chat: {
     chatAi: "chat-ai/",
   },
@@ -9,6 +11,7 @@ export const apiRoutes = {
     getAll: "scenarios/",
     create: "scenarios/",
     getById: (id: string) => `scenarios/${id}/`,
+    delete: (id: string) => `scenarios/${id}/`,
   },
   classContent: "class-contents/",
   courses: "courses/",
@@ -34,5 +37,3 @@ export const post = async (route: string, data: any) => {
   const response = await axiosDashboard.post(route, data);
   return response.data;
 };
-
-

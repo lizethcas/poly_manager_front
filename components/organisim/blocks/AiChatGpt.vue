@@ -1,7 +1,7 @@
 <template>
   <div
     class="bg-[#f5f5f5] p-4 rounded-md shadow-md my-4 flex flex-col gap-2 justify-center"
-    :class="{ 'h-96': !previewImage && !aiImage }"
+    :class="{ 'min-h-96': !previewImage && !aiImage }"
   >
     <h2 class="text-xl text-fuscous-gray-600 font-bold text-center">
       {{ index + 1 }}. {{ headdings[index + 1] }}
@@ -29,9 +29,10 @@
 
     <img
       v-else-if="index === 0"
-      :src="previewImage || (aiImage?.url || aiImage)"
+      :src="previewImage || aiImage?.url || aiImage"
       alt="Preview Image"
-      class="w-full h-96 object-cover"
+      class="w-full h-96 object-cover cursor-pointer"
+      @click="handleImageClick"
     />
 
     <template v-if="index >= 1">
@@ -98,9 +99,9 @@ import MoleculeInput from "~/components/molecule/Input.vue";
 import { useTaskStore } from "~/stores/task.store";
 import ActionButtons from "~/components/molecule/ActionButtons.vue";
 import { useNotify } from "~/composables/useNotify";
-import { useMutation } from '@tanstack/vue-query';
-import { apiRoutes, post } from '~/services/routes.api';
-import { useRoute } from 'vue-router';
+import { useMutation } from "@tanstack/vue-query";
+import { apiRoutes, post } from "~/services/routes.api";
+import { useRoute } from "vue-router";
 
 defineProps<{
   selectedTask?: string;
@@ -126,9 +127,9 @@ const headdings: Record<number, string> = {
 };
 
 const taskStore = useTaskStore();
-
 const previewImage = ref("");
 const aiImage = computed(() => taskStore.getTask("img_gen"));
+const taskInstructions = computed(() => taskStore.getTask("instructions"));
 const showImageGenerator = ref(false);
 console.log(route.params.classId);
 const formData = reactive({
@@ -150,6 +151,16 @@ const formData = reactive({
   scoring: "",
   additional_info: "",
 });
+
+watch(
+  taskInstructions,
+  (newValue) => {
+    console.log(newValue);
+    formData.name = newValue?.title || "";
+    formData.description = newValue?.instructions || "";
+  },
+  { deep: true }
+);
 
 const addNewImage = async (file: File) => {
   try {
@@ -189,12 +200,12 @@ const clearPreview = () => {
   formData.cover = null as unknown as File | string;
   taskStore.addTask("img_gen", "");
 };
-    
+
 // Add mutation for creating scenario
 const createScenarioMutation = useMutation({
   mutationFn: (data: typeof formData) => post(apiRoutes.scenarios.create, data),
   onSuccess: (response) => {
-    console.log('Scenario creation response:', response);
+    console.log("Scenario creation response:", response);
     notify.success("Scenario created successfully");
     clearPreview();
     taskStore.addTask("modal", { open: false });
@@ -202,7 +213,7 @@ const createScenarioMutation = useMutation({
   onError: (error) => {
     console.error("Error details:", error);
     notify.error("Error creating scenario");
-  }
+  },
 });
 
 // Update handleSave to use mutation
@@ -210,7 +221,7 @@ const handleSave = async () => {
   console.log(formData);
   const formDataToSend = new FormData();
   formDataToSend.append("cover", formData.cover as File);
-  formDataToSend.append("class_id", route.params.classId as number   );
+  formDataToSend.append("class_id", route.params.classId as number);
   formDataToSend.append("name", formData.name);
   formDataToSend.append("description", formData.description);
   formDataToSend.append("goals", formData.goals);
@@ -222,7 +233,10 @@ const handleSave = async () => {
   formDataToSend.append("vocabulary", formData.vocabulary);
   formDataToSend.append("key_expressions", formData.key_expressions);
   formDataToSend.append("end_conversation", formData.end_conversation);
-  formDataToSend.append("end_conversation_saying", formData.end_conversation_saying);
+  formDataToSend.append(
+    "end_conversation_saying",
+    formData.end_conversation_saying
+  );
   formDataToSend.append("feedback", formData.feedback);
   formDataToSend.append("scoring", formData.scoring);
   formDataToSend.append("additional_info", formData.additional_info);
@@ -339,4 +353,11 @@ watch(aiImage, (newValue) => {
 
 // Add isCreating ref for loading state
 const isCreating = computed(() => createScenarioMutation.isPending.value);
+
+const handleImageClick = () => {
+  // Reset current image
+  clearPreview();
+  // Reset index to 0 to show image selection options
+  index.value = 0;
+};
 </script>

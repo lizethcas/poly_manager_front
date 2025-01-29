@@ -10,9 +10,9 @@
     <!-- Move "My Current Course" to the top -->
     <div class="flex flex-col w-full p-1">
       <div class="flex justify-between" v-show="route.path.includes('/course')">
-        <h2 class="text-fuscous-gray-600 font-bold text-lg mb-2 w-contain">
+   <!--      <h2 class="text-fuscous-gray-600 font-bold text-lg mb-2 w-contain">
           My Current Course:
-        </h2>
+        </h2> -->
         <div class="flex items-center gap-2 text-sm">
           <p class="text-fuscous-gray-600">Unhide finished classes</p>
           <AtomosToggle />

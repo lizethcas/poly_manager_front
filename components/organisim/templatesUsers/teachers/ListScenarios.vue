@@ -20,7 +20,7 @@
         <h2
           class="text-fuscous-gray-600 font-bold text-base md:text-lg w-contain"
         >
-          {{ scenario.scenario_name ||"no hay nombre"}}
+          {{ scenario.name ||"no hay nombre"}}
         </h2>
         <!-- Level Badge -->
       </div>
@@ -78,6 +78,12 @@
         >
           edit
         </button>
+        <button
+          @click.stop="handleDelete(scenario.id)"
+          class="text-red-500 px-4 py-1 rounded-full border border-red-500 text-xs"
+        >
+          delete
+        </button>
       </div>
     </div>
   </div>
@@ -94,13 +100,14 @@
 <script setup>
 import { ref, computed } from "vue";
 import { useQuery } from "@tanstack/vue-query";
-import { get } from "~/services/routes.api";
+import { get, del } from "~/services/routes.api";
 import { apiRoutes } from "~/services/routes.api";
 import PracticeScenario from "~/components/organisim/templatesUsers/teachers/PracticeScenario.vue";
 import { useRouter } from "vue-router";
 import { useGetColor } from "~/composables/useGetColor";
 import { IconType } from "~/data/iconsType";
 import IconMolecule from "~/components/atomos/Icon.vue";
+import { useNotify } from '~/composables/useNotify'
 
 
 const router = useRouter();
@@ -108,6 +115,7 @@ const isPopupOpen = ref(false);
 const selectedScenario = ref({});
 const classId = router.currentRoute.value.params.classId;
 const { getLevelColor } = useGetColor();
+const { success, error } = useNotify()
 
 
 // Modified query to include course details
@@ -151,5 +159,19 @@ const openPopup = (scenario) => {
 const closePopup = () => {
   isPopupOpen.value = false;
   selectedScenario.value = {};
+};
+
+const handleDelete = async (scenarioId) => {
+  if (confirm("Are you sure you want to delete this scenario?")) {
+    try {
+      await del(`${apiRoutes.scenarios.delete(scenarioId)}`);
+      success("Scenario deleted successfully");
+      // Refresh the scenarios list
+      await scenarios.value.refetch();
+    } catch (err) {
+      console.error("Error deleting scenario:", err);
+      error("Error deleting scenario");
+    }
+  }
 };
 </script>
