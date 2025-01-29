@@ -1,93 +1,105 @@
 <template>
-<<<<<<< HEAD
-  <div class="login-container">
-    <form @submit.prevent="handleLogin" class="login-form">
-      <h2>Inicio de Sesión</h2>
-
-      <div class="form-group">
-        <label for="email">Correo Electrónico</label>
-        <input
-          type="email"
-          id="email"
-          v-model="formData.email"
-          required
-          placeholder="Ingrese su correo electrónico"
-        />
-      </div>
-
-      <div class="form-group">
-        <label for="password">Contraseña</label>
-        <input
-          type="password"
-          id="password"
-          v-model="formData.password"
-          required
-          placeholder="Ingrese su contraseña"
-        />
-      </div>
-
-      <div v-if="message" :class="['message', messageType]">
-        {{ message }}
-      </div>
-
-      <button type="submit" :disabled="isLoading">
-        {{ isLoading ? 'Iniciando sesión...' : 'Iniciar Sesión' }}
-      </button>
-    </form>
-=======
-  <div class="page-container">
+  <div class="min-h-screen  flex bg-white w-full">
     <!-- Wave pattern container -->
-    <div class="wave-pattern">
-      <div class="image-container img1">
-        <img src="https://images.unsplash.com/photo-1541339907198-e08756dedf3f" alt="Student 1" />
-      </div>
-      <div class="image-container img2">
-        <img src="https://images.unsplash.com/photo-1629872430082-93d8912beccf" alt="Student 2" />
-      </div>
-      <div class="image-container img3">
-        <img src="https://images.unsplash.com/photo-1627556704290-2b1f5853ff78" alt="Student 3" />
-      </div>
-      <div class="image-container img4">
-        <img src="https://images.unsplash.com/photo-1629872430082-93d8912beccf" alt="Student 4" />
-      </div>
-      <div class="shape shape1"></div>
-      <div class="shape shape2"></div>
-      <div class="shape shape3"></div>
-    </div>
+ 
     
-    <!-- Existing login form -->
-    <div class="login-container">
-      <form @submit.prevent="handleLogin" class="login-form">
-        <h1>Login</h1>
-
-        <div class="form-group">
-          <label for="email">Email</label>
-          <input
-            type="email"
-            id="email"
-            v-model="email"
-            required
-            placeholder="Enter your email"
-          />
+    
+    <div class="flex min-h-screen items-center justify-center px-4">
+      <!-- Left side - Login Form -->
+      <div class="w-full max-w-md space-y-8 bg-transparent opacity-100 p-8 rounded-2xl shadow-lg">
+        <!-- Back Arrow -->
+        <div class="mb-8">
+          <button class="text-gray-400 hover:text-gray-600">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
+            </svg>
+          </button>
         </div>
 
-        <div class="form-group">
-          <label for="password">Password</label>
-          <input
-            type="password"
-            id="password"
-            v-model="password"
-            required
-            placeholder="Enter your password"
-          />
+        <!-- Welcome Text -->
+        <div class="space-y-2">
+          <h1 class="text-4xl font-bold text-gray-900">WELCOME</h1>
+          <h2 class="text-4xl font-bold text-yellow-400">BACK!</h2>
         </div>
-        <div class="flex flex-column">
-          <NuxtLink  type="submit" to="/admin">Login admin</NuxtLink>
-          <NuxtLink type="submit" to="/student">Login student</NuxtLink>
-        </div>
-      </form>
+
+        <!-- Login Form -->
+        <form @submit.prevent="handleLogin" class="mt-8 space-y-6">
+          <div class="space-y-4">
+            <div>
+              <div class="relative">
+                <input
+                  type="text"
+                  v-model="email"
+                  required
+                  class="w-full px-4 py-3 bg-gray-50 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500"
+                  placeholder="Phone, email or username"
+                />
+                <span class="absolute left-4 top-3 text-gray-400">
+                  <i class="fas fa-user"></i>
+                </span>
+              </div>
+            </div>
+
+            <div>
+              <div class="relative">
+                <input
+                  type="password"
+                  v-model="password"
+                  required
+                  class="w-full px-4 py-3 bg-gray-50 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500"
+                  placeholder="Password"
+                />
+                <span class="absolute right-4 top-3 text-gray-400 cursor-pointer">
+                  <i class="fas fa-eye"></i>
+                </span>
+              </div>
+              <div class="mt-2">
+                <a href="#" class="text-emerald-400 text-sm hover:text-emerald-500">
+                  I don't remember my password
+                </a>
+              </div>
+            </div>
+          </div>
+
+          <!-- Agregar mensaje de error -->
+          <div v-if="error" class="text-red-500 text-sm mt-2">
+            {{ error }}
+          </div>
+
+          <div>
+            <button
+              type="submit"
+              class="w-full py-3 px-4 bg-emerald-400 text-white rounded-lg hover:bg-emerald-500 transition-colors"
+              :disabled="isLoading"
+            >
+              <span v-if="isLoading">Loading...</span>
+              <span v-else>LOG IN</span>
+            </button>
+          </div>
+
+          <!-- Social Login -->
+        <!--   <div class="mt-6">
+            <div class="flex justify-center space-x-4">
+              <button class="p-2 bg-gray-100 rounded-full hover:bg-gray-200">
+                <img src="~/assets/images/google.png" alt="Google" class="w-6 h-6" />
+              </button>
+              <button class="p-2 bg-gray-100 rounded-full hover:bg-gray-200">
+                <img src="~/assets/images/apple.png" alt="Apple" class="w-6 h-6" />
+              </button>
+              <button class="p-2 bg-gray-100 rounded-full hover:bg-gray-200">
+                <img src="~/assets/images/facebook.png" alt="Facebook" class="w-6 h-6" />
+              </button>
+              <button class="p-2 bg-gray-100 rounded-full hover:bg-gray-200">
+                <img src="~/assets/images/instagram.png" alt="Instagram" class="w-6 h-6" />
+              </button>
+            </div>
+          </div> -->
+        </form>
+      </div>
+      <img src="~/assets/images/login.png" alt="Logo" class="logo z-50 relative w-1/2 h-full" />
+
     </div>
->>>>>>> b62f8d624e19d918d9b55f9eff4091ae155049ff
+
   </div>
   <StudentLoginRecord ref="loginRecordRef" />
 </template>
@@ -132,8 +144,9 @@ const loginMutation = useMutation({
     }
   },
   onError: (err: Error) => {
-    toast.error(err.message);
-    error.value = err.message;
+    toast.error(err.response.data.message);
+    console.log(err.response.data.message);
+    error.value = err.response.data.message;
   }
 });
 
