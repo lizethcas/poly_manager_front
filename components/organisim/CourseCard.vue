@@ -1,5 +1,5 @@
 <template>
-  <p v-if="!coursesData" class="text-title-color">no hay cursos</p>
+  <p v-if="coursesData.length === 0" class="text-title-color">there are no courses yet</p>
   <div
     v-if="coursesData && coursesData.length > 0"
     v-for="course in coursesData.slice().reverse()"
@@ -112,8 +112,8 @@ import { useGetColor } from "~/composables/useGetColor";
 import { useGetCover } from "~/composables/useGetcover";
 import { useTaskStore } from "~/stores/task.store";
 import { IconType } from "~/data/iconsType";
-import { routes } from '~/data/routes'
-import { ref } from 'vue';
+import { routes } from "~/data/routes";
+import { ref } from "vue";
 
 // Updated Props interface with proper typing
 interface Course {
@@ -141,7 +141,7 @@ const activeDropdown = ref<number | null>(null);
 // Add these new refs and emits
 const showEditModal = ref(false);
 const selectedCourse = ref<Course | null>(null);
-const emit = defineEmits(['openModal']);
+const emit = defineEmits(["openModal"]);
 
 // Improved click outside handler
 onMounted(() => {
@@ -166,9 +166,9 @@ const navigateToCourse = (courseId: number) => {
 // Add this new method
 const openEditModal = (course: Course) => {
   selectedCourse.value = course;
-  emit('openModal', {
+  emit("openModal", {
     course,
-    mode: 'edit'
+    mode: "edit",
   });
 };
 </script>

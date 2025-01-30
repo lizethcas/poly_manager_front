@@ -130,6 +130,12 @@ const isSidebarOpen = ref(false);
 
 const route = useRoute();
 const router = useRouter();
+
+// Add isProgressRoute computed property
+const isProgressRoute = computed(() => {
+  return route.path.startsWith('/student/progress');
+});
+
 const isClassRoute = computed(() => {
   return /^\/course\/[^/]+\/class\/[^/]+$/.test(route.path) || isProgressRoute.value;
 });
@@ -227,13 +233,23 @@ const mainContentWidth = computed(() => {
 
 const handleLogout = async () => {
   try {
-    await post(apiRoutes.logout, {});
-    // Clear any stored auth tokens or user data
-    localStorage.removeItem('token'); // Adjust based on your auth storage method
-    // Redirect to login page
-    router.push('/login');
+    const response = await post(apiRoutes.logout, {});
+    
+    if (response.ok) {
+      // Clear any stored auth tokens or user data
+      localStorage.removeItem('token');
+      // You might want to clear other auth-related data
+      localStorage.clear(); // Optional: clears all localStorage data
+      
+      // Redirect to login page
+      await router.push('/login');
+    } else {
+      console.error('Logout failed:', response.statusText);
+      // Optionally show an error message to the user
+    }
   } catch (error) {
     console.error('Error during logout:', error);
+    // Optionally show an error message to the user
   }
 };
 </script>

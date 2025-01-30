@@ -1,5 +1,4 @@
 import { defineStore } from 'pinia';
-import axios from 'axios';
 
 interface User {
   id: number;
@@ -14,79 +13,76 @@ interface AuthState {
 }
 
 export const useAuthStore = defineStore('auth', {
-  state: (): AuthState => ({
-    token: null,
-    user: null,
-    userType: null
-  }),
+  state: (): AuthState => {
+    // Safely get and parse user data from localStorage
+    let user = null;
+    const userStr = localStorage.getItem('user');
+    if (userStr) {
+      try {
+        user = JSON.parse(userStr);
+      } catch (e) {
+        console.error('Error parsing user data from localStorage:', e);
+      }
+    }
+
+    return {
+      token: localStorage.getItem('token') || null,
+      user: user,
+      userType: localStorage.getItem('userType') || null
+    };
+  },
 
   actions: {
     setAuth(payload: { token: string; user: User; userType: string }) {
       this.token = payload.token;
       this.user = payload.user;
       this.userType = payload.userType;
+      
+      // Persist in localStorage
+      localStorage.setItem('token', payload.token);
+      localStorage.setItem('user', JSON.stringify(payload.user));
+      localStorage.setItem('userType', payload.userType);
+    },
+
+    setToken(token: string) {
+      this.token = token;
+      localStorage.setItem('token', token);
     },
 
     logout() {
       this.token = null;
       this.user = null;
       this.userType = null;
+      
+      // Clear localStorage
+      localStorage.removeItem('token');
+      localStorage.removeItem('user');
+      localStorage.removeItem('userType');
     },
 
     validateToken() {
-      const token = this.token
-      if (!token) return false
+      const token = this.token;
+      if (!token) return false;
       
       try {
         // Basic JWT expiration check
-        const payload = JSON.parse(atob(token.split('.')[1]))
-        const expiration = payload.exp * 1000 // Convert to milliseconds
+        const payload = JSON.parse(atob(token.split('.')[1]));
+        const expiration = payload.exp * 1000; // Convert to milliseconds
         
         if (Date.now() >= expiration) {
-          this.clearAuth()
-          return false
+          this.clearAuth();
+          return false;
         }
         
-        return true
+        return true;
       } catch (error) {
-        this.clearAuth()
-        return false
+        this.clearAuth();
+        return false;
       }
     },
     
     clearAuth() {
-      this.token = null
-      this.user = null
-      this.userType = null
+      this.logout(); // Reuse logout logic
     }
   }
 }); 
-
-export default defineNuxtPlugin(() => {
-  const authStore = useAuthStore()
-  
-  addRouteMiddleware('auth', () => {
-    if (!authStore.validateToken()) {
-      return navigateTo('/login')
-    }
-  })
-  
-  // Add axios interceptor for API calls
-  axios.interceptors.request.use(config => {
-    if (authStore.token) {
-      config.headers.Authorization = `Bearer ${authStore.token}`
-    }
-    return config
-  })
-  
-  axios.interceptors.response.use(
-    response => response,
-    error => {
-      if (error.response?.status === 401) {
-        authStore.clearAuth()
-        navigateTo('/login')
-      }
-      return Promise.reject(error)
-    }
-  )
-})

@@ -101,7 +101,7 @@
     </div>
 
   </div>
-  <StudentLoginRecord ref="loginRecordRef" />
+
 </template>
 
 <script setup lang="ts">
@@ -138,9 +138,9 @@ const loginMutation = useMutation({
     });
 
     if (data.user_type === 'teacher') {
-      router.push('/admin/dashboard');
+      navigateTo('/admin/dashboard');
     } else if (data.user_type === 'student') {
-      router.push('/student/dashboard');
+      navigateTo('/student/dashboard');
     }
   },
   onError: (err: Error) => {

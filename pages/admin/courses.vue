@@ -5,5 +5,9 @@
 import Index from "~/pages/admin/index.vue";
 definePageMeta({
   layout: "dashboard-layout",
+  middleware: ["auth"],
+
 });
+
+
 </script>

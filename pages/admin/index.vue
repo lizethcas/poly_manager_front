@@ -38,6 +38,7 @@
 definePageMeta({
   layout: "dashboard-layout",
   middleware: ["auth"],
+
 });
 import { useModal } from "~/composables/useModal";
 import { createCourse } from "~/data/cardModal";
@@ -58,13 +59,7 @@ const handleAdd = () => {
   openModal();
 };
 
-// Add middleware to check auth and redirect
-const router = useRouter();
-const { $auth } = useNuxtApp();
 
-onMounted(() => {
-  if (!$auth?.currentUser) {
-    router.push('/login');
-  }
-});
+
+
 </script>

@@ -23,6 +23,30 @@ export const axiosDashboard = axios.create({
     : baseURLs.production.dashboard,
 });
 
+// Add interceptor to include auth token
+axiosDashboard.interceptors.request.use((config) => {
+  const token = localStorage.getItem('access_token');
+  if (token) {
+    config.headers.Authorization = `Bearer ${token}`;
+  } else {
+    // If no token is found, redirect to login
+    window.location.href = '/login';
+  }
+  return config;
+});
+
+// Update the response interceptor to be more specific
+axiosDashboard.interceptors.response.use(
+  (response) => response,
+  (error) => {
+    if (error.response?.status === 401 || error.response?.status === 403) {
+      localStorage.removeItem('access_token');
+      window.location.href = '/login';
+    }
+    return Promise.reject(error);
+  }
+);
+
 export const axiosChat = axios.create({
   baseURL: isDevelopment ? baseURLs.development.chat : baseURLs.production.chat,
 });
