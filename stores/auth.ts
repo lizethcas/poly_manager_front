@@ -17,7 +17,7 @@ export const useAuthStore = defineStore('auth', {
     // Safely get and parse user data from localStorage
     let user = null;
     const userStr = localStorage.getItem('user');
-    if (userStr) {
+    if (userStr && userStr !== 'undefined') {
       try {
         user = JSON.parse(userStr);
       } catch (e) {

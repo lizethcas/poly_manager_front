@@ -233,23 +233,28 @@ const mainContentWidth = computed(() => {
 
 const handleLogout = async () => {
   try {
-    const response = await post(apiRoutes.logout, {});
+    const refreshToken = localStorage.getItem('refreshToken'); // Assuming you store it as 'refreshToken'
+    const response = await post(apiRoutes.logout, {
+      refresh: refreshToken
+    });
     
     if (response.ok) {
       // Clear any stored auth tokens or user data
       localStorage.removeItem('token');
-      // You might want to clear other auth-related data
+      localStorage.removeItem('refreshToken');
       localStorage.clear(); // Optional: clears all localStorage data
       
       // Redirect to login page
       await router.push('/login');
     } else {
       console.error('Logout failed:', response.statusText);
-      // Optionally show an error message to the user
+      // Still redirect to login page even if the server request fails
+      await router.push('/login');
     }
   } catch (error) {
     console.error('Error during logout:', error);
-    // Optionally show an error message to the user
+    // Still redirect to login page even if there's an error
+    await router.push('/login');
   }
 };
 </script>

@@ -2,126 +2,127 @@
   <div class="register-container">
     <form @submit.prevent="handleSubmit" class="register-form">
       <h2>Registro de Usuario</h2>
-      
+
       <div class="form-group">
         <label for="name">Nombre Completo</label>
-        <input 
-          type="text" 
-          id="name" 
-          v-model="formData.name" 
-          required
-        >
+        <input type="text" id="name" v-model="formData.name" required />
       </div>
 
       <div class="form-group">
         <label for="email">Correo Electrónico</label>
-        <input 
-          type="email" 
-          id="email" 
-          v-model="formData.email" 
-          required
-        >
+        <input type="email" id="email" v-model="formData.email" required />
       </div>
 
       <div class="form-group">
         <label for="password">Contraseña</label>
-        <input 
-          type="password" 
-          id="password" 
-          v-model="formData.password" 
+        <input
+          type="password"
+          id="password"
+          v-model="formData.password"
           required
-        >
+        />
       </div>
 
       <div class="form-group">
         <label for="profile_picture">Foto de Perfil</label>
-        <input 
-          type="file" 
-          id="profile_picture" 
+        <input
+          type="file"
+          id="profile_picture"
           @change="handleFileChange"
           accept="image/*"
-        >
+        />
       </div>
-
-
+      <div class="form-group">
+        <label for="acces_code">Código de Acceso</label>
+        <input
+          type="text"
+          id="acces_code"
+          v-model="formData.acces_code"
+          required
+        />
+      </div>
 
       <div v-if="message" :class="['message', messageType]">
         {{ message }}
       </div>
 
       <button type="submit" :disabled="isLoading">
-        {{ isLoading ? 'Registrando...' : 'Registrar' }}
+        {{ isLoading ? "Registrando..." : "Registrar" }}
       </button>
     </form>
   </div>
 </template>
 
 <script setup>
-import { ref } from 'vue'
-import { axiosDashboard } from '../services/axios.config'
+import { ref } from "vue";
+import { axiosDashboard } from "../services/axios.config";
 
 const formData = ref({
-  name: '',
-  email: '',
-  password: '',
+  name: "",
+  email: "",
+  password: "",
   profile_picture: null,
-  userType: 'student'
-})
+  userType: "teacher",
+  acces_code: "",
+});
 
-const isLoading = ref(false)
-const message = ref('')
-const messageType = ref('')
+const isLoading = ref(false);
+const message = ref("");
+const messageType = ref("");
 
 const handleFileChange = (event) => {
-  formData.value.profile_picture = event.target.files[0]
-}
+  formData.value.profile_picture = event.target.files[0];
+};
 
 const handleSubmit = async () => {
-  isLoading.value = true
-  message.value = ''
-  
-  console.log('Iniciando el registro del usuario:', formData.value)
+  isLoading.value = true;
+  message.value = "";
+
+  console.log("Iniciando el registro del usuario:", formData.value);
 
   try {
-    const form = new FormData()
-    form.append('username', formData.value.name)
-    form.append('email', formData.value.email)
-    form.append('password', formData.value.password)
+    const form = new FormData();
+    form.append("username", formData.value.name);
+    form.append("email", formData.value.email);
+    form.append("password", formData.value.password);
     if (formData.value.profile_picture) {
-      form.append('profile_picture', formData.value.profile_picture)
+      form.append("profile_picture", formData.value.profile_picture);
     }
 
-    const endpoint = formData.value.userType === 'teacher' ? 'teachers/' : 'students/create/'
-    console.log('Datos del formulario preparados para enviar:', form)
+    const endpoint =
+      formData.value.userType === "teacher" ? "teachers/" : "students/create/";
+    console.log("Datos del formulario preparados para enviar:", form);
 
     const response = await axiosDashboard.post(endpoint, form, {
       headers: {
-        'Content-Type': 'multipart/form-data'
-      }
-    })
+        "Content-Type": "multipart/form-data",
+      },
+    });
 
-    console.log('Respuesta del servidor:', response.data)
+    console.log("Respuesta del servidor:", response.data);
 
-    if (response.data.status === 'success') {
-      message.value = '¡Registro exitoso!'
-      messageType.value = 'success'
+    if (response.data.status === "success") {
+      message.value = "¡Registro exitoso!";
+      messageType.value = "success";
       // Limpiar el formulario
       formData.value = {
-        name: '',
-        email: '',
-        password: '',
+        name: "",
+        email: "",
+        password: "",
         profile_picture: null,
-        userType: 'teacher'
-      }
+        userType: "teacher",
+        acces_code: "",
+      };
     }
   } catch (error) {
-    console.error('Error al registrar el usuario:', error)
-    message.value = error.response?.data?.message || 'Error al registrar el usuario'
-    messageType.value = 'error'
+    console.error("Error al registrar el usuario:", error);
+    message.value =
+      error.response?.data?.message || "Error al registrar el usuario";
+    messageType.value = "error";
   } finally {
-    isLoading.value = false
+    isLoading.value = false;
   }
-}
+};
 </script>
 
 <style scoped>
@@ -160,7 +161,7 @@ input {
 button {
   width: 100%;
   padding: 10px;
-  background-color: #4CAF50;
+  background-color: #4caf50;
   color: white;
   border: none;
   border-radius: 4px;
