@@ -1,5 +1,5 @@
 <template>
-  <div class="flex items-center gap-4">
+  <div class=" items-center gap-4 mb-2">
     <label v-if="!label" class="min-w-[120px] text-middele-gray">{{
       title
     }}</label>

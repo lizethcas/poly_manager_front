@@ -140,7 +140,7 @@ const loginMutation = useMutation({
     if (data.user_type === 'teacher') {
       navigateTo('/admin/dashboard');
     } else if (data.user_type === 'student') {
-      navigateTo('/student/dashboard');
+      navigateTo('/student/classes');
     }
   },
   onError: (err: Error) => {

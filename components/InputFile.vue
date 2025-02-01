@@ -2,7 +2,7 @@
     <div class="flex flex-col items-start">
         <div class="flex items-center gap-4 my-1 w-full">
             <div v-if="icon">
-                <label for="file-upload" class="min-w-[120px] text-primary-color font-bold text-sm">{{ title }}</label>
+                <label for="file-upload" class="w-fit text-primary-color font-bold text-sm">{{ title }}</label>
                 <div @click="triggerFileUpload"
                     class="hover:text-fuscous-gray-600 p-2 bg-fuscous-gray-100 min-w-20 max-w-8 w-full text-center rounded-lg cursor-pointer hover:scale-105 transition-all duration-300 group  ">
                     <Icon name="material-symbols:upload" class="text-fuscous-gray-400 group-hover:text-fuscous-gray-600"
@@ -12,14 +12,18 @@
             </div>
 
             <!-- Label and preview -->
-            <label v-if="!icon" for="file-upload" class="min-w-[120px] text-middele-gray">File:</label>
+            <label v-if="!icon" for="file-upload" class="w-fit text-middele-gray">File:</label>
             <div v-if="showPreview" :class="[
                 'rounded overflow-hidden',
                 fileType === 'video' ? 'w-64 h-36' : fileType === 'audio' ? '' : 'w-16 h-16'
             ]">
                 <slot></slot>
-                <!-- Image preview -->
-                <ImgAtom v-if="fileType === 'image' && previewUrl" :image="previewUrl" alt="Preview" />
+                <!-- Update image preview to use props.previewUrl as fallback -->
+                <ImgAtom 
+                    v-if="(fileType === 'image' && previewUrl) || props.previewUrl" 
+                    :image="previewUrl || props.previewUrl" 
+                    alt="Preview" 
+                />
                 <!-- Video preview -->
                 <video v-if="fileType === 'video' && previewUrl" :src="previewUrl" controls
                     class="w-full h-full object-cover"></video>
@@ -50,16 +54,11 @@
 
 <script setup lang="ts">
 import ImgAtom from "./atomos/ImgAtom.vue";
-import { ref, defineProps, defineEmits } from "vue";
+import { ref, defineProps, defineEmits, onMounted } from "vue";
 import EventBus from '~/composables/useEvenBus';
 import { useTaskStore } from '~/stores/task.store';
 
-interface InputFileProps {
-    modelValue: string;
-    title: string;
-    icon: boolean;
-    showPreview: boolean;
-}
+
 
 // Props and events
 const props = defineProps({
@@ -69,6 +68,10 @@ const props = defineProps({
     showPreview: {
         type: Boolean,
         default: true
+    },
+    previewUrl: {
+        type: String,
+        default: ''
     }
 });
 const emit = defineEmits(['update:modelValue', 'file-selected']);
@@ -78,6 +81,14 @@ const fileInput = ref(null);
 const previewUrl = ref(null);
 const fileType = ref("");
 const fileName = ref(null);
+
+// Initialize fileType if previewUrl is provided
+onMounted(() => {
+    if (props.previewUrl) {
+        fileType.value = 'image';
+    }
+});
+
 // Trigger file input on button click
 const triggerFileUpload = () => {
     fileInput.value.click();

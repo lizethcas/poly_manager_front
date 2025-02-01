@@ -15,9 +15,17 @@ export const apiRoutes = {
   },
   classContent: "class-contents/",
   courses: "courses/",
+  course: {
+    getById: (courseId: string | string[]) =>
+      `/courses/?courseId=${courseId}`,
+    update: (courseId: string | string[]) =>
+      `/courses/${courseId}/`,
+    delete: (courseId: string | string[]) => `courses/${courseId}/`,
+  },
   classes: {
     getByCourseId: (courseId: string | string[]) =>
       `/classes/?courseId=${courseId}`,
+
     getById: (classId: number) => `classes/${classId}/`,
     create: `classes/`,
     delete: (classId: number) => `classes/${classId}/`,
@@ -35,5 +43,10 @@ export const del = async (url: string) => {
 
 export const post = async (route: string, data: any) => {
   const response = await axiosDashboard.post(route, data);
+  return response.data;
+};
+
+export const patch = async (route: string, data: any) => {
+  const response = await axiosDashboard.patch(route, data);
   return response.data;
 };

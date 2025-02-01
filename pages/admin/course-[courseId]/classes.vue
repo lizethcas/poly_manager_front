@@ -1,5 +1,5 @@
 <template>
-  <div class=" text-title-color mb-6">
+  <div class="text-title-color mb-6">
     <div class="flex items-center text-middele-gray w-4/5">
       <p class="mr-4">total lessons {{ filteredData?.length || 0 }}</p>
       <div class="flex-grow border-t-2 border-dotted border-middele-gray"></div>
@@ -9,7 +9,7 @@
     <div v-if="isLoading">Loading...</div>
 
     <!-- Show error state -->
-    <div v-else-if="error">Error: {{ error.message }}</div>
+    <div v-else-if="classesError">Error: {{ classesError.message }}</div>
 
     <!-- Show data -->
     <div class="bg-white rounded-lg p-4 mb-2 shadow-sm relative w-full">
@@ -33,7 +33,9 @@
           <AddCourseModal
             :title="createClass.title"
             @closeModal="handleCloseModal"
+            @handleSave="handleSave"
             :showExtraElements="false"
+         
           />
         </div>
       </div>
@@ -49,23 +51,29 @@ import ClassCard from "~/components/organisim/ClassCard.vue";
 import { useModal } from "~/composables/useModal";
 import { createClass } from "~/data/cardModal";
 import { useClassesQuery } from "~/composables/useClassesQuery";
+import { useTaskStore } from "~/stores/task.store";
+import { useClassMutation } from "~/composables/useClassMutation";
+import { useNotify } from "~/composables/useNotify";
 import { useRoute } from "vue-router";
 import { computed } from "vue";
 
 const route = useRoute();
-const courseId = route.params.courseId;
+const classMutation = useClassMutation();
 
+const courseId = route.params.courseId;
+const { success, error } = useNotify();
 const {
   data,
+  error: classesError,
   isLoading,
-  error,
   refetch: refresh,
 } = useClassesQuery(courseId as string);
+
+
 
 const filteredData = computed(() => {
   return data.value?.filter((item: any) => item.course_id == courseId) || [];
 });
-console.log(filteredData.value);
 
 const { isOpen, openModal, closeModal } = useModal();
 
@@ -76,5 +84,25 @@ const handleAdd = () => {
 const handleCloseModal = async () => {
   closeModal();
   await refresh();
+};
+
+const handleSave = async (formDataEvent: any) => {
+  try {
+    const { formData, bulletPoints } = formDataEvent;
+
+    const requestData = {
+      class_name: formData.course_name,
+      description: formData.description,
+      course_id: courseId,
+      bullet_points: JSON.stringify(bulletPoints),
+      cover: formData.cover,
+    };
+    await classMutation.mutateAsync(requestData);
+    success("Class created successfully");
+    await handleCloseModal();
+  } catch (err) {
+    console.error("Error creating class:", err);
+    error("Failed to create class");
+  }
 };
 </script>

@@ -17,6 +17,7 @@
           <AddCourseModal
             :title="createCourse.title"
             @closeModal="closeModal"
+            @handleSave="handleSave"
             :showExtraElements="true"
           />
         </div>
@@ -38,7 +39,6 @@
 definePageMeta({
   layout: "dashboard-layout",
   middleware: ["auth"],
-
 });
 import { useModal } from "~/composables/useModal";
 import { createCourse } from "~/data/cardModal";
@@ -47,19 +47,51 @@ import AddCourseModal from "~/components/organisim/AddCourseModal.vue";
 import OrganismCourseCard from "~/components/organisim/CourseCard.vue";
 import Loading from "~/components/organisim/alerts/Loading.vue";
 import Error from "~/components/organisim/alerts/Error.vue";
-import { useTaskStore } from "~/stores/task.store";
 import { useCoursesQuery } from "~/composables/useCourseQuery";
+import { useCourseMutation } from "~/composables/useCourseMutation";
+import { useNotify } from "~/composables/useNotify";
+
 
 const { isOpen, openModal, closeModal } = useModal();
 
 // Use the courseQuery composable
 const { data: courses, isLoading, error, refetch } = useCoursesQuery();
 
+
+const courseMutation = useCourseMutation();
+
+const { success, error: notifyError } = useNotify();
+
+// Add these constants
+const defaultCategory = createCourse.categorys[0];
+const defaultLevel = createCourse.levels[0];
+
 const handleAdd = () => {
   openModal();
 };
 
+const handleSave = async (formDataEvent: any) => {
 
+  const { formData, bulletPoints } = formDataEvent;
+  
 
+  try {
+    const requestData = {
+      course_name: formData.course_name,
+      description: formData.description,
+      category: formData.category || defaultCategory,
+      level: formData.level || defaultLevel,
+      bullet_points: JSON.stringify(bulletPoints),
+      cover: formData.cover,
+    };
+    await courseMutation.mutateAsync(requestData);
+    success("Course created successfully");
 
+    closeModal();
+    refetch();
+  } catch (err) {
+    notifyError("Error creating course/class");
+    console.error("Error creating course/class:", err);
+  }
+};
 </script>

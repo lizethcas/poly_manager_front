@@ -16,12 +16,18 @@ export const createClass = {
 export const labels = [
   {
     id: 1,
-    label_name: "Course Name: ",
+    label_name: "Course Name:",
+    field_name: "course_name",
     type: "text",
+
   },
+  
+
   {
-    id: 2,
+    id: 3,
     label_name: "Description:",
+    field_name: "description",
     type: "text_area",
-  }
+  },
+  
 ];

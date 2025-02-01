@@ -12,7 +12,10 @@
   >
     <div class="relative flex items-center">
       <!-- Dots Menu -->
-      <button v-if="showDragIcon" class="h-full px-4 cursor-grab flex items-center">
+      <button
+        v-if="showDragIcon"
+        class="h-full px-4 cursor-grab flex items-center"
+      >
         <Icon
           name="material-symbols:drag-indicator"
           size="24"
@@ -64,7 +67,14 @@
                   <Icon name="material-symbols:edit-outline" size="14" />
                   <span class="text-xs">edit</span>
                 </button>
-                <button class="action-btn" @click="openModalHandler(classItem.id)">
+                <button class="action-btn" @click="openEditClass(classItem)">
+                  <Icon name="material-symbols:visibility-outline" size="14" />
+                  <span class="text-xs">Settings</span>
+                </button>
+                <button
+                  class="action-btn"
+                  @click="openModalHandler(classItem.id)"
+                >
                   <Icon name="material-symbols:visibility-outline" size="14" />
                   <span class="text-xs">preview</span>
                 </button>
@@ -86,32 +96,56 @@
       </div>
     </div>
   </main>
+  <div
+    v-if="isOpen"
+    class="fixed flex justify-center items-center inset-0 bg-gray-600 bg-opacity-50 z-50"
+  >
+    <div class="w-full max-w-5xl mx-auto">
+      <AddCourseModal
+        :title="createClass.title"
+        @closeModal="closeModal"
+        :showExtraElements="false"
+        @handleSave="handleSave"
+        :initialData="selectedClass"
+        :actionType="'edit'"
+      />
+    </div>
+  </div>
 </template>
 
 <script setup lang="ts">
 import { ref, computed } from "vue";
 import { useGetCover } from "~/composables/useGetcover";
-import { useTaskStore } from "~/stores/task.store";
 import type { ClassData } from "~/interfaces/models/class.interface..model";
 import { useClassesQuery } from "~/composables/useClassesQuery";
+import AddCourseModal from "./AddCourseModal.vue";
+import { createClass } from "~/data/cardModal";
 import { routes } from "~/data/routes";
-import { useNotify } from '~/composables/useNotify'
-const { success, error } = useNotify()
-
+import { useNotify } from "~/composables/useNotify";
+import { useModal } from "~/composables/useModal";
+import { useRoute, useRouter } from "nuxt/app";
+import { useClassMutation } from "~/composables/useClassMutation";
+const { success, error } = useNotify();
+const { isOpen, openModal, closeModal } = useModal();
 const route = useRoute();
+const router = useRouter();
 const courseId = route.params.courseId as string;
-const classItem = ref<ClassData | null>(0);
+
 // Define props
 const props = defineProps<{
   classes: ClassData[];
   showDragIcon?: boolean;
 }>();
-
+const selectedClass = ref<ClassData | null>(null);
 // Add computed property for filtered classes
 const filteredClasses = computed(() => {
   if (!props.classes) return [];
   return props.classes.filter((classItem) => {
-    return classItem && classItem.course_id && classItem.course_id.toString() === courseId;
+    return (
+      classItem &&
+      classItem.course_id &&
+      classItem.course_id.toString() === courseId
+    );
   });
 });
 
@@ -122,6 +156,8 @@ const routeCourseId = useRoute().params.courseId as string;
 const { onDragOver, onDrop, onDragStart } = useDragAnDrop(classesRef);
 
 const { deleteClass, isDeletingClass } = useClassesQuery(courseId);
+
+const { updateClassMutation } = useClassMutation();
 
 const openModalHandler = (classId: number) => {
   navigateTo(routes.routesStudent.class(routeCourseId, classId));
@@ -139,6 +175,55 @@ const handleDelete = async (classId: number) => {
   }
 };
 
+const openEditClass = (classItem: ClassData) => {
+  console.log(classItem);
+  selectedClass.value = {
+    ...classItem,
+    class_name: classItem.class_name,
+    description: classItem.description,
+    bullet_points: classItem.bullet_points,
+    cover: classItem.cover,
+  };
+
+  openModal();
+};
+
+const handleSave = async (formData: any) => {
+  if (!selectedClass.value?.id) return;
+
+  const formDataToSend = new FormData();
+
+  // Add non-file fields to FormData
+  Object.entries(formData.formData).forEach(([key, value]) => {
+    if (key === 'cover') return;
+    
+    if (value !== undefined && value !== null && value !== '') {
+      formDataToSend.append(key, value as string);
+    }
+  });
+
+  // Handle cover file
+  if (formData.formData.cover instanceof File) {
+    formDataToSend.append('cover', formData.formData.cover);
+  }
+
+  // Add bullet points if they exist
+  if (formData.bulletPoints?.length > 0) {
+    formDataToSend.append('bullet_points', JSON.stringify(formData.bulletPoints));
+  }
+
+  try {
+    await updateClassMutation.mutateAsync({
+      id: selectedClass.value.id,
+      formData: formDataToSend,
+    });
+    success('Class updated successfully');
+    closeModal();
+  } catch (err) {
+    console.error('Error updating class:', err);
+    error('Error updating class');
+  }
+};
 </script>
 
 <style scoped>

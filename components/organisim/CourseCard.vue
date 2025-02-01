@@ -1,5 +1,7 @@
 <template>
-  <p v-if="coursesData.length === 0" class="text-title-color">there are no courses yet</p>
+  <p v-if="coursesData.length === 0" class="text-title-color">
+    there are no courses yet
+  </p>
   <div
     v-if="coursesData && coursesData.length > 0"
     v-for="course in coursesData.slice().reverse()"
@@ -104,9 +106,55 @@
       </div>
     </div>
   </div>
+  <div v-if="isOpen" class="fixed inset-0 bg-gray-600 bg-opacity-50 z-50 flex justify-center items-center">
+    <div class="w-full max-w-5xl mx-auto">
+      <AddCourseModal
+        :title="createCourse.title"
+        :type="createCourse.type"
+        @closeModal="closeModal"
+        :showExtraElements="true"
+        @handleSave="handleCourseAction"
+        :initialData="selectedCourse"
+        :actionType="'edit'"
+        :deleteAction="true"
+        @handleDelete="handleDelete"
+      />
+    </div>
+  </div>
+  <div v-if="confirmDelete"
+    class="fixed flex items-center justify-center top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2  w-full z-50 bg-gray-600 bg-opacity-90 h-screen"
+  >
+    <UAlert
+      
+
+      class="w-full max-w-xl mx-auto"
+      :actions="[
+        {
+          variant: 'solid',
+          color: 'red',
+          label: 'Delete',
+          click: () => confirmDeleteCourse(),
+
+
+        },
+        {
+          variant: 'outline',
+          color: 'gray',
+          label: 'Cancel',
+          click: () => (confirmDelete = false),
+
+        },
+      ]"
+      title="Delete Course"
+      description="Are you sure you want to delete this course? This action cannot be undone."
+    />
+  </div>
 </template>
 
 <script lang="ts" setup>
+import { createCourse } from "~/data/cardModal";
+
+import AddCourseModal from "./AddCourseModal.vue";
 import IconMolecule from "~/components/atomos/Icon.vue";
 import { useGetColor } from "~/composables/useGetColor";
 import { useGetCover } from "~/composables/useGetcover";
@@ -114,6 +162,8 @@ import { useTaskStore } from "~/stores/task.store";
 import { IconType } from "~/data/iconsType";
 import { routes } from "~/data/routes";
 import { ref } from "vue";
+import { useModal } from "~/composables/useModal";
+import { useCourseMutation } from "~/composables/useCourseMutation";
 
 // Updated Props interface with proper typing
 interface Course {
@@ -131,17 +181,19 @@ interface Props {
 }
 
 const props = defineProps<Props>();
-
+const { isOpen, openModal, closeModal } = useModal();
 const { getLevelColor } = useGetColor();
 const { getCoverUrl } = useGetCover();
 const taskStore = useTaskStore();
 const classes = taskStore.getTask("classes");
+
 const activeDropdown = ref<number | null>(null);
 
 // Add these new refs and emits
-const showEditModal = ref(false);
 const selectedCourse = ref<Course | null>(null);
+const confirmDelete = ref(false);
 const emit = defineEmits(["openModal"]);
+const { updateCourseMutation, deleteCourseMutation } = useCourseMutation();
 
 // Improved click outside handler
 onMounted(() => {
@@ -163,12 +215,78 @@ const navigateToCourse = (courseId: number) => {
   }
 };
 
-// Add this new method
-const openEditModal = (course: Course) => {
-  selectedCourse.value = course;
-  emit("openModal", {
-    course,
-    mode: "edit",
+// Update the handleCourseAction function
+const handleCourseAction = async (formData: any) => {
+  if (!selectedCourse.value?.id) return;
+
+  const formDataToSend = new FormData();
+
+  // Add non-file fields to FormData
+  Object.entries(formData.formData).forEach(([key, value]) => {
+    if (key === "cover") return;
+
+    if (value !== undefined && value !== null && value !== "") {
+      formDataToSend.append(key, value as string);
+    }
   });
+
+  // Handle cover file
+  if (formData.formData.cover instanceof File) {
+    formDataToSend.append("cover", formData.formData.cover);
+  }
+
+  // Add bullet points
+  if (formData.bulletPoints?.length > 0) {
+    formDataToSend.append(
+      "bullet_points",
+      JSON.stringify(formData.bulletPoints)
+    );
+  }
+
+  await updateCourseMutation.mutateAsync({
+    id: selectedCourse.value.id,
+    formData: formDataToSend,
+  });
+
+  closeModal();
+};
+
+// Modify the openEditModal function
+const openEditModal = (course: Course) => {
+  // Transform the course data to match the form structure
+  selectedCourse.value = {
+    ...course,
+    course_name: course.course_name,
+    description: course.description,
+    category: course.category,
+    level: course.level,
+    cover: course.cover,
+  };
+
+  openModal();
+};
+
+const handleDelete = async () => {
+  if (!selectedCourse.value?.id) return;
+  confirmDelete.value = true;
+  console.log(selectedCourse.value);
+
+  /*  try {
+    await deleteCourseMutation.mutateAsync(selectedCourse.value.id);
+    closeModal();
+  } catch (error) {
+    console.error("Error deleting course:", error);
+  } */
+};
+
+const confirmDeleteCourse = async () => {
+  if (!selectedCourse.value?.id) return;
+  try {
+    await deleteCourseMutation.mutateAsync(selectedCourse.value.id);
+    confirmDelete.value = false;
+    closeModal();
+  } catch (error) {
+    console.error("Error deleting course:", error);
+  }
 };
 </script>

@@ -19,9 +19,9 @@
             <Icon :name="route.icon" size="20" />
             {{ route.name }}
           </NuxtLink>
-          <NuxtLink 
-            to="/login" 
-            @click.prevent="handleLogout" 
+          <NuxtLink
+            to="/login"
+            @click.prevent="handleLogout"
             class="flex items-start text-gray-700 hover:bg-gray-100 rounded-md"
           >
             <Icon name="material-symbols:logout" size="20" />
@@ -55,8 +55,8 @@
 
           <div>
             <NuxtLink to="/" class="flex items-center">
-              <span class="text-primary-color font-bold text-md"
-                >polyAcademy</span
+              <span class="text-primary-color font-bold text-[20px]"
+                >PolyAcademy</span
               >
             </NuxtLink>
           </div>
@@ -64,7 +64,10 @@
           <div class="flex-1 max-w-2xl px-4 hidden sm:block">
             <SearchInput class="w-full" />
             <NuxtLink to="/search" class="flex items-center">
-                <UIcon name="i-heroicons-magnifying-glass-20-solid" class="text-gray-500" />
+              <UIcon
+                name="i-heroicons-magnifying-glass-20-solid"
+                class="text-gray-500"
+              />
             </NuxtLink>
           </div>
 
@@ -82,7 +85,10 @@
         </div>
       </header>
       <!-- Promotional banner - Only show on student routes -->
-      <div v-if="route.path.startsWith('/student')" class="bg-[#00C6FF] text-white px-4 py-2 rounded-lg mx-5 w-full mt-5">
+      <div
+        v-if="route.path.startsWith('/student')"
+        class="bg-[#00C6FF] text-white px-4 py-2 rounded-lg mx-5 w-full mt-5"
+      >
         <div>
           <h2 class="text-xl font-bold">Ahorra en tus estudios!</h2>
           <p class="text-sm">
@@ -101,9 +107,8 @@
       >
         <!-- Main Content -->
 
-        <main class="flex-1 mt-2  w-full">
+        <main class="flex-1 mt-2 w-full">
           <NuxtPage />
-          <CalendarStudent v-if="isClassRoute" />
         </main>
         <div
           v-if="!isClassRoute"
@@ -123,8 +128,8 @@ import { ref, computed } from "vue";
 import UserProfile from "~/components/organisim/UserProfile.vue";
 
 import { useRoute, useRouter } from "vue-router";
-import { post } from '~/services/routes.api';
-import { apiRoutes } from '~/services/routes.api';
+import { post } from "~/services/routes.api";
+import { apiRoutes } from "~/services/routes.api";
 
 const isSidebarOpen = ref(false);
 
@@ -133,11 +138,13 @@ const router = useRouter();
 
 // Add isProgressRoute computed property
 const isProgressRoute = computed(() => {
-  return route.path.startsWith('/student/progress');
+  return route.path.startsWith("/student/progress");
 });
 
 const isClassRoute = computed(() => {
-  return /^\/course\/[^/]+\/class\/[^/]+$/.test(route.path) || isProgressRoute.value;
+  return (
+    /^\/course\/[^/]+\/class\/[^/]+$/.test(route.path) || isProgressRoute.value
+  );
 });
 
 const toggleSidebar = () => {
@@ -147,7 +154,7 @@ const toggleSidebar = () => {
 const user = {
   profileImage: "https://via.placeholder.com/150",
   name: "Mark Andrew Chernetskiy",
-  role: "Content Administrator",
+  role: "Student",
 };
 
 interface NavigationRoute {
@@ -181,49 +188,44 @@ const studentRoutes: NavigationRoute[] = [
   {
     path: "/student/classes",
     name: "My Classes",
-    icon: "material-symbols:class-outline",
+    icon: "material-symbols:menu-book",
   },
   {
     path: "/student/courses",
     name: "My Courses",
-    icon: "material-symbols:menu-book-outline",
+    icon: "material-symbols:school",
   },
-
   {
     path: "/student/progress",
     name: "My Progress",
-    icon: "material-symbols:trending-up-outline",
+    icon: "material-symbols:trending-up",
   },
   {
     path: "/student/speaking_practice",
     name: "Speaking Practice",
-    icon: "material-symbols:trending-up-outline",
+    icon: "material-symbols:record-voice-over",
   },
-
   {
     path: "/student/my_notes",
     name: "My Notes",
-    icon: "material-symbols:trending-up-outline",
+    icon: "material-symbols:note",
   },
-
   {
     path: "/student/my_words",
     name: "My Words",
-    icon: "material-symbols:trending-up-outline",
+    icon: "material-symbols:translate",
   },
-
   {
     path: "/student/my_profile",
     name: "My Profile",
-    icon: "material-symbols:trending-up-outline",
+    icon: "material-symbols:person",
   },
 ];
 
-// Update the navigationRoutes computed property
+// Update the navigationRoutes computed property with better route detection
 const navigationRoutes = computed(() => {
-  // Check if the current route starts with /student
-  const isStudent = route.path.startsWith("/student");
-  return isStudent ? studentRoutes : adminRoutes;
+  // Simplify the logic to only check user role
+  return user.role === "student" ? studentRoutes : adminRoutes;
 });
 
 const mainContentWidth = computed(() => {
@@ -233,28 +235,28 @@ const mainContentWidth = computed(() => {
 
 const handleLogout = async () => {
   try {
-    const refreshToken = localStorage.getItem('refreshToken'); // Assuming you store it as 'refreshToken'
+    const refreshToken = localStorage.getItem("refreshToken"); // Assuming you store it as 'refreshToken'
     const response = await post(apiRoutes.logout, {
-      refresh: refreshToken
+      refresh: refreshToken,
     });
-    
+
     if (response.ok) {
       // Clear any stored auth tokens or user data
-      localStorage.removeItem('token');
-      localStorage.removeItem('refreshToken');
+      localStorage.removeItem("token");
+      localStorage.removeItem("refreshToken");
       localStorage.clear(); // Optional: clears all localStorage data
-      
+
       // Redirect to login page
-      await router.push('/login');
+      await router.push("/login");
     } else {
-      console.error('Logout failed:', response.statusText);
+      console.error("Logout failed:", response.statusText);
       // Still redirect to login page even if the server request fails
-      await router.push('/login');
+      await router.push("/login");
     }
   } catch (error) {
-    console.error('Error during logout:', error);
+    console.error("Error during logout:", error);
     // Still redirect to login page even if there's an error
-    await router.push('/login');
+    await router.push("/login");
   }
 };
 </script>

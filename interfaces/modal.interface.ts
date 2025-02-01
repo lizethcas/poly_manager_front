@@ -1,7 +1,17 @@
 export interface ModalProps {
   title: string;
   showExtraElements?: boolean;
+  initialData?: {
+    course_name: string;
+    description: string;
+    category: string;
+    level: string;
+    cover?: string;
+    bullet_points: string[];
+  };
+  actionType?: 'create' | 'edit' | 'delete';
   options?: string[];
+  deleteAction?: boolean;
 }
 
 export interface FormDataModal {

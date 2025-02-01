@@ -14,34 +14,53 @@ export const useClassMutation = () => {
     return response.data;
   };
 
-  return useMutation({
-    mutationFn: createClassMutation,
-    onMutate: async (newClass) => {
-      const courseId = newClass.course_id;
-      await queryClient.cancelQueries({ queryKey: ["classes", courseId] });
+  const updateClassMutation = async ({ id, formData }: { id: number; formData: FormData }) => {
+    const response = await axiosDashboard.patch(apiRoutes.classes.getById(id), formData, {
+      headers: {
+        "Content-Type": "multipart/form-data",
+      },
+    });
+    return response.data;
+  };
 
-      const previousClasses = queryClient.getQueryData(["classes", courseId]);
-
-      queryClient.setQueryData(["classes", courseId], (old: any[] = []) => {
-        const optimisticClass = {
-          ...newClass,
-          id: "temp-" + Date.now(),
-          imageUrl: URL.createObjectURL(newClass.cover),
-        };
-        return [...old, optimisticClass];
-      });
-
-      return { previousClasses, courseId };
-    },
-    onError: (err, newClass, context) => {
-      if (context?.courseId) {
-        queryClient.setQueryData(["classes", context.courseId], context.previousClasses);
-      }
-    },
-    onSettled: (_, newClass) => {
-      if (newClass?.course_id) {
-        queryClient.invalidateQueries({ queryKey: ["classes", newClass.course_id] });
-      }
+  const updateMutation = useMutation({
+    mutationFn: updateClassMutation,
+    onSuccess: (_, variables) => {
+      queryClient.invalidateQueries({ queryKey: ["classes", variables.id] });
     },
   });
+
+  return {
+    createClassMutation: useMutation({
+      mutationFn: createClassMutation,
+      onMutate: async (newClass) => {
+        const courseId = newClass.course_id;
+        await queryClient.cancelQueries({ queryKey: ["classes", courseId] });
+
+        const previousClasses = queryClient.getQueryData(["classes", courseId]);
+
+        queryClient.setQueryData(["classes", courseId], (old: any[] = []) => {
+          const optimisticClass = {
+            ...newClass,
+            id: "temp-" + Date.now(),
+            imageUrl: URL.createObjectURL(newClass.cover),
+          };
+          return [...old, optimisticClass];
+        });
+
+        return { previousClasses, courseId };
+      },
+      onError: (err, newClass, context) => {
+        if (context?.courseId) {
+          queryClient.setQueryData(["classes", context.courseId], context.previousClasses);
+        }
+      },
+      onSettled: (_, newClass) => {
+        if (newClass?.course_id) {
+          queryClient.invalidateQueries({ queryKey: ["classes", newClass.course_id] });
+        }
+      },
+    }),
+    updateClassMutation: updateMutation,
+  };
 }; 
