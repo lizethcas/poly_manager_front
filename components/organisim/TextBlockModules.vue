@@ -25,6 +25,7 @@
       @handleSave="handleSave()"
       @handleCancel="handleCancel"
       :isActive="isActive"
+      :deleteAction="false"
     />
   </div>
 </template>

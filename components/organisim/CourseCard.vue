@@ -31,20 +31,31 @@
         <!-- Level Badge -->
       </div>
 
-      <!-- Course Name -->
-
-      <!-- Stats -->
-
-      <div class="flex md:items-center md:gap-4 mt-1 flex-wrap">
+      <div class="flex md:items-center md:gap-4 mt-1 flex-wrap" @click="(event) => publishCourse(course.id, event)">
         <div
+        v-show="course.publish"
           class="bg-emerald-100 text-emerald-700 text-xs px-2 rounded-full flex items-center gap-1"
         >
+
           <IconMolecule
             :name="IconType.eye"
             :size="16"
             :color="'text-emerald-700'"
           />
           <span class="leading-none">published</span>
+        </div>
+        <div 
+          v-show="!course.publish"
+          class=" text-xs px-2 rounded-full flex items-center gap-1 bg-white border border-fuscous-gray-600"
+        >
+          <IconMolecule
+            :name="IconType.eyeOff"
+
+
+            :size="16"
+            :color="'text-fuscous-gray-600'"
+          />
+          <span class="leading-none">hidden</span>
         </div>
         <!-- Modified stats section with responsive classes -->
         <div
@@ -106,7 +117,10 @@
       </div>
     </div>
   </div>
-  <div v-if="isOpen" class="fixed inset-0 bg-gray-600 bg-opacity-50 z-50 flex justify-center items-center">
+  <div
+    v-if="isOpen"
+    class="fixed inset-0 bg-gray-600 bg-opacity-50 z-50 flex justify-center items-center"
+  >
     <div class="w-full max-w-5xl mx-auto">
       <AddCourseModal
         :title="createCourse.title"
@@ -121,12 +135,11 @@
       />
     </div>
   </div>
-  <div v-if="confirmDelete"
-    class="fixed flex items-center justify-center top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2  w-full z-50 bg-gray-600 bg-opacity-90 h-screen"
+  <div
+    v-if="confirmDelete"
+    class="fixed flex items-center justify-center top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-full z-50 bg-gray-600 bg-opacity-90 h-screen"
   >
     <UAlert
-      
-
       class="w-full max-w-xl mx-auto"
       :actions="[
         {
@@ -134,15 +147,12 @@
           color: 'red',
           label: 'Delete',
           click: () => confirmDeleteCourse(),
-
-
         },
         {
           variant: 'outline',
           color: 'gray',
           label: 'Cancel',
           click: () => (confirmDelete = false),
-
         },
       ]"
       title="Delete Course"
@@ -174,7 +184,10 @@ interface Course {
   level: string;
   cover?: string;
   students?: number;
+  publish?: boolean;
 }
+
+
 
 interface Props {
   coursesData?: Course[];
@@ -243,6 +256,9 @@ const handleCourseAction = async (formData: any) => {
     );
   }
 
+  // Add stats to FormData
+  formDataToSend.append("stats", formData.formData.stats);
+
   await updateCourseMutation.mutateAsync({
     id: selectedCourse.value.id,
     formData: formDataToSend,
@@ -270,13 +286,6 @@ const handleDelete = async () => {
   if (!selectedCourse.value?.id) return;
   confirmDelete.value = true;
   console.log(selectedCourse.value);
-
-  /*  try {
-    await deleteCourseMutation.mutateAsync(selectedCourse.value.id);
-    closeModal();
-  } catch (error) {
-    console.error("Error deleting course:", error);
-  } */
 };
 
 const confirmDeleteCourse = async () => {
@@ -289,4 +298,24 @@ const confirmDeleteCourse = async () => {
     console.error("Error deleting course:", error);
   }
 };
+
+
+const publishCourse = async (courseId: number, event: Event) => {
+  event.stopPropagation(); // Prevent navigation when clicking publish/hidden
+  const course = props.coursesData?.find((c) => c.id === courseId);
+  if (!course) return;
+
+  const formData = new FormData();
+  formData.append('publish', (!course.publish).toString());
+
+  try {
+    await updateCourseMutation.mutateAsync({
+      id: courseId,
+      formData: formData,
+    });
+  } catch (error) {
+    console.error('Error updating publish status:', error);
+  }
+};
+
 </script>

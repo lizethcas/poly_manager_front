@@ -10,4 +10,5 @@ export interface Course {
   cover: string;
   course_name: string;
   category: string;
+  publish: boolean;
 }

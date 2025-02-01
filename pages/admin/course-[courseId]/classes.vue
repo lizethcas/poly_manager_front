@@ -51,7 +51,6 @@ import ClassCard from "~/components/organisim/ClassCard.vue";
 import { useModal } from "~/composables/useModal";
 import { createClass } from "~/data/cardModal";
 import { useClassesQuery } from "~/composables/useClassesQuery";
-import { useTaskStore } from "~/stores/task.store";
 import { useClassMutation } from "~/composables/useClassMutation";
 import { useNotify } from "~/composables/useNotify";
 import { useRoute } from "vue-router";
@@ -96,10 +95,12 @@ const handleSave = async (formDataEvent: any) => {
       course_id: courseId,
       bullet_points: JSON.stringify(bulletPoints),
       cover: formData.cover,
+      publish: formData.publish,
     };
-    await classMutation.mutateAsync(requestData);
+    await classMutation.createClassMutation.mutateAsync(requestData);
     success("Class created successfully");
     await handleCloseModal();
+
   } catch (err) {
     console.error("Error creating class:", err);
     error("Failed to create class");

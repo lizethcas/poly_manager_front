@@ -8,12 +8,17 @@
 </template>
 
 <script setup lang="ts">
+import { ref, watch } from 'vue'
 
+const props = defineProps<{
+  modelValue?: boolean
+}>()
 
-const selected = ref(false)
+const selected = ref(props.modelValue)
+
+watch(() => props.modelValue, (newValue) => {
+  selected.value = newValue
+})
 
 defineEmits(['update:modelValue'])
-
-
-
 </script>

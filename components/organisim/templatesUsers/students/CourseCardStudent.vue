@@ -8,7 +8,7 @@
     class="w-full flex bg-white border rounded-xl cursor-pointer mt-2 hover:scale-105 transition-all duration-300 p-2"
   >
     <!-- Move "My Current Course" to the top -->
-    <div class="flex flex-col w-full p-1">
+    <div class="flex flex-col w-full p-1" v-show="course.publish">
       <div class="flex justify-between" v-show="route.path.includes('/course')">
    <!--      <h2 class="text-fuscous-gray-600 font-bold text-lg mb-2 w-contain">
           My Current Course:

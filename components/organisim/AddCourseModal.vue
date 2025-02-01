@@ -14,13 +14,24 @@
 
     <form @submit.prevent @click.stop>
       <div>
-        <InputFile
-          v-model="formData.cover"
-          :previewUrl="previewUrl || props.initialData?.cover"
-          @file-selected="handleCoverImage"
-        />
+        <div class="flex items-center gap-2 py-4 text-sm justify-between">
+          <InputFile
+            v-model="formData.cover"
+            :previewUrl="previewUrl || props.initialData?.cover"
+            @file-selected="handleCoverImage"
+          />
+          <div class="flex items-center gap-2 py-4 text-sm">
+            <p>Publish</p>
+            <AtomosToggle 
+              v-model="formData.publish" 
+              :modelValue="formData.publish || props.initialData?.publish || false"
+            />
+          </div>
+        </div>
         <!-- Iterar sobre los labels para los campos del formulario -->
         <div v-for="(item, index) in labels" :key="'label-' + index">
+
+
           <MoleculeInput
             :title="item.label_name"
             :type="item.type"
@@ -56,9 +67,8 @@
         <div
           v-for="(point, index) in bulletPoints"
           :key="index"
-          class=" items-center gap-4 mb-4"
+          class="items-center gap-4 mb-4"
         >
-     
           <UInput
             type="text"
             size="md"
@@ -73,7 +83,6 @@
 
       <!-- Botones de acción -->
       <div class="flex justify-center gap-4 mt-6">
-     
         <MoleculeActionButtons
           @handleSave="handleSave"
           @handleCancel="closeModal"
@@ -83,14 +92,13 @@
         />
       </div>
     </form>
-
-
   </div>
 </template>
 
 <script lang="ts" setup>
 import { defineProps, onMounted, ref } from "vue";
 import BulletPoint from "../molecule/BulletPoint.vue";
+
 import { createCourse, labels } from "~/data/cardModal";
 import type { ModalProps } from "~/interfaces/modal.interface";
 import SelectAtom from "../molecule/SelectAtom.vue";
@@ -100,13 +108,8 @@ import transformKey from "~/utils/stringTransformations";
 import { useNotify } from "~/composables/useNotify";
 const { error } = useNotify();
 
-
-
-
 const { bulletPoints, formData, handleEmit, updateFormField, resetForm } =
   useFormData();
-
-
 
 // Propiedades del modal
 const props = defineProps<ModalProps>();
@@ -141,7 +144,6 @@ const handleSave = () => {
     return;
   }
 
-
   if (!formData.value?.course_name?.trim() && props.actionType !== "edit") {
     error("El nombre es obligatorio");
     return;
@@ -151,7 +153,6 @@ const handleSave = () => {
     formData: formData.value,
     bulletPoints: Array.from(bulletPoints.value),
   });
-
 };
 
 // Añade esta referencia para manejar la URL de previsualización
@@ -176,9 +177,12 @@ const initializeFormData = () => {
         updateFormField(key as FormDataKey, value);
       }
     });
-    
+
     // Inicializar bulletPoints si existen en initialData
-    if (props.initialData.bullet_points && props.initialData.bullet_points.length > 0) {
+    if (
+      props.initialData.bullet_points &&
+      props.initialData.bullet_points.length > 0
+    ) {
       bulletPoints.value = [...props.initialData.bullet_points];
     }
 
@@ -194,7 +198,4 @@ onMounted(() => {
   initializeFormData();
   console.log("initialData", props.initialData);
 });
-
-
-
 </script>

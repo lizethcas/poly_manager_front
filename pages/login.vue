@@ -144,9 +144,9 @@ const loginMutation = useMutation({
     }
   },
   onError: (err: Error) => {
-    toast.error(err.response.data.message);
-    console.log(err.response.data.message);
-    error.value = err.response.data.message;
+    toast.error(err.message);
+    console.log(err.message);
+    error.value = err.message;
   }
 });
 

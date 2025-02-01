@@ -83,8 +83,9 @@ const handleSave = async (formDataEvent: any) => {
       level: formData.level || defaultLevel,
       bullet_points: JSON.stringify(bulletPoints),
       cover: formData.cover,
+      publish: formData.publish,
     };
-    await courseMutation.mutateAsync(requestData);
+    await courseMutation.createCourseMutation.mutateAsync(requestData);
     success("Course created successfully");
 
     closeModal();

@@ -7,7 +7,10 @@ export interface FormData {
   level: string;
   cover: File | null;
   bullet_points: string[];
+  publish: boolean;
 }
+
+
 
 export function useFormData() {
   const bulletPoints = ref<string[]>([]);
@@ -17,8 +20,11 @@ export function useFormData() {
     category: '',
     level: '',
     cover: null,
-    bullet_points: []
+    bullet_points: [],
+    publish: false
   });
+
+
 
   const resetForm = () => {
     bulletPoints.value = [];
@@ -28,9 +34,12 @@ export function useFormData() {
       category: '',
       level: '',
       cover: null,
-      bullet_points: []
+      bullet_points: [],
+      publish: false
     };
   };
+
+
 
   const handleEmit = () => {
     bulletPoints.value.push('');

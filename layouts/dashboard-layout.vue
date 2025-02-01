@@ -225,7 +225,7 @@ const studentRoutes: NavigationRoute[] = [
 // Update the navigationRoutes computed property with better route detection
 const navigationRoutes = computed(() => {
   // Simplify the logic to only check user role
-  return user.role === "student" ? studentRoutes : adminRoutes;
+  return user.role === "Student" ? studentRoutes : adminRoutes;
 });
 
 const mainContentWidth = computed(() => {
