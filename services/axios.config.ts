@@ -26,7 +26,12 @@ export const axiosDashboard = axios.create({
 // Add request interceptor
 axiosDashboard.interceptors.request.use(
   (config) => {
-    // Get token from localStorage
+    // Skip adding Bearer token for Google login endpoint
+    if (config.url?.includes('google-login')) {
+      return config;
+    }
+    
+    // Get token from localStorage for other endpoints
     const token = localStorage.getItem('token');
     if (token) {
       config.headers.Authorization = `Bearer ${token}`;

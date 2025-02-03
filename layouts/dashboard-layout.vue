@@ -8,23 +8,45 @@
     >
       <!-- Navigation Links -->
       <nav class="overflow-y-auto h-[calc(100vh-64px)] mt-6">
-        <div class="px-4 space-y-2">
-          <NuxtLink
-            v-for="route in navigationRoutes"
-            :key="route.path"
-            :to="route.path"
-            class="flex items-start text-gray-700 hover:bg-gray-100 rounded-md"
-            @click="isSidebarOpen = false"
-          >
-            <Icon :name="route.icon" size="20" />
-            {{ route.name }}
-          </NuxtLink>
+        <div class=" space-y-4">
+          <div v-for="(section, index) in navigationRoutes" :key="index">
+            <!-- Section Header -->
+            <h3
+              class="pl-4 text-base font-semibold text-gray-500 uppercase tracking-wider mb-2"
+            >
+              {{ section.header }}
+            </h3>
+            <!-- Navigation Items -->
+            <div class="space-y-1">
+              <NuxtLink
+                v-for="route in section.items"
+                :key="route.path"
+                :to="route.path"
+                class="flex items-center text-[#7B828C] hover:bg-gray-100 rounded-md pl-4 text-sm"
+                :class="{ 'text-[#478ADF]': $route.path === route.path }"
+                @click="isSidebarOpen = false"
+              >
+                <Icon 
+                  :name="route.icon" 
+                  size="20" 
+                  class="mr-2"
+                  :class="{ 'text-[#478ADF]': $route.path === route.path }" 
+                />
+                <span class="text-base" :class="{ 'text-[#478ADF] ': $route.path === route.path }">
+                  {{ route.name }}
+                </span>
+              </NuxtLink>
+
+            </div>
+
+          </div>
+          <!-- Logout Link -->
           <NuxtLink
             to="/login"
             @click.prevent="handleLogout"
-            class="flex items-start text-gray-700 hover:bg-gray-100 rounded-md"
+            class="flex items-center text-gray-700 hover:bg-gray-100 rounded-md py-2 px-2 mt-4"
           >
-            <Icon name="material-symbols:logout" size="20" />
+            <Icon name="material-symbols:logout" size="20" class="mr-2" />
             Logout
           </NuxtLink>
         </div>
@@ -64,7 +86,7 @@
           <div class="flex-1 max-w-2xl px-4 hidden sm:block">
             <SearchInput class="w-full" />
             <NuxtLink to="/search" class="flex items-center">
-              <UIcon
+              <Icon
                 name="i-heroicons-magnifying-glass-20-solid"
                 class="text-gray-500"
               />
@@ -126,13 +148,14 @@
 <script setup lang="ts">
 import { ref, computed } from "vue";
 import UserProfile from "~/components/organisim/UserProfile.vue";
-
+import { useAuthStore } from "~/stores/auth";
 import { useRoute, useRouter } from "vue-router";
 import { post } from "~/services/routes.api";
 import { apiRoutes } from "~/services/routes.api";
+import { IconType } from "~/data/iconsType";
 
 const isSidebarOpen = ref(false);
-
+const authStore = useAuthStore();
 const route = useRoute();
 const router = useRouter();
 
@@ -164,68 +187,109 @@ interface NavigationRoute {
   onClick?: boolean;
 }
 
-// Define admin routes (renamed from defaultRoutes)
-const adminRoutes: NavigationRoute[] = [
+// Define admin routes with groupings
+const adminRoutes = [
   {
-    path: "/admin/dashboard",
-    name: "Dashboard",
-    icon: "material-symbols:dashboard-outline",
-  },
-  {
-    path: "/admin/courses",
-    name: "Courses",
-    icon: "material-symbols:menu-book-outline",
-  },
-  {
-    path: "/admin/students",
-    name: "Students",
-    icon: "material-symbols:person-outline",
+    header: "Modules",
+    items: [
+      {
+        path: "/admin/dashboard",
+        name: "Dashboard",
+        icon: IconType.home,
+      },
+      {
+        path: "/admin/courses",
+        name: "Courses",
+        icon: "material-symbols:menu-book-outline",
+      },
+      {
+        path: "/admin/students",
+        name: "Students",
+        icon: "material-symbols:person-outline",
+      },
+    ],
   },
 ];
 
-// Define student routes
-const studentRoutes: NavigationRoute[] = [
+// Define student routes with groupings
+const studentRoutes = [
   {
-    path: "/student/classes",
-    name: "My Classes",
-    icon: "material-symbols:menu-book",
+    items: [
+      {
+        path: "/student/classes",
+        name: "My Classes",
+        icon: IconType.home,
+      },
+      {
+        path: "/student/courses",
+        name: "My Courses",
+        icon: IconType.book,
+      },
+
+
+      {
+        path: "/student/progress",
+        name: "My Progress",
+        icon: IconType.trendingUp,
+      },
+    ],
+  },
+
+  {
+    header: "My Progress",
+    items: [
+      {
+        path: "/student/speaking_practice",
+        name: "Speaking Practice",
+        icon: IconType.wechat,
+
+      },
+      {
+        path: "/student/my_notes",
+        name: "My Notes",
+        icon: IconType.note,
+      },
+      {
+        path: "/student/my_words",
+        name: "My Words",
+        icon: IconType.translate,
+      },
+
+      {
+        path: "/student/my_profile",
+        name: "My Profile",
+        icon: IconType.person,
+
+      },
+    ],
   },
   {
-    path: "/student/courses",
-    name: "My Courses",
-    icon: "material-symbols:school",
-  },
-  {
-    path: "/student/progress",
-    name: "My Progress",
-    icon: "material-symbols:trending-up",
-  },
-  {
-    path: "/student/speaking_practice",
-    name: "Speaking Practice",
-    icon: "material-symbols:record-voice-over",
-  },
-  {
-    path: "/student/my_notes",
-    name: "My Notes",
-    icon: "material-symbols:note",
-  },
-  {
-    path: "/student/my_words",
-    name: "My Words",
-    icon: "material-symbols:translate",
-  },
-  {
-    path: "/student/my_profile",
-    name: "My Profile",
-    icon: "material-symbols:person",
+    header: "Others",
+
+    items: [
+      {
+        path: "/student/my_payments",
+        name: "My Payments",
+        icon: "material-symbols:payments-outline",
+      },
+      {
+        path: "/student/my_tutor",
+        name: "My Tutor",
+        icon: "material-symbols:person-outline",
+      },
+      {
+        path: "/student/speaking_clubs",
+        name: "Speaking Clubs",
+        icon: "material-symbols:groups",
+      },
+    ],
   },
 ];
 
 // Update the navigationRoutes computed property with better route detection
 const navigationRoutes = computed(() => {
   // Simplify the logic to only check user role
-  return user.role === "Student" ? studentRoutes : adminRoutes;
+  return authStore.getUserType() === "student" ? studentRoutes : adminRoutes;
 });
 
 const mainContentWidth = computed(() => {

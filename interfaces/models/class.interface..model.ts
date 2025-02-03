@@ -5,4 +5,5 @@ export interface ClassData {
     description: string;
     course_id: string;
     bullet_points: string[];
+    publish: boolean;
   }

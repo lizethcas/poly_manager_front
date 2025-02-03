@@ -1,17 +1,28 @@
 <template>
-  <div class="min-h-screen  flex bg-white w-full">
+  <div class="min-h-screen flex bg-white w-full">
     <!-- Wave pattern container -->
- 
-    
-    
+
     <div class="flex min-h-screen items-center justify-center px-4">
       <!-- Left side - Login Form -->
-      <div class="w-full max-w-md space-y-8 bg-transparent opacity-100 p-8 rounded-2xl shadow-lg">
+      <div
+        class="w-full max-w-md space-y-8 bg-transparent opacity-100 p-8 rounded-2xl shadow-lg"
+      >
         <!-- Back Arrow -->
         <div class="mb-8">
           <button class="text-gray-400 hover:text-gray-600">
-            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              class="h-6 w-6"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M10 19l-7-7m0 0l7-7m-7 7h18"
+              />
             </svg>
           </button>
         </div>
@@ -49,12 +60,17 @@
                   class="w-full px-4 py-3 bg-gray-50 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500"
                   placeholder="Password"
                 />
-                <span class="absolute right-4 top-3 text-gray-400 cursor-pointer">
+                <span
+                  class="absolute right-4 top-3 text-gray-400 cursor-pointer"
+                >
                   <i class="fas fa-eye"></i>
                 </span>
               </div>
               <div class="mt-2">
-                <a href="#" class="text-emerald-400 text-sm hover:text-emerald-500">
+                <a
+                  href="#"
+                  class="text-emerald-400 text-sm hover:text-emerald-500"
+                >
                   I don't remember my password
                 </a>
               </div>
@@ -76,9 +92,9 @@
               <span v-else>LOG IN</span>
             </button>
           </div>
-
+          <LoginGoogle />
           <!-- Social Login -->
-        <!--   <div class="mt-6">
+          <!--   <div class="mt-6">
             <div class="flex justify-center space-x-4">
               <button class="p-2 bg-gray-100 rounded-full hover:bg-gray-200">
                 <img src="~/assets/images/google.png" alt="Google" class="w-6 h-6" />
@@ -96,21 +112,24 @@
           </div> -->
         </form>
       </div>
-      <img src="~/assets/images/login.png" alt="Logo" class="logo z-50 relative w-1/2 h-full" />
-
+      <img
+        src="~/assets/images/login.png"
+        alt="Logo"
+        class="logo z-50 relative w-1/2 h-full"
+      />
     </div>
-
   </div>
-
 </template>
 
 <script setup lang="ts">
-import { ref } from 'vue';
-import { useRouter } from 'vue-router';
-import { useAuthStore } from '~/stores/auth';
-import { useMutation } from '@tanstack/vue-query';
-import { apiRoutes, post } from '~/services/routes.api';
-import { useToast } from 'vue-toastification';
+import { ref } from "vue";
+import { useRouter } from "vue-router";
+import { useAuthStore } from "~/stores/auth";
+import { useMutation } from "@tanstack/vue-query";
+import { apiRoutes, post } from "~/services/routes.api";
+import { useToast } from "vue-toastification";
+import LoginGoogle from "~/components/organisim/LoginGoogle.vue";
+import { useLogin } from "~/composables/useLogin";
 
 const router = useRouter();
 const authStore = useAuthStore();
@@ -118,47 +137,14 @@ const toast = useToast();
 
 const email = ref("");
 const password = ref("");
-const error = ref("");
 const isLoading = ref(false);
 
-// Definir la mutación para el login
-const loginMutation = useMutation({
-  mutationFn: async (credentials: { email: string; password: string }) => {
-    const data = await post(apiRoutes.login, credentials);
-    if (data.status !== 'success') {
-      throw new Error(data.message);
-    }
-    return data;
-  },
-  onSuccess: async (data) => {
-    await authStore.setAuth({
-      token: data.token,
-      user: data.user_data,
-      userType: data.user_type
-    });
-
-    if (data.user_type === 'teacher') {
-      navigateTo('/admin/dashboard');
-    } else if (data.user_type === 'student') {
-      navigateTo('/student/classes');
-    }
-  },
-  onError: (err: Error) => {
-    toast.error(err.message);
-    console.log(err.message);
-    error.value = err.message;
-  }
-});
+const { loginMutation, error } = useLogin();
 
 const handleLogin = async () => {
-  error.value = ""; // Limpiar errores previos
-  
   await loginMutation.mutate({
     email: email.value,
-    password: password.value
+    password: password.value,
   });
 };
 </script>
-
-
-

@@ -78,10 +78,43 @@
                   <Icon name="material-symbols:visibility-outline" size="14" />
                   <span class="text-xs">preview</span>
                 </button>
-                <button class="action-btn">
-                  <Icon name="lucide:eye-off" size="14" />
-                  <span class="text-xs">hide</span>
-                </button>
+                <!--  <button 
+                  class="action-btn" 
+                  @click.stop="togglePublish(classItem)"
+                >
+                  <Icon 
+                    :name="classItem.publish ? 'lucide:eye' : 'lucide:eye-off'" 
+                    size="14" 
+                  />
+                  <span class="text-xs">{{ classItem.publish ? 'published' : 'hidden' }}</span>
+                </button> -->
+                <div
+                  class="flex md:items-center md:gap-4 mt-1 flex-wrap"
+                  @click.stop="togglePublish(classItem)"
+                >
+                  <div
+                    v-if="classItem.publish"
+                    class="bg-emerald-100 text-emerald-700 text-xs px-2 rounded-full flex items-center gap-1"
+                  >
+                    <IconMolecule
+                      :name="IconType.eye"
+                      :size="16"
+                      :color="'text-emerald-700'"
+                    />
+                    <span class="leading-none">published</span>
+                  </div>
+                  <div
+                    v-if="!classItem.publish"
+                    class="text-xs px-2 rounded-full flex items-center gap-1 bg-white border border-fuscous-gray-600"
+                  >
+                    <IconMolecule
+                      :name="IconType.eyeOff"
+                      :size="16"
+                      :color="'text-fuscous-gray-600'"
+                    />
+                    <span class="leading-none">hidden</span>
+                  </div>
+                </div>
                 <button
                   class="action-btn text-red-500"
                   @click="handleDelete(classItem.id)"
@@ -119,6 +152,7 @@ import { useGetCover } from "~/composables/useGetcover";
 import type { ClassData } from "~/interfaces/models/class.interface..model";
 import { useClassesQuery } from "~/composables/useClassesQuery";
 import AddCourseModal from "./AddCourseModal.vue";
+import { IconType } from "~/data/iconsType";
 import { createClass } from "~/data/cardModal";
 import { routes } from "~/data/routes";
 import { useNotify } from "~/composables/useNotify";
@@ -128,7 +162,6 @@ import { useClassMutation } from "~/composables/useClassMutation";
 const { success, error } = useNotify();
 const { isOpen, openModal, closeModal } = useModal();
 const route = useRoute();
-const router = useRouter();
 const courseId = route.params.courseId as string;
 
 // Define props
@@ -183,6 +216,7 @@ const openEditClass = (classItem: ClassData) => {
     description: classItem.description,
     bullet_points: classItem.bullet_points,
     cover: classItem.cover,
+    publish: classItem.publish,
   };
 
   openModal();
@@ -195,21 +229,24 @@ const handleSave = async (formData: any) => {
 
   // Add non-file fields to FormData
   Object.entries(formData.formData).forEach(([key, value]) => {
-    if (key === 'cover') return;
-    
-    if (value !== undefined && value !== null && value !== '') {
+    if (key === "cover") return;
+
+    if (value !== undefined && value !== null && value !== "") {
       formDataToSend.append(key, value as string);
     }
   });
 
   // Handle cover file
   if (formData.formData.cover instanceof File) {
-    formDataToSend.append('cover', formData.formData.cover);
+    formDataToSend.append("cover", formData.formData.cover);
   }
 
   // Add bullet points if they exist
   if (formData.bulletPoints?.length > 0) {
-    formDataToSend.append('bullet_points', JSON.stringify(formData.bulletPoints));
+    formDataToSend.append(
+      "bullet_points",
+      JSON.stringify(formData.bulletPoints)
+    );
   }
 
   try {
@@ -217,11 +254,31 @@ const handleSave = async (formData: any) => {
       id: selectedClass.value.id,
       formData: formDataToSend,
     });
-    success('Class updated successfully');
+    success("Class updated successfully");
     closeModal();
   } catch (err) {
-    console.error('Error updating class:', err);
-    error('Error updating class');
+    console.error("Error updating class:", err);
+    error("Error updating class");
+  }
+};
+
+const togglePublish = async (classItem: ClassData) => {
+  const formData = new FormData();
+  // Toggle the publish status immediately for instant UI feedback
+  classItem.publish = !classItem.publish;
+  formData.append("publish", classItem.publish.toString());
+
+  try {
+    await updateClassMutation.mutateAsync({
+      id: classItem.id,
+      formData: formData,
+    });
+    success("Class status updated successfully");
+  } catch (err) {
+    // Revert the change if the API call fails
+    classItem.publish = !classItem.publish;
+    console.error("Error updating class status:", err);
+    error("Error updating class status");
   }
 };
 </script>

@@ -31,12 +31,14 @@
         <!-- Level Badge -->
       </div>
 
-      <div class="flex md:items-center md:gap-4 mt-1 flex-wrap" @click="(event) => publishCourse(course.id, event)">
+      <div
+        class="flex md:items-center md:gap-4 mt-1 flex-wrap"
+        @click="(event) => publishCourse(course.id, event)"
+      >
         <div
-        v-show="course.publish"
+          v-show="course.publish"
           class="bg-emerald-100 text-emerald-700 text-xs px-2 rounded-full flex items-center gap-1"
         >
-
           <IconMolecule
             :name="IconType.eye"
             :size="16"
@@ -44,14 +46,12 @@
           />
           <span class="leading-none">published</span>
         </div>
-        <div 
+        <div
           v-show="!course.publish"
-          class=" text-xs px-2 rounded-full flex items-center gap-1 bg-white border border-fuscous-gray-600"
+          class="text-xs px-2 rounded-full flex items-center gap-1 bg-white border border-fuscous-gray-600"
         >
           <IconMolecule
             :name="IconType.eyeOff"
-
-
             :size="16"
             :color="'text-fuscous-gray-600'"
           />
@@ -187,8 +187,6 @@ interface Course {
   publish?: boolean;
 }
 
-
-
 interface Props {
   coursesData?: Course[];
 }
@@ -299,14 +297,13 @@ const confirmDeleteCourse = async () => {
   }
 };
 
-
 const publishCourse = async (courseId: number, event: Event) => {
   event.stopPropagation(); // Prevent navigation when clicking publish/hidden
   const course = props.coursesData?.find((c) => c.id === courseId);
   if (!course) return;
 
   const formData = new FormData();
-  formData.append('publish', (!course.publish).toString());
+  formData.append("publish", (!course.publish).toString());
 
   try {
     await updateCourseMutation.mutateAsync({
@@ -314,8 +311,7 @@ const publishCourse = async (courseId: number, event: Event) => {
       formData: formData,
     });
   } catch (error) {
-    console.error('Error updating publish status:', error);
+    console.error("Error updating publish status:", error);
   }
 };
-
 </script>

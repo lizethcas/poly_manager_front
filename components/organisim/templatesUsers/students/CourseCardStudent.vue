@@ -2,7 +2,7 @@
   <p v-if="!courses" class="text-title-color">no hay cursos</p>
   <div
     v-if="courses"
-    v-for="course in courses"
+    v-for="course in filteredCourses"
     :key="course.id"
    
     class="w-full flex bg-white border rounded-xl cursor-pointer mt-2 hover:scale-105 transition-all duration-300 p-2"
@@ -83,14 +83,18 @@ import type { Course } from "~/interfaces/course.interface";
 import { useGetCover } from "~/composables/useGetcover";
 import { useGetColor } from "~/composables/useGetColor";
 import routes from "~/data/routes";
+import { computed } from "vue";
 
 const route = useRoute();
 
 const { getCoverUrl } = useGetCover();
 const { getLevelColor } = useGetColor();
 
-
-defineProps<{
+const props = defineProps<{
   courses: Course[];
 }>();
+
+const filteredCourses = computed(() => {
+  return props.courses.filter(course => course.publish === true);
+});
 </script>

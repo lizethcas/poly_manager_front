@@ -21,11 +21,16 @@ export default defineNuxtConfig({
     "@nuxtjs/tailwindcss",
     "@pinia/nuxt",
     "@pinia-plugin-persistedstate/nuxt",
+    "nuxt-vue3-google-signin",
   ],
-
+  googleSignIn: {
+    clientId: "812601186913-sp0e8hfnarjmbvqi51bpgfsj6tmeq0sf.apps.googleusercontent.com",
+  },
   pinia: {
     storesDirs: ["./stores/**", "./custom-folder/stores/**"],
   },
+
+
   app: {
     head: {
       link: [
@@ -41,9 +46,9 @@ export default defineNuxtConfig({
         },
       ],
     },
-    baseURL: '/poly_manager_front/'
+    baseURL: "/poly_manager_front/",
   },
-  css: ["~/assets/css/main.css", 'vue-toastification/dist/index.css'],
+  css: ["~/assets/css/main.css", "vue-toastification/dist/index.css"],
   vite: {
     vue: {
       template: {
@@ -60,12 +65,9 @@ export default defineNuxtConfig({
   runtimeConfig: {
     autoImports: ["defineStore", "storeToRefs"], // Esto normalmente no se coloca en runtimeConfig, verifica si es necesario.
   },
- 
+
   imports: {
-    dirs: [
-      'composables/**',
-      'components/**',
-    ]
+    dirs: ["composables/**", "components/**"],
   },
   ssr: false,
 });
