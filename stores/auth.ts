@@ -10,6 +10,7 @@ interface AuthState {
   token: string | null;
   user: User | null;
   userType: string | null;
+  userId: number | null;
 }
 
 export const useAuthStore = defineStore('auth', {
@@ -28,20 +29,28 @@ export const useAuthStore = defineStore('auth', {
     return {
       token: localStorage.getItem('token') || null,
       user: user,
-      userType: localStorage.getItem('userType') || null
+      userType: localStorage.getItem('userType') || null,
+      userId: localStorage.getItem('userId') ? parseInt(localStorage.getItem('userId')!) : null
     };
   },
 
   actions: {
-    setAuth(payload: { token: string; user: User; userType: string }) {
+    setAuth(payload: {
+      token: string;
+      user: User;
+      userType: string;
+      userId: number;
+    }) {
       this.token = payload.token;
       this.user = payload.user;
       this.userType = payload.userType;
+      this.userId = payload.userId;
       
       // Persist in localStorage
       localStorage.setItem('token', payload.token);
       localStorage.setItem('user', JSON.stringify(payload.user));
       localStorage.setItem('userType', payload.userType);
+      localStorage.setItem('userId', payload.userId.toString());
     },
 
     setToken(token: string) {
@@ -57,12 +66,13 @@ export const useAuthStore = defineStore('auth', {
       this.token = null;
       this.user = null;
       this.userType = null;
+      this.userId = null;
       
-
       // Clear localStorage
       localStorage.removeItem('token');
       localStorage.removeItem('user');
       localStorage.removeItem('userType');
+      localStorage.removeItem('userId');
     },
 
     validateToken() {
@@ -87,7 +97,14 @@ export const useAuthStore = defineStore('auth', {
     },
     
     clearAuth() {
-      this.logout(); // Reuse logout logic
+      // Reset all auth-related state
+      this.user = null;
+      this.token = null;
+      // Reset any other auth-related state
+    },
+
+    getUserId() {
+      return this.userId;
     }
   }
 }); 

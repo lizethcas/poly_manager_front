@@ -71,10 +71,11 @@
             <span class="text-gray-600">completed</span>
           </div>
           <button @click="showClassDescription(classItem, index)">
-            start class
+            {{textButton}}
           </button>
         </div>
       </div>
+
       <div class="w-72 h-full">
         <img
           :src="classItem.cover"
@@ -89,30 +90,36 @@
     :class-item="selectedClass"
     :is-open="isDescriptionVisible"
     @close="isDescriptionVisible = false"
+    :name="selectedClass.class_name"
+    :description="selectedClass.description"
+    :bullet-points="selectedClass.bullet_points"
+    :cover="selectedClass.cover"
+    :course-id="selectedClass.course_id"
+    :id="selectedClass.id"
+    text-button="Start lesson"
   />
 </template>
+
 
 <script setup lang="ts">
 import { useRoute } from "#imports";
 import ClassDescription from "./ClassDescription.vue";
 import { useClassesQuery } from "~/composables/useClassesQuery";
 import { computed } from "vue";
-import { useTaskStore } from "~/stores/task.store";
-
 const route = useRoute();
 const courseId = route.params.courseid;
 const selectedClass = ref({});
-const taskStore = useTaskStore();
-const { data: classes, isPending, error } = useClassesQuery(courseId);
+const { data: classes, isPending, error } = useClassesQuery(courseId as string);
 
 const filteredClasses = computed(() => {
   if (!classes.value) return [];
-  return classes.value.filter((classItem) => {
+  return classes.value.filter((classItem: any) => {
     return (
       classItem &&
       classItem.course_id &&
       classItem.course_id.toString() === courseId &&
       classItem.publish === true
+
     );
   });
 });
@@ -126,6 +133,7 @@ const showClassDescription = (classItem: any, index: number) => {
     course_id: courseId,
   };
   isDescriptionVisible.value = true;
+
 };
 
 const MAX_DESCRIPTION_LENGTH = 100;

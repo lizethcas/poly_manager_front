@@ -61,13 +61,20 @@
         <div
           class="flex items-center gap-1 md:gap-2 text-gray-600 text-xs flex-wrap"
         >
-          <span class="flex items-center gap-1">
+          <span
+            class="flex items-center gap-1"
+            @click="handleStudents(course.id)"
+          >
             <IconMolecule
               :name="IconType.students"
               :size="16"
               :color="'text-gray-600'"
             />
-            {{ course.students || 25 }} students
+            {{
+              useCourseStudents(course.id).students?.value?.data
+                .total_students || 0
+            }}
+            students
           </span>
           <span class="flex items-center gap-1">
             <IconMolecule
@@ -174,6 +181,7 @@ import { routes } from "~/data/routes";
 import { ref } from "vue";
 import { useModal } from "~/composables/useModal";
 import { useCourseMutation } from "~/composables/useCourseMutation";
+import { useCourseStudents } from "~/composables/useCourseStudents";
 
 // Updated Props interface with proper typing
 interface Course {
@@ -206,7 +214,12 @@ const confirmDelete = ref(false);
 const emit = defineEmits(["openModal"]);
 const { updateCourseMutation, deleteCourseMutation } = useCourseMutation();
 
+const handleStudents = (courseId: number) => {
+  console.log(courseId);
+};
+
 // Improved click outside handler
+
 onMounted(() => {
   document.addEventListener("click", (e: Event) => {
     const target = e.target as HTMLElement;

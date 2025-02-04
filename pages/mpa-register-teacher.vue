@@ -33,11 +33,11 @@
         />
       </div>
       <div class="form-group">
-        <label for="acces_code">Código de Acceso</label>
+        <label for="access_code">Código de Acceso</label>
         <input
           type="text"
-          id="acces_code"
-          v-model="formData.acces_code"
+          id="access_code"
+          v-model="formData.access_code"
           required
         />
       </div>
@@ -54,8 +54,10 @@
 </template>
 
 <script setup>
-import { ref } from "vue";
-import { axiosDashboard } from "../services/axios.config";
+import { ref, computed } from "vue";
+import { useMutation } from '@tanstack/vue-query';
+import { post } from "../services/routes.api";
+import { apiRoutes } from "../services/routes.api";
 
 const formData = ref({
   name: "",
@@ -63,10 +65,9 @@ const formData = ref({
   password: "",
   profile_picture: null,
   userType: "teacher",
-  acces_code: "",
+  access_code: "",
 });
 
-const isLoading = ref(false);
 const message = ref("");
 const messageType = ref("");
 
@@ -74,55 +75,45 @@ const handleFileChange = (event) => {
   formData.value.profile_picture = event.target.files[0];
 };
 
-const handleSubmit = async () => {
-  isLoading.value = true;
-  message.value = "";
-
-  console.log("Iniciando el registro del usuario:", formData.value);
-
-  try {
+const registerMutation = useMutation({
+  mutationFn: async (formData) => {
     const form = new FormData();
-    form.append("username", formData.value.name);
-    form.append("email", formData.value.email);
-    form.append("password", formData.value.password);
-    if (formData.value.profile_picture) {
-      form.append("profile_picture", formData.value.profile_picture);
+    form.append("username", formData.name);
+    form.append("email", formData.email);
+    form.append("password", formData.password);
+    form.append("access_code", formData.access_code);
+    if (formData.profile_picture) {
+      form.append("profile_picture", formData.profile_picture);
     }
-
-    const endpoint =
-      formData.value.userType === "teacher" ? "teachers/" : "students/create/";
-    console.log("Datos del formulario preparados para enviar:", form);
-
-    const response = await axiosDashboard.post(endpoint, form, {
-      headers: {
-        "Content-Type": "multipart/form-data",
-      },
-    });
-
-    console.log("Respuesta del servidor:", response.data);
-
-    if (response.data.status === "success") {
-      message.value = "¡Registro exitoso!";
-      messageType.value = "success";
-      // Limpiar el formulario
-      formData.value = {
-        name: "",
-        email: "",
-        password: "",
-        profile_picture: null,
-        userType: "teacher",
-        acces_code: "",
-      };
-    }
-  } catch (error) {
-    console.error("Error al registrar el usuario:", error);
-    message.value =
-      error.response?.data?.message || "Error al registrar el usuario";
+    
+    return await post(apiRoutes.registerTeacher, form);
+  },
+  onSuccess: () => {
+    message.value = "¡Registro exitoso!";
+    messageType.value = "success";
+    // Reset form
+    formData.value = {
+      name: "",
+      email: "",
+      password: "",
+      profile_picture: null,
+      userType: "teacher",
+      access_code: "",
+    };
+  },
+  onError: (error) => {
+    console.log(error);
+    message.value = error.response?.data?.message || "Error al registrar el usuario";
     messageType.value = "error";
-  } finally {
-    isLoading.value = false;
   }
+});
+
+const handleSubmit = async () => {
+  registerMutation.mutate(formData.value);
 };
+
+// Replace isLoading ref with mutation loading state
+const isLoading = computed(() => registerMutation.isPending.value);
 </script>
 
 <style scoped>

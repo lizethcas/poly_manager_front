@@ -2,15 +2,14 @@
   <p v-if="!courses" class="text-title-color">no hay cursos</p>
   <div
     v-if="courses"
-    v-for="course in filteredCourses"
+    v-for="(course, index) in filteredCourses"
     :key="course.id"
-   
     class="w-full flex bg-white border rounded-xl cursor-pointer mt-2 hover:scale-105 transition-all duration-300 p-2"
   >
     <!-- Move "My Current Course" to the top -->
     <div class="flex flex-col w-full p-1" v-show="course.publish">
       <div class="flex justify-between" v-show="route.path.includes('/course')">
-   <!--      <h2 class="text-fuscous-gray-600 font-bold text-lg mb-2 w-contain">
+        <!--      <h2 class="text-fuscous-gray-600 font-bold text-lg mb-2 w-contain">
           My Current Course:
         </h2> -->
         <div class="flex items-center gap-2 text-sm">
@@ -30,22 +29,42 @@
         </div>
 
         <!-- Course Info -->
-
         <div class="flex flex-col ml-4 flex-grow justify-between">
           <div class="items-center gap-2">
             <h3 class="text-fuscous-gray-600 font-bold text-base md:text-lg">
               {{ course.course_name }}
             </h3>
-            <!-- Level Badge -->
           </div>
-
-          <NuxtLink
-          
-            :to="routes.routes.routesStudent.course(course.id)"
-            class="text-blue-500 border-blue-500 text-xs hover:underline"
+          <div class="mb-2">
+            <p class="text-gray-600 text-sm">
+              {{ getDisplayedDescription(course.description, course.id) }}
+              <button
+                v-if="
+                  course.description &&
+                  course.description.length > MAX_DESCRIPTION_LENGTH
+                "
+                @click="toggleDescription(course.id)"
+                class="text-blue-500 hover:text-blue-700 ml-1"
+              >
+                {{
+                  truncatedDescriptions[course.id] ? "Show less" : "Show more"
+                }}
+              </button>
+            </p>
+          </div>
+          <button v-if="!courses"
+            @click="showCourseDescription(course, index)"
+            class="text-blue-500 hover:text-blue-700 text-left text-sm"
           >
-            View the course details
-          </NuxtLink>
+            View course details
+          </button>
+          <nuxt-link :to="`/student-${route.params.id}/classes`" v-else >
+            <button class="text-blue-500 hover:text-blue-700 text-left text-sm">
+              View course details
+            </button>
+
+
+          </nuxt-link>
         </div>
 
         <!-- Action Buttons -->
@@ -75,6 +94,20 @@
       </div>
     </div>
   </div>
+  <ClassDescription
+    v-if="isDescriptionVisible && !courses"
+    :course="selectedCourse"
+    :is-open="isDescriptionVisible"
+    @close="isDescriptionVisible = false"
+    :name="selectedCourse.course_name"
+    :description="selectedCourse.description"
+    :bullet-points="selectedCourse.bullet_points"
+    :cover="selectedCourse.cover"
+    :course-id="selectedCourse.id"
+    :id="selectedCourse.id"
+    text-button="Enroll"
+    @handleClick="handleClick"
+  />
 </template>
 
 <script setup lang="ts">
@@ -82,19 +115,67 @@ import { useRoute } from "vue-router";
 import type { Course } from "~/interfaces/course.interface";
 import { useGetCover } from "~/composables/useGetcover";
 import { useGetColor } from "~/composables/useGetColor";
-import routes from "~/data/routes";
 import { computed } from "vue";
+import ClassDescription from "~/components/organisim/templatesUsers/students/ClassDescription.vue"; // Adjust the path according to your project structure
+import { useEnrollMutation } from "~/composables/useEnrollMutation";
+import { useToast } from "vue-toastification";
 
 const route = useRoute();
 
 const { getCoverUrl } = useGetCover();
 const { getLevelColor } = useGetColor();
+const selectedCourse = ref({});
+const isDescriptionVisible = ref(false);
+const toast = useToast();
 
 const props = defineProps<{
   courses: Course[];
 }>();
 
 const filteredCourses = computed(() => {
-  return props.courses.filter(course => course.publish === true);
+  return props.courses.filter((course) => course.publish === true);
 });
+
+const MAX_DESCRIPTION_LENGTH = 100;
+
+const truncatedDescriptions = ref<{ [key: string]: boolean }>({});
+const getDisplayedDescription = (description: string, classId: string) => {
+  if (!description) return "";
+  if (
+    description.length <= MAX_DESCRIPTION_LENGTH ||
+    truncatedDescriptions.value[classId]
+  ) {
+    return description;
+  }
+  return description.slice(0, MAX_DESCRIPTION_LENGTH) + "...";
+};
+
+const toggleDescription = (classId: string) => {
+  truncatedDescriptions.value[classId] = !truncatedDescriptions.value[classId];
+};
+
+const showCourseDescription = (course: Course, index: number) => {
+  console.log(course);
+  selectedCourse.value = {
+    ...course,
+    unit: index,
+  };
+  isDescriptionVisible.value = true;
+};
+
+const enrollMutation = useEnrollMutation();
+
+const handleClick = async (courseId: number) => {
+  if (!courseId) {
+    toast.error("Invalid course ID");
+    return;
+  }
+  try {
+    await enrollMutation.mutateAsync(courseId.toString());
+    isDescriptionVisible.value = false; // Close modal after successful enrollment
+  } catch (error) {
+    // Error handling is managed by the mutation
+    console.error("Enrollment failed:", error);
+  }
+};
 </script>

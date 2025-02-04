@@ -158,11 +158,13 @@ const isSidebarOpen = ref(false);
 const authStore = useAuthStore();
 const route = useRoute();
 const router = useRouter();
-
+const studentId = computed(() => authStore.getUserId());
+console.log(studentId.value);
 // Add isProgressRoute computed property
 const isProgressRoute = computed(() => {
   return route.path.startsWith("/student/progress");
 });
+
 
 const isClassRoute = computed(() => {
   return (
@@ -216,19 +218,17 @@ const studentRoutes = [
   {
     items: [
       {
-        path: "/student/classes",
+        path: studentId.value ? `/student-${studentId.value}/classes` : '/student/classes',
         name: "My Classes",
         icon: IconType.home,
       },
       {
-        path: "/student/courses",
+        path: studentId.value ? `/student-${studentId.value}/my-courses` : '/student/courses',
         name: "My Courses",
         icon: IconType.book,
       },
-
-
       {
-        path: "/student/progress",
+        path: studentId.value ? `/student-${studentId.value}/progress` : '/student/progress',
         name: "My Progress",
         icon: IconType.trendingUp,
       },
@@ -239,51 +239,51 @@ const studentRoutes = [
     header: "My Progress",
     items: [
       {
-        path: "/student/speaking_practice",
+        path: studentId.value ? `/student-${studentId.value}/speaking_practice` : '/student/speaking_practice',
         name: "Speaking Practice",
         icon: IconType.wechat,
-
       },
       {
-        path: "/student/my_notes",
+        path: studentId.value ? `/student-${studentId.value}/my_notes` : '/student/my_notes',
         name: "My Notes",
         icon: IconType.note,
       },
       {
-        path: "/student/my_words",
+        path: studentId.value ? `/student-${studentId.value}/my_words` : '/student/my_words',
         name: "My Words",
         icon: IconType.translate,
       },
-
       {
-        path: "/student/my_profile",
+        path: studentId.value ? `/student-${studentId.value}/my_profile` : '/student/my_profile',
         name: "My Profile",
         icon: IconType.person,
-
       },
     ],
   },
-  {
+ /*  {
     header: "Others",
 
     items: [
       {
-        path: "/student/my_payments",
+        path: `/student-${studentId.value}/my_payments`,
         name: "My Payments",
         icon: "material-symbols:payments-outline",
+
       },
       {
-        path: "/student/my_tutor",
+        path: `/student-${studentId.value}/my_tutor`,
         name: "My Tutor",
         icon: "material-symbols:person-outline",
       },
+
       {
-        path: "/student/speaking_clubs",
+        path: `/student-${studentId.value}/speaking_clubs`,
         name: "Speaking Clubs",
         icon: "material-symbols:groups",
       },
+
     ],
-  },
+  }, */
 ];
 
 // Update the navigationRoutes computed property with better route detection
@@ -299,28 +299,31 @@ const mainContentWidth = computed(() => {
 
 const handleLogout = async () => {
   try {
-    const refreshToken = localStorage.getItem("refreshToken"); // Assuming you store it as 'refreshToken'
-    const response = await post(apiRoutes.logout, {
-      refresh: refreshToken,
-    });
+    const refreshToken = localStorage.getItem("refreshToken");
+    
+    // First clear auth state
+    authStore.clearAuth(); // Add this method to your auth store
+    
+    // Clear localStorage
+    localStorage.removeItem("token");
+    localStorage.removeItem("refreshToken");
+    localStorage.clear();
 
-    if (response.ok) {
-      // Clear any stored auth tokens or user data
-      localStorage.removeItem("token");
-      localStorage.removeItem("refreshToken");
-      localStorage.clear(); // Optional: clears all localStorage data
-
-      // Redirect to login page
-      await router.push("/login");
-    } else {
-      console.error("Logout failed:", response.statusText);
-      // Still redirect to login page even if the server request fails
-      await router.push("/login");
+    // Then make the API call
+    try {
+      await post(apiRoutes.logout, {
+        refresh: refreshToken,
+      });
+    } catch (error) {
+      console.error("Logout API error:", error);
+      // Continue with navigation even if API fails
     }
+
+    // Use navigateTo for more reliable navigation in Nuxt
+    await navigateTo("/login", { replace: true });
   } catch (error) {
     console.error("Error during logout:", error);
-    // Still redirect to login page even if there's an error
-    await router.push("/login");
+    await navigateTo("/login", { replace: true });
   }
 };
 </script>

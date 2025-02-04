@@ -15,30 +15,34 @@
       <div class="flex-1">
         <!-- Unit indicator -->
         <span
-          class="inline-block bg-mint-100 text-mint-700 px-3 font-bold rounded-md text-md mb-4 bg-[#E0EEEB] text-[#78CBB6]"
+          class="inline-block px-3 font-bold rounded-md text-md mb-4 bg-[#E0EEEB] text-[#78CBB6]"
           role="text"
         >
-          Unit {{ classItem.unit }}
+          Unit {{ unit || 0 }}
         </span>
 
         <!-- Decorative zigzag -->
         <div class="text-yellow-400 text-m mb-4">〰️</div>
 
         <!-- Title -->
-        <h1 id="modal-title" class="text-3xl font-bold mb-4">{{ classItem.class_name }}</h1>
+        <h1 id="modal-title" class="text-3xl font-bold mb-4">{{ name }}</h1>
 
         <!-- Description -->
-        <h2 class="bg-mint-100  py-2 rounded-md text-md mb-2 inline-block text-[#78CBB6] font-bold">In this unit</h2>
-        <p class="text-gray-600 mb-6">{{ classItem.description }}</p>
+        <h2
+          class="bg-mint-100 py-2 rounded-md text-md mb-2 inline-block text-[#78CBB6] font-bold"
+        >
+          In this unit
+        </h2>
+        <p class="text-gray-600 mb-6">{{ description }}</p>
 
         <!-- Communicative topics -->
         <div class="mb-6">
           <h2 class="text-mint-600 mb-3">Communicative topics:</h2>
           <ul class="space-y-2">
-            <li 
-              v-for="(point, index) in classItem.bullet_points"
+            <li
+              v-for="(point, index) in bulletPoints"
               :key="index"
-              class="flex items-center gap-2 "
+              class="flex items-center gap-2"
             >
               <span
                 v-show="point !== ''"
@@ -53,29 +57,30 @@
 
         <!-- Start lesson button -->
         <div class="flex gap-2">
-          <button 
+          <button
             class="p-3 rounded-lg border border-gray-200"
             aria-label="Close modal"
             @click="$emit('close')"
           >
             <span class="text-gray-400">←</span>
           </button>
-          <NuxtLink
-            :to="routes.routesStudent.class(classItem.course_id, classItem.id)"
+          <button
+            @click="() => $emit('handleClick', courseId, id)"
             class="bg-[#78CBB6] text-white text-center px-6 py-3 rounded-lg flex-1"
             role="button"
             aria-label="Start the lesson"
+
           >
-            START THE LESSON
-          </NuxtLink>
+            {{ textButton }}
+          </button>
         </div>
       </div>
 
       <!-- Right image section -->
       <div class="flex-1 flex items-center">
         <img
-          :src="classItem.cover"
-          :alt="`Cover image for ${classItem.class_name}`"
+          :src="cover"
+          :alt="`Cover image for ${name}`"
           class="w-full h-full object-cover rounded-lg"
         />
       </div>
@@ -85,23 +90,21 @@
 <script setup lang="ts">
 import { routes } from "~/data/routes";
 
-interface ClassItem {
+interface ClassDescriptionProps {
+  name: string;
   description: string;
-  class_name: string;
-  bullet_points: string[];
-  unit: string;
+  bulletPoints: string[];
+  unit?: string;
   cover: string;
-  course_id: number;
+  courseId: number;
   id: number;
-}
-
-interface ClassItemProps {
-  classItem: ClassItem;
   isOpen: boolean;
+  textButton: string;
 }
 
-defineProps<ClassItemProps>();
+defineProps<ClassDescriptionProps>();
 defineEmits<{
   (e: "close"): void;
+  (e: "handleClick", courseId: number, id: number): void;
 }>();
 </script>

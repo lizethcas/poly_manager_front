@@ -5,8 +5,14 @@ export const apiRoutes = {
   login: "login/",
   loginGoogle: "google-login/",
   logout: "logout/",
+  register: "register/",
+  registerTeacher: "teachers/",
   chat: {
     chatAi: "chat-ai/",
+  },
+  students: {
+    getCourseByStudent: (id: string) => `students/${id}/courses/`,
+    enrollCourse: (courseId: string) => `students/${courseId}/courses/enroll/`,
   },
   scenarios: {
     getAll: "scenarios/",
@@ -17,11 +23,11 @@ export const apiRoutes = {
   classContent: "class-contents/",
   courses: "courses/",
   course: {
-    getById: (courseId: string | string[]) =>
-      `/courses/?courseId=${courseId}`,
-    update: (courseId: string | string[]) =>
-      `/courses/${courseId}/`,
+    getById: (courseId: string | string[]) => `/courses/?courseId=${courseId}`,
+    update: (courseId: string | string[]) => `/courses/${courseId}/`,
     delete: (courseId: string | string[]) => `courses/${courseId}/`,
+    getStudents: (courseId: string | string[]) =>
+      `/courses/${courseId}/students/`,
   },
   classes: {
     getByCourseId: (courseId: string | string[]) =>

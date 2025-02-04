@@ -123,17 +123,10 @@
 
 <script setup lang="ts">
 import { ref } from "vue";
-import { useRouter } from "vue-router";
-import { useAuthStore } from "~/stores/auth";
-import { useMutation } from "@tanstack/vue-query";
-import { apiRoutes, post } from "~/services/routes.api";
-import { useToast } from "vue-toastification";
 import LoginGoogle from "~/components/organisim/LoginGoogle.vue";
 import { useLogin } from "~/composables/useLogin";
 
-const router = useRouter();
-const authStore = useAuthStore();
-const toast = useToast();
+
 
 const email = ref("");
 const password = ref("");

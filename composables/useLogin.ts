@@ -11,7 +11,6 @@ export const useLogin = () => {
   
   const loginMutation = useMutation({
     mutationFn: async (credentials: { email?: string; password?: string; token?: string }) => {
-      console.log('Login credentials:', credentials);
       const endpoint = credentials.token ? apiRoutes.loginGoogle : apiRoutes.login;
       const data = await post(endpoint, credentials);
       if (data.status !== "success") {
@@ -26,12 +25,15 @@ export const useLogin = () => {
         token: data.token,
         user: data.user_data,
         userType: data.user_type,
+        userId: data.user.id
       });
+
 
       if (data.user_type === "teacher") {
         navigateTo("/admin/dashboard");
       } else if (data.user_type === "student") {
-        navigateTo("/student/classes");
+        const studentId = data.user.id;
+        navigateTo(`/student-${studentId}/classes`);
       }
     },
     onError: (err: Error) => {
