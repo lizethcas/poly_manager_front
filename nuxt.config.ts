@@ -22,14 +22,15 @@ export default defineNuxtConfig({
     "@pinia/nuxt",
     "@pinia-plugin-persistedstate/nuxt",
     "nuxt-vue3-google-signin",
+    "@nuxt/test-utils/module",
   ],
   googleSignIn: {
-    clientId: "812601186913-sp0e8hfnarjmbvqi51bpgfsj6tmeq0sf.apps.googleusercontent.com",
+    clientId:
+      "812601186913-sp0e8hfnarjmbvqi51bpgfsj6tmeq0sf.apps.googleusercontent.com",
   },
   pinia: {
     storesDirs: ["./stores/**", "./custom-folder/stores/**"],
   },
-
 
   app: {
     head: {
