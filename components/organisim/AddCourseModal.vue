@@ -196,6 +196,5 @@ const initializeFormData = () => {
 // Add watch or onMounted to initialize the data
 onMounted(() => {
   initializeFormData();
-  console.log("initialData", props.initialData);
 });
 </script>

@@ -88,7 +88,6 @@ watch(localValue, (newValue) => {
 
 const handleInput = (newValue: string) => {
   emit("update:value", newValue);
-  console.log(newValue);
 };
 
 const handleExtraInput = (event: Event) => {

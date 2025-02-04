@@ -83,6 +83,7 @@ const isAnswerSelected = (qIndex: number, answerText: string) => {
 
 const handleAnswerChange = (qIndex: number, answerText: string) => {
   console.log(`Pregunta ${qIndex + 1} - Opción seleccionada: ${answerText}`);
+  console.log(`Estado actual de respuestas:`, userAnswers.value);
 };
 
 const gradeAnswers = () => {
