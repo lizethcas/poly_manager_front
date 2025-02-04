@@ -296,7 +296,7 @@ const openEditModal = (course: Course) => {
 const handleDelete = async () => {
   if (!selectedCourse.value?.id) return;
   confirmDelete.value = true;
-  console.log(selectedCourse.value);
+  
 };
 
 const confirmDeleteCourse = async () => {

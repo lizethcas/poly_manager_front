@@ -80,7 +80,6 @@ const handleSubmit = async () => {
   isLoading.value = true
   message.value = ''
   
-  console.log('Iniciando el registro del usuario:', formData.value)
 
   try {
     const form = new FormData()
@@ -92,7 +91,6 @@ const handleSubmit = async () => {
     }
 
     const endpoint = formData.value.userType === 'teacher' ? 'teachers/' : 'students/create/'
-    console.log('Datos del formulario preparados para enviar:', form)
 
     const response = await axiosDashboard.post(endpoint, form, {
       headers: {
@@ -100,7 +98,6 @@ const handleSubmit = async () => {
       }
     })
 
-    console.log('Respuesta del servidor:', response.data)
 
     if (response.data.status === 'success') {
       message.value = '¡Registro exitoso!'

@@ -128,7 +128,6 @@ const getNewTopic = async () => {
             role: 'assistant',
             content: response.data.answer
         }]
-        console.log('Historial después de nuevo tema:', conversationHistory.value)
     } catch (error) {
         console.error('Error al obtener tema:', error)
         currentTopic.value = 'Error al obtener tema de conversación'
@@ -172,7 +171,6 @@ const toggleRecording = async () => {
 // Enviar audio y obtener respuesta
 const sendAudioAndGetResponse = async (audioBlob: Blob) => {
     try {
-        console.log('Iniciando envío de audio')  // Log inicial
         const formData = new FormData()
         formData.append('audio', audioBlob, 'recording.webm')
 
@@ -183,18 +181,14 @@ const sendAudioAndGetResponse = async (audioBlob: Blob) => {
             timeout: 30000
         })
 
-        console.log('Respuesta recibida:', transcriptionResponse.data)  // Log de respuesta
 
         if (transcriptionResponse.data.status === 'success') {
             const { transcription, pronunciation_analysis } = transcriptionResponse.data.data
-            console.log('Transcripción:', transcription)  // Log de transcripción
-            console.log('Análisis de pronunciación:', pronunciation_analysis)  // Log de análisis
             
             // Intentar parsear el análisis de pronunciación de manera segura
             let analysis = null
             try {
                 analysis = JSON.parse(pronunciation_analysis)
-                console.log('Análisis parseado:', analysis)  // Log del análisis parseado
             } catch (parseError) {
                 console.error('Error al parsear el análisis:', parseError)  // Log de error de parseo
                 console.warn('Contenido que no se pudo parsear:', pronunciation_analysis)

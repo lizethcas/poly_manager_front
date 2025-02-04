@@ -19,9 +19,7 @@ export const useClassesQuery = (courseId: string) => {
 
   const deleteClassMutation = useMutation({
     mutationFn: async (classId: number) => {
-      console.log(classId)
       const response = await del(apiRoutes.classes.delete(classId));
-      console.log("Delete class response:", response); // Add this line to see the response
 
       return response.data;
     },

@@ -68,7 +68,6 @@ const {
   refetch: refresh,
 } = useClassesQuery(courseId as string);
 
-console.log("data", data.value);
 
 const filteredData = computed(() => {
   return data.value?.filter((item: any) => item.course_id == courseId) || [];

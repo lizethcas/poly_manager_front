@@ -131,7 +131,6 @@ const previewImage = ref("");
 const aiImage = computed(() => taskStore.getTask("img_gen"));
 const taskInstructions = computed(() => taskStore.getTask("instructions"));
 const showImageGenerator = ref(false);
-console.log(route.params.classId);
 const formData = reactive({
   class_id: route.params.classId as number,
   cover: null as unknown as File | string,
@@ -155,7 +154,6 @@ const formData = reactive({
 watch(
   taskInstructions,
   (newValue) => {
-    console.log(newValue);
     formData.name = newValue?.title || "";
     formData.description = newValue?.instructions || "";
   },
@@ -205,7 +203,6 @@ const clearPreview = () => {
 const createScenarioMutation = useMutation({
   mutationFn: (data: typeof formData) => post(apiRoutes.scenarios.create, data),
   onSuccess: (response) => {
-    console.log("Scenario creation response:", response);
     notify.success("Scenario created successfully");
     clearPreview();
     taskStore.addTask("modal", { open: false });
@@ -218,7 +215,6 @@ const createScenarioMutation = useMutation({
 
 // Update handleSave to use mutation
 const handleSave = async () => {
-  console.log(formData);
   const formDataToSend = new FormData();
   formDataToSend.append("cover", formData.cover as File);
   formDataToSend.append("class_id", route.params.classId as number);

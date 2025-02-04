@@ -69,7 +69,6 @@ import UserProfile from "~/components/organisim/UserProfile.vue";
 import { routes } from "~/data/routes";
 const route = useRoute();
 const courseId = computed(() => route.params.courseId);
-console.log(courseId);
 
 const user = {
   profileImage: "https://via.placeholder.com/150",

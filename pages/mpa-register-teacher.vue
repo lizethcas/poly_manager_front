@@ -102,7 +102,6 @@ const registerMutation = useMutation({
     };
   },
   onError: (error) => {
-    console.log(error);
     message.value = error.response?.data?.message || "Error al registrar el usuario";
     messageType.value = "error";
   }

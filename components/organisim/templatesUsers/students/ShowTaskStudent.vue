@@ -75,7 +75,6 @@ const contentComponents = {
 } as const;
 
 const getComponent = (contentType: string) => {
-  console.log(contentType);
 
   return contentComponents[contentType as keyof typeof contentComponents];
 };

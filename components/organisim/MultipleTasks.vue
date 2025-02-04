@@ -257,13 +257,6 @@ const data = ref({
 
 
 
-watch(
-  select,
-  (newValue) => {
-    console.log("select", newValue);
-  },
-  { deep: true }
-);
 
 // Update the watch for questions
 watch(
@@ -341,14 +334,7 @@ watch(
   { deep: true }
 );
 
-watch(
-  data,
-  (newValue) => {
-    console.log("newValue", newValue);
-   
-  },
-  { deep: true }
-);
+
 
 watch(
   taskType,
@@ -366,7 +352,6 @@ watch(
     
     data.value.content_type = contentTypeMap[newValue] || 'multiple_choice';
     console.log("typeTask changed:", newValue);
-    console.log("data", data.value);
   },
   { immediate: true }
 );
@@ -494,7 +479,6 @@ const updateOptionAnswer = (
   value: string
 ) => {
   if (typeTask === "ordering") {
-    console.log(value);
     questions.value[questionIndex].text = value;
   } else if (typeTask === "true_false") {
     questions.value[questionIndex].statement = value;

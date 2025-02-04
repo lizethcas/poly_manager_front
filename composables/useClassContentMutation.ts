@@ -26,7 +26,6 @@ export function useClassContentMutation() {
         }
       );
       
-      console.log("Response from mutation:", response.data);
       return response.data;
     } catch (error) {
       console.error('API Error:', error);

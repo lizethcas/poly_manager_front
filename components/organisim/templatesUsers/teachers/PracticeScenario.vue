@@ -149,16 +149,13 @@ export default {
         window.location.protocol === "https:" ? "wss://" : "ws://";
       const wsUrl = `${wsScheme}${baseUrl}/ws/chat/${roomName}/${scenarioId}/`;
 
-      console.log("Intentando conectar WebSocket a:", wsUrl); // Debug
 
       this.chatSocket = new WebSocket(wsUrl);
 
       this.chatSocket.onopen = () => {
-        console.log("WebSocket conectado exitosamente"); // Debug
       };
 
       this.chatSocket.onmessage = (e) => {
-        console.log("Mensaje recibido:", e.data);
         const data = JSON.parse(e.data);
         this.chatHistory.push({
           role: "assistant",
@@ -168,10 +165,7 @@ export default {
         // Actualizar el estado de canEndConversation y mostrar en consola
         if (data.can_end !== undefined) {
           this.canEndConversation = data.can_end;
-          console.log("Estado actual de can_end:", data.can_end);
-        } else {
-          console.log("can_end no definido en el mensaje");
-        }
+        } 
         
         this.$nextTick(() => {
           this.scrollToBottom();
@@ -179,9 +173,7 @@ export default {
       };
 
       this.chatSocket.onclose = (e) => {
-        console.log("WebSocket cerrado. Código:", e.code, "Razón:", e.reason); // Debug detallado
         setTimeout(() => {
-          console.log("Intentando reconexión..."); // Debug
           this.connectWebSocket();
         }, 3000);
       };

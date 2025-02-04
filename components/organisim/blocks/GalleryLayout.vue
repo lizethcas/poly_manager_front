@@ -125,7 +125,6 @@ watch(taskImgGen, (newValue) => {
 watch(
   taskInstructions,
   (newValue) => {
-    console.log(newValue);
     formData.value.tittle = newValue.title || "";
     formData.value.instructions = newValue.instructions || "";
   },
@@ -159,8 +158,8 @@ const handleSave = async () => {
       stats: formData.value.stats,
     };
 
-    console.log("Datos a enviar:", contentData);
 
+    
     // Validaciones
     if (images.length === 0) {
       throw new Error("Debe agregar al menos una imagen");
@@ -171,7 +170,6 @@ const handleSave = async () => {
     }
 
     const response = await mutation.mutateAsync(contentData);
-    console.log("Respuesta del servidor:", response);
 
     if (response.status === "success") {
       taskStore.addTask("modal", { modal: false });

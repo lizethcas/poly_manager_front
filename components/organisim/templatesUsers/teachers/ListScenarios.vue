@@ -124,8 +124,7 @@ const { data: scenarios } = useQuery({
   queryFn: async () => {
     const scenariosData = await get(apiRoutes.scenarios.getAll) || [];
     const coursesData = await get(apiRoutes.courses) || [];
-    console.log(coursesData);
-    console.log(scenariosData);
+
 
     return Array.isArray(scenariosData) ? scenariosData.map(scenario => {
       const courseInfo = Array.isArray(coursesData) 
@@ -142,7 +141,7 @@ const { data: scenarios } = useQuery({
     }) : [];
   }
 });
-console.log(scenarios);
+
 
 // Add computed property to filter scenarios
 const filteredScenarios = computed(
@@ -150,7 +149,7 @@ const filteredScenarios = computed(
     scenarios.value?.filter((scenario) => scenario.classId === classId) || []
 );
 
-console.log(scenarios);
+
 const openPopup = (scenario) => {
   selectedScenario.value = scenario;
   isPopupOpen.value = true;

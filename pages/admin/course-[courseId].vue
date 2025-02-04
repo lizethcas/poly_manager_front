@@ -38,10 +38,8 @@ const route = useRoute();
 
 const routeCourseId = route.params.courseId as string;
 
-console.log("routeCourseId", routeCourseId);
 // Use the shared query composable
 const { data: courses, isLoading, error } = useCoursesQuery();
-console.log(courses.value);
 // Get the specific course using computed
 
 // Get only the current course based on courseId

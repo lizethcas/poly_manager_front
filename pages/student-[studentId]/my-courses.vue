@@ -34,5 +34,4 @@ const {
   error,
 } = useCoursesQuery(studentId as string);
 
-console.log(courses);
 </script>

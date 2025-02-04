@@ -49,7 +49,6 @@ export const del = async (url: string) => {
 };
 
 export const post = async (route: string, data: any) => {
-  console.log("DATA enviada:", data);
   const response = await axiosDashboard.post(route, data);
   return response.data;
 };

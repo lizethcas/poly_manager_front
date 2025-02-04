@@ -101,7 +101,6 @@ const getQuestionComponent = (contentType: string) => {
 };
 
 const getContentComponent = (contentType: string) => {
-  console.log(contentType);
   return contentComponents[contentType as keyof typeof contentComponents];
 };
 const getQuestions = (task: any) => {

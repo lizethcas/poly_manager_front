@@ -21,5 +21,5 @@ import { useCoursesQuery } from "~/composables/useCourseQuery";
 
 const { data: courses, isLoading, error } = useCoursesQuery();
 
-console.log(courses);
+
 </script>

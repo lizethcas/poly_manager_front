@@ -10,7 +10,6 @@ import AiChatGPT from "~/components/organisim/blocks/AiChatGpt.vue";
 
 export const useGetComponent = () => {
   const getCurrentComponent = (label: string) => {
-    console.log("Component requested:", label);
     if (!label) return null;
 
     switch (label.toLowerCase()) {

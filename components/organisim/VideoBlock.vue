@@ -149,7 +149,6 @@ const handleSave = async () => {
 
   try {
     const response = await classContentMutation.mutateAsync(formData);
-    console.log("Full server response:", response);
 
     // Invalidate and refetch the class contents query
     await queryClient.invalidateQueries({
@@ -190,7 +189,6 @@ watch(
 );
 
 watch(form, (newValue) => {
-  console.log("form", newValue);
   isActive.value = Boolean(newValue.video || newValue.audio);
 });
 

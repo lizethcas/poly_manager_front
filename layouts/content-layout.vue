@@ -21,7 +21,6 @@ const route = useRoute();
 
 const courseId = route.params.courseId as string;
 const classId = route.params.classId as string;
-console.log(route.path);
 
 const handleRoute = () => {
   if (route.path.includes(`/class-${classId}`)) {

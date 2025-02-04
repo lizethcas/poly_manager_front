@@ -31,7 +31,6 @@ const route = useRoute();
 const courseId = route.params.courseid;
 
 const { data: courses, isLoading, error } = useCoursesQuery();
-console.log(courses);
 // Get only the current course based on courseId
 const currentCourse = computed(() => {
   if (!courses.value) return [];

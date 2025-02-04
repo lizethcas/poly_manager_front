@@ -9,14 +9,12 @@ export const useCourseMutation = () => {
 
   const createCourseMutation = useMutation({
     mutationFn: async (courseData: any) => {
-      console.log('Course data:', courseData)
       const response = await axiosDashboard.post(apiRoutes.courses, courseData, {
         headers: {
           "Content-Type": "multipart/form-data",
           Accept: "application/json",
         },
       });
-      console.log('Course created:', response.data)
       return response.data;
     },
     onMutate: async (newCourse) => {

@@ -19,7 +19,6 @@ export const useLogin = () => {
       return data;
     },
     onSuccess: async (data) => {
-      console.log('Full login response:', data);
      
       await authStore.setAuth({
         token: data.token,
