@@ -37,12 +37,13 @@
 import { ref, onMounted } from 'vue'
 import { axiosDashboard } from '../../services/axios.config'
 
-const loggedInDays = ref([])
-const weeks = ref([])
-const currentMonth = ref(new Date().getMonth())
-const currentYear = ref(new Date().getFullYear())
+// Variables reactivas para el calendario
+const loggedInDays = ref([])  // Almacena los días en que el estudiante inició sesión
+const weeks = ref([])         // Almacena las semanas del calendario
+const currentMonth = ref(new Date().getMonth())     // Mes actual
+const currentYear = ref(new Date().getFullYear())   // Año actual
 
-// Obtener los días de login del estudiante
+// Obtener los días de login del estudiante desde la API
 const fetchLoginDays = async () => {
   try {
     const studentId = localStorage.getItem('studentId')
@@ -58,12 +59,13 @@ const fetchLoginDays = async () => {
   }
 }
 
-// Generar el calendario
+// Array con los nombres de los días de la semana
 const days = ['Dom', 'Lun', 'Mar', 'Mié', 'Jue', 'Vie', 'Sáb']
 
+// Función para generar la estructura del calendario
 const generateCalendar = () => {
-  const startOfMonth = new Date(currentYear.value, currentMonth.value, 1)
-  const endOfMonth = new Date(currentYear.value, currentMonth.value + 1, 0)
+  const startOfMonth = new Date(currentYear.value, currentMonth.value, 1)    // Primer día del mes
+  const endOfMonth = new Date(currentYear.value, currentMonth.value + 1, 0)  // Último día del mes
   
   // Obtener el día de la semana del primer día del mes (0-6)
   const firstDayOfWeek = startOfMonth.getDay()
@@ -107,7 +109,7 @@ const generateCalendar = () => {
   }
 }
 
-// Funciones para navegar entre meses
+// Función para ir al mes anterior
 const prevMonth = () => {
   if (currentMonth.value === 0) {
     currentMonth.value = 11
@@ -118,6 +120,7 @@ const prevMonth = () => {
   generateCalendar()
 }
 
+// Función para ir al mes siguiente
 const nextMonth = () => {
   if (currentMonth.value === 11) {
     currentMonth.value = 0
@@ -128,6 +131,7 @@ const nextMonth = () => {
   generateCalendar()
 }
 
+// Inicializar el calendario cuando el componente se monta
 onMounted(() => {
   generateCalendar()
   fetchLoginDays()

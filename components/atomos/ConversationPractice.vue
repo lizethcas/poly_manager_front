@@ -95,9 +95,11 @@
 </template>
 
 <script setup lang="ts">
+// Importaciones y configuración inicial
 import { ref, onBeforeUnmount } from 'vue'
 import axiosInstance from '../../services/axios.config'
 
+// Referencias reactivas y variables de estado
 const isRecording = ref(false)
 const currentTopic = ref('')
 const conversationHistory = ref<Array<{
@@ -117,7 +119,7 @@ if (typeof window !== 'undefined') {
     speechSynthesis = window.speechSynthesis
 }
 
-// Obtener nuevo tema de conversación
+// Función principal para obtener nuevo tema de conversación desde la API
 const getNewTopic = async () => {
     try {
         const response = await axiosInstance.post('/ask-openai/', {
@@ -134,7 +136,7 @@ const getNewTopic = async () => {
     }
 }
 
-// Grabación de audio
+// Sistema de grabación de audio del usuario
 const toggleRecording = async () => {
     if (!isRecording.value) {
         try {
@@ -168,7 +170,7 @@ const toggleRecording = async () => {
     }
 }
 
-// Enviar audio y obtener respuesta
+// Procesa el audio grabado y obtiene respuestas
 const sendAudioAndGetResponse = async (audioBlob: Blob) => {
     try {
         const formData = new FormData()
@@ -228,7 +230,7 @@ const sendAudioAndGetResponse = async (audioBlob: Blob) => {
     }
 }
 
-// Función para reproducir texto
+// Sistema de texto a voz para respuestas del asistente
 const speakText = (text: string) => {
     if (!speechSynthesis) return
 
@@ -272,7 +274,7 @@ const speakText = (text: string) => {
     speechSynthesis.speak(speechUtterance)
 }
 
-// Función para reproducir audio del usuario
+// Funciones de utilidad para reproducción y análisis
 const playUserAudio = (audioBlob: Blob) => {
     const audioUrl = URL.createObjectURL(audioBlob)
     const audio = new Audio(audioUrl)
@@ -284,15 +286,13 @@ const playUserAudio = (audioBlob: Blob) => {
     }
 }
 
-// Nuevo ref para controlar qué análisis se muestra
+// Control de visualización del análisis de pronunciación
 const selectedAnalysisIndex = ref<number | null>(null)
-
-// Función para mostrar/ocultar el análisis
 const togglePronunciationAnalysis = (index: number) => {
     selectedAnalysisIndex.value = selectedAnalysisIndex.value === index ? null : index
 }
 
-// Función para obtener la clase CSS según la puntuación
+// Utilidad para clasificación visual de puntuaciones
 const getScoreClass = (score: number) => {
     if (score >= 8) return 'score-high'
     if (score >= 6) return 'score-medium'
