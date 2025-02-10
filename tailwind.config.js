@@ -45,7 +45,7 @@ export default {
         xs: "0.75rem",
         md: "16.2px",
         m: "1.29rem",
-        xl: "2rem",
+        xl: "2.25rem",
         "2xl": "2.5rem",
         "3rem": "3rem",
       },

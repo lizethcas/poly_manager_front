@@ -41,13 +41,11 @@
 
     <!-- Upload options -->
     <div class="flex mt-4 items-end gap-2">
-      
       <InputFile
         fileType="image"
         icon="true"
         @file-selected="addNewImage"
         :showPreview="false"
-       
       />
 
       <!-- AI Image Generator Button -->
@@ -91,7 +89,6 @@ import IconMolecule from "~/components/atomos/Icon.vue";
 import { IconType } from "~/data/iconsType";
 import IaGeneratorModal from "../IA/IaGeneratorModal.vue";
 
-
 const route = useRoute();
 const taskStore = useTaskStore();
 const mutation = useClassContentMutation();
@@ -104,8 +101,6 @@ interface Image {
   preview: string;
   showPreview: boolean;
 }
-
-
 
 const formData = ref({
   ...createBaseTaskData(route.params.classId, "image"),
@@ -158,8 +153,6 @@ const handleSave = async () => {
       stats: formData.value.stats,
     };
 
-
-    
     // Validaciones
     if (images.length === 0) {
       throw new Error("Debe agregar al menos una imagen");
@@ -169,7 +162,7 @@ const handleSave = async () => {
       throw new Error("Todas las imágenes deben tener título y descripción");
     }
 
-    const response = await mutation.mutateAsync(contentData);
+    const response = await mutation.create.mutateAsync(contentData);
 
     if (response.status === "success") {
       taskStore.addTask("modal", { modal: false });
@@ -178,11 +171,11 @@ const handleSave = async () => {
     } else {
       throw new Error(response.message || "Error al guardar las imágenes");
     }
-  } catch (error) {
-    console.error("Error al guardar la galería:", error);
+  } catch (error: any) {
     alert(error.message || "Error al guardar las imágenes");
   }
 };
+
 
 // Método para agregar nueva imagen
 const addNewImage = async (file: File) => {

@@ -1,5 +1,5 @@
 <template>
-  <div class="text-sm text-fuscous-gray-700pb-4 rounded-md ">
+  <div class="text-sm text-fuscous-gray-700pb-4 rounded-md flex-1">
     <!-- Multiple Choice and True/False with Media -->
     <div
       v-if="

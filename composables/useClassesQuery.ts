@@ -59,7 +59,7 @@ export const useClassByIdQuery = (classId: number) => {
   };
 
   return useQuery({
-    queryKey: ["class", classId],
+    queryKey: [ "class", classId],
     queryFn: fetchClassById,
     refetchOnMount: "always",
     refetchOnWindowFocus: true,

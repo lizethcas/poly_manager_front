@@ -21,6 +21,11 @@ export const apiRoutes = {
     delete: (id: string) => `scenarios/${id}/`,
   },
   classContent: "class-contents/",
+  classContents: {
+    delete: (id: string) => `class-contents/${id}/`,
+    update: (id: string) => `class-contents/${id}/`,
+  },
+
   courses: "courses/",
   course: {
     getById: (courseId: string | string[]) => `/courses/?courseId=${courseId}`,

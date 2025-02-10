@@ -38,6 +38,7 @@ export const IconType = {
   translate: "material-symbols:translate",
   payments: "material-symbols:payments-outline",
   person: "material-symbols:person-outline",
+  menuTasks: "mage:dots-menu",
   paymentsOutline: "material-symbols:payments-outline",
-  paymentsOutline: "material-symbols:payments-outline",
+  trash: "material-symbols:delete-outline",
 };

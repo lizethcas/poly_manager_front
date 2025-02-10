@@ -159,10 +159,13 @@ import { useNotify } from "~/composables/useNotify";
 import { useModal } from "~/composables/useModal";
 import { useRoute, useRouter } from "nuxt/app";
 import { useClassMutation } from "~/composables/useClassMutation";
+import IconMolecule from "~/components/atomos/Icon.vue";
+
 const { success, error } = useNotify();
 const { isOpen, openModal, closeModal } = useModal();
 const route = useRoute();
 const courseId = route.params.courseId as string;
+
 
 // Define props
 const props = defineProps<{

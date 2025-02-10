@@ -106,7 +106,7 @@ const handleSave = async () => {
       stats: taskData.value.stats
     };
 
-    const response = await mutation.mutateAsync(payload);
+    const response = await mutation.create.mutateAsync(payload);
     if (response.status === 'success') {
       if (response.data.status !== 'error') {
         notyf.success('Class content created successfully');

@@ -1,20 +1,17 @@
 import { useQuery } from "@tanstack/vue-query";
 import { apiRoutes, get } from "@/services/routes.api";
-import { useRoute } from "vue-router";
 
 export const useCoursesQuery = (studentId?: string) => {
-  const route = useRoute();
-
   const fetchCourses = async () => {
     try {
       // If studentId is provided, use student-specific endpoint
       // If not, use general courses endpoint
-      const endpoint = studentId 
+      const endpoint = studentId
         ? apiRoutes.students.getCourseByStudent(studentId)
         : apiRoutes.courses;
 
       const response = await get(endpoint);
-
+      console.log(response);
       if (!response) {
         throw new Error("No courses found");
       }

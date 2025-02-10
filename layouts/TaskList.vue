@@ -28,20 +28,58 @@
             </p>
           </div>
         </div>
-        <div>
+        <div class="flex items-center gap-2">
+          <UDropdown
+            :items="items(task)"
+            :popper="{ placement: 'bottom-start' }"
+            class="cursor-pointer rounded-lg"
+          >
+            <IconMolecule
+              :name="IconType.menuTasks"
+              :size="18"
+              :color="'text-tarawera-700'"
+            />
+          </UDropdown>
           <slot :task="task" :index="index" />
-         
         </div>
       </div>
-    
     </div>
+
     <ListScenarios v-if="route.path.includes('/admin')" />
     <ScenarioListStudent v-if="route.path.includes('/student')" />
   </div>
-
   <div v-else>
     <pre>Aun no hay contenido para esta clase</pre>
   </div>
+  <UAlert
+    v-if="showDeleteAlert"
+    class="w-full max-w-xl mx-auto fixed top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2"
+    :actions="[
+      {
+        variant: 'solid',
+        color: 'red',
+        label: 'Delete',
+        click: () => confirmDelete(),
+      },
+      {
+        variant: 'outline',
+        color: 'gray',
+        label: 'Cancel',
+        click: () => (showDeleteAlert = false),
+      },
+    ]"
+    title="Delete Task"
+    description="Are you sure you want to delete this task? This action cannot be undone."
+  />
+
+  <BaseTaskModal
+    v-if="isModalOpen"
+    :is-open="isModalOpen"
+    :title="modalTitle"
+    :icon="modalIcon"
+    @close="closeModal"
+    :menuItems="getDataMenu(modalTitle)"
+  />
 </template>
 <script setup lang="ts">
 import { useCapitalizerLetter } from "~/composables/useCapitalizerLetter";
@@ -49,6 +87,12 @@ import ListScenarios from "~/components/organisim/templatesUsers/teachers/ListSc
 import ScenarioListStudent from "~/components/organisim/templatesUsers/students/taskStudents/ScenarioListStudent.vue";
 import { useClassContents } from "~/composables/useClassContents";
 import { useRoute } from "vue-router";
+import IconMolecule from "~/components/atomos/Icon.vue";
+import { IconType } from "~/data/iconsType";
+import { useClassContentMutation } from "~/composables/useClassContentMutation";
+import BaseTaskModal from "~/components/organisim/BaseTaskModal.vue";
+import { useDataMenu } from "~/composables/useDataMenu";
+import { useTaskStore } from "~/stores/task.store";
 
 const route = useRoute();
 const {
@@ -56,7 +100,7 @@ const {
   isLoading,
   error,
 } = useClassContents(route.params.classId as string);
-
+const { delete: deleteContentMutation } = useClassContentMutation();
 
 const editTask = ref(false);
 const editingIndex = ref(-1);
@@ -86,19 +130,68 @@ const getTaskNumber = (currentIndex: number) => {
 
   return `${mainNumber}.${subNumber}`;
 };
-const handleEditTask = (task: any, index: number) => {
+
+const handleEditTask = (task: any) => {
+  isModalOpen.value = true;
+  modalTitle.value = "Edit block";
+  modalIcon.value = "i-heroicons-pencil-square-20-solid";
   editTask.value = true;
-  editingIndex.value = index;
+  editingIndex.value = task.id;
 };
 
-const handleSaveTask = (task: any, index: number) => {
-  editTask.value = false;
-  editingIndex.value = -1;
-  // Here you would typically add logic to save the changes to your backend
+const showDeleteAlert = ref(false);
+const taskToDelete = ref(null);
+
+const handleDeleteTask = (task: any) => {
+  showDeleteAlert.value = true;
+  taskToDelete.value = task;
+};
+
+const confirmDelete = () => {
+  if (taskToDelete.value) {
+    deleteContentMutation.mutate(taskToDelete.value.id);
+    showDeleteAlert.value = false;
+    taskToDelete.value = null;
+  }
 };
 
 // Add currentTaskIndex to props
 defineProps<{
   currentTaskIndex?: number;
 }>();
+
+const items = computed(() => (task: any) => [
+  [
+    {
+      label: "Edit block",
+      icon: "i-heroicons-pencil-square-20-solid",
+      click: () => handleEditTask(task),
+    },
+  ],
+  [
+    {
+      label: "Delete block",
+      icon: "i-heroicons-trash-20-solid",
+      click: () => handleDeleteTask(task),
+    },
+  ],
+]);
+
+const taskStore = useTaskStore();
+const { getDataMenu } = useDataMenu();
+const isModalOpen = ref(false);
+const modalTitle = ref("");
+const modalIcon = ref("");
+
+watch(
+  () => taskStore.getTask("modal"),
+  (newValue) => {
+    isModalOpen.value = newValue?.modal ?? false;
+  },
+  { immediate: true }
+);
+
+const closeModal = () => {
+  isModalOpen.value = false;
+};
 </script>

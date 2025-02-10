@@ -135,6 +135,7 @@
     @handleSave="handleSave()"
     @handleCancel="handleCancel"
     :isActive="infoResponseApi.isActive"
+    :deleteAction="false"
   />
 </template>
 
@@ -162,9 +163,9 @@ const emit = defineEmits(["update:value", "save-task"]);
 const { typeTask, titleTask, description } = defineProps<MultipleTasksProps>();
 const taskStore = useTaskStore();
 const route = useRoute();
+const audio_transcription = computed(() => taskStore.getTask("script"));
 const taskInstructions = computed(() => taskStore.getTask("instructions"));
 const files = computed(() => taskStore.getTask("files"));
-const select = computed(() => taskStore.getTask("select"));
 const taskType = computed(() => taskStore.getTask("typeTask"));
 const value = ref("");
 const isActive = ref(false);
@@ -173,19 +174,14 @@ const { getType } = useGetTypeTask();
 const { success, error } = useNotify()
 
 
-const { 
-  mutateAsync,
-  isLoading: isMutating,
-  isSuccess,
-  isError 
-} = useClassContentMutation();
+const { create: mutation } = useClassContentMutation();
 
 // Update infoResponseApi ref to use the mutation states
 const infoResponseApi = ref({
   isActive: false,
-  isLoading: computed(() => isMutating),
-  isSuccess: computed(() => isSuccess),
-  isError: computed(() => isError),
+  isLoading: computed(() => mutation.isLoading),
+  isSuccess: computed(() => mutation.isSuccess),
+  isError: computed(() => mutation.isError),
   error: null,
   data: null,
 });
@@ -287,7 +283,11 @@ watch(
       if (files.value.audio) {
         data.value.audio = files.value.audio;
       }
+      if (audio_transcription.value) {
+        data.value.audio_transcription = audio_transcription.value;
+      }
     }
+
 
     if (typeTask === "true_false") {
       data.value.content_details.questions = newValue.map((q) => ({
@@ -319,6 +319,15 @@ watch(
     }
   },
   { deep: true }
+);
+
+watch(
+  audio_transcription,
+  (newValue) => {
+    console.log("audio_transcription changed:", newValue);
+    data.value.audio_transcription = newValue;
+  },
+  { immediate: true }
 );
 
 watch(
@@ -529,7 +538,6 @@ const handleSave = async () => {
       formData.append("audio", data.value.audio);
     }
     // Always include audio_transcription even if empty
-    formData.append("audio_transcription", data.value.audio_transcription || "");
 
     // Prepare content_details based on content type
     let contentDetails;
@@ -554,8 +562,12 @@ const handleSave = async () => {
     formData.append("instructions", data.value.instructions);
     formData.append("content_details", JSON.stringify(contentDetails));
     formData.append("stats", String(data.value.stats));
+    formData.append("audio_transcription", data.value.audio_transcription || "");
 
-    await mutateAsync(formData);
+
+
+    await mutation.mutate(formData);
+    
     success("Task saved successfully");
     taskStore.addTask("modal", { modal: false });
   } catch (err) {

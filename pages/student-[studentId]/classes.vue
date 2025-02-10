@@ -1,5 +1,5 @@
 <template>
-  no hay clases
+ 
   <div v-if="!isLoading && currentCourse.length > 0" class="flex items-center">
     <img
 
@@ -11,7 +11,11 @@
     />
     <CourseCardStudent :courses="currentCourse" />
   </div>
+  <div v-else>
+    <h1>No hay clases disponibles</h1>
+  </div>
   <ClassCardStudent />
+
 
 </template>
 

@@ -8,10 +8,19 @@ export function useClassContentMutation() {
 
   const createClassContentMutation = async (data: any) => {
     try {
-      // Si los datos ya vienen como FormData, usarlos directamente
-      // Si no, enviarlos como JSON
       const isFormData = data instanceof FormData;
       
+      // Convert FormData to object and log all data together
+      if (isFormData) {
+        const formDataObject = {};
+        for (const pair of data.entries()) {
+          formDataObject[pair[0]] = pair[1];
+        }
+        console.log('Data being sent:', formDataObject);
+      } else {
+        console.log('Data being sent:', data);
+      }
+
       const response = await axiosDashboard.post(
         apiRoutes.classContent,
         data,
@@ -25,7 +34,7 @@ export function useClassContentMutation() {
           },
         }
       );
-      
+      console.log(response.data)
       return response.data;
     } catch (error) {
       console.error('API Error:', error);
@@ -67,5 +76,18 @@ export function useClassContentMutation() {
     },
   });
 
-  return mutation;
+  const deleteMutation = useMutation({
+    mutationFn: async (contentId: string) => {
+      const response = await axiosDashboard.delete(apiRoutes.classContents.delete(contentId))
+      return response.data
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['class-contents', route.params.classId] })
+    }
+  })
+
+  return {
+    create: mutation,
+    delete: deleteMutation
+  }
 } 

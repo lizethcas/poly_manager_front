@@ -33,6 +33,7 @@
     <!-- Image Modal -->
     <IaGeneratorModal
       v-model="showModal"
+      
 
     />
   </div> 

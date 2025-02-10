@@ -18,11 +18,13 @@
 </template>
 
 <script lang="ts" setup>
+
 const emit = defineEmits(["handleAdd"]);
  defineProps({
   text: {
     type: String,
     required: true,
+    
   },
 });
 </script>

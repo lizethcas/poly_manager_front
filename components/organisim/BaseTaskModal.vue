@@ -12,10 +12,12 @@
       <div class="flex-1 mt-6">
         <!-- Modal Header -->
         <div
-          class="flex justify-between items-center  border-b-[1px] sticky top-0 bg-white z-10"
+          class="fixed flex justify-between items-center  border-b-[1px] w-[95vw] px-4 top-0 bg-white z-10" 
         >
-          <div class="flex items-center gap-2 m-2">
+          <div class="flex items-center gap-2 m-2 ">
             <Icon :name="icon" size="30" class="text-primary-color" />
+
+
             <h2 class="text-m font-bold text-primary-color">{{ title }}</h2>
           </div>
           <img
@@ -59,7 +61,7 @@
                 :is="getCurrentComponent(title)"
                 :selectedTask="taskTitle"
               />
-              <IaChatGPT />
+            <!--   <IaChatGPT /> -->
             </div>
           </div>
 

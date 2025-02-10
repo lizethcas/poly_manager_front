@@ -52,16 +52,17 @@
               </button>
             </p>
           </div>
-          <button v-if="!courses"
+          <button v-if="route.path.includes('/courses')"
             @click="showCourseDescription(course, index)"
             class="text-blue-500 hover:text-blue-700 text-left text-sm"
           >
             View course details
           </button>
-          <nuxt-link :to="`/student-${route.params.id}/classes`" v-else >
+          <nuxt-link v-else :to="`/student-${route.params.id}/classes`" >
             <button class="text-blue-500 hover:text-blue-700 text-left text-sm">
               View course details
             </button>
+
 
 
           </nuxt-link>
@@ -95,7 +96,7 @@
     </div>
   </div>
   <ClassDescription
-    v-if="isDescriptionVisible && !courses"
+    v-if="isDescriptionVisible "
     :course="selectedCourse"
     :is-open="isDescriptionVisible"
     @close="isDescriptionVisible = false"

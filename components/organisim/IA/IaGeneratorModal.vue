@@ -39,10 +39,7 @@ defineProps({
     type: Boolean,
     required: true
   },
-  source: {
-    type: String,
-    required: true
-  }
+
 });
 
 const emit = defineEmits(['update:modelValue', 'image-generated']);
