@@ -32,7 +32,7 @@
         <div class="flex flex-col ml-4 flex-grow justify-between">
           <div class="items-center gap-2">
             <h3 class="text-fuscous-gray-600 font-bold text-base md:text-lg">
-              {{ course.course_name }}
+              {{ course.name }}
             </h3>
           </div>
           <div class="mb-2">
@@ -100,7 +100,7 @@
     :course="selectedCourse"
     :is-open="isDescriptionVisible"
     @close="isDescriptionVisible = false"
-    :name="selectedCourse.course_name"
+    :name="selectedCourse.name"
     :description="selectedCourse.description"
     :bullet-points="selectedCourse.bullet_points"
     :cover="selectedCourse.cover"

@@ -21,10 +21,11 @@ export const useDataMenu = () => {
       const video = [multimediaBlockOptions[0]];
       return video;
     }
-    if (label === "Info block") {
+    if (label === "Info block" || label === "info_block") {
       const info = [textBlockOptions[1]];
       return info;
     }
+
     if (label === "Gallery layout") {
       return galletyLayoutOptions;
     }

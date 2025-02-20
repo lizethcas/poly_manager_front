@@ -51,9 +51,11 @@
       @handleSave="handleSave"
       @handleCancel="handleCancel"
       :isActive="isActive"
+      :deleteAction="false"
     />
     <UProgress
       v-if="isLoading"
+
       animation="carousel"
       class="mt-4"
       :ui="{ color: 'freshGreen' }"
@@ -67,14 +69,16 @@ import { useTaskStore } from "~/stores/task.store";
 import { useMutation, useQueryClient } from "@tanstack/vue-query";
 import { apiRoutes } from "~/services/routes.api";
 import { axiosDashboard } from "~/services/axios.config";
-import { useNotify } from '~/composables/useNotify'
+import { useNotify } from "~/composables/useNotify";
 
-const { notify } = useNotify();
+const notify = useNotify();
+
 const queryClient = useQueryClient();
 const route = useRoute();
 const taskStore = useTaskStore();
 const taskInstructions = computed(() => taskStore.getTask("instructions"));
 const tiitle = computed(() => taskStore.getTask("taskTitle"));
+
 
 const isActive = ref(false);
 
@@ -149,7 +153,7 @@ const handleSave = async () => {
 
   try {
     const response = await classContentMutation.mutateAsync(formData);
-
+    console.log(response);
     // Invalidate and refetch the class contents query
     await queryClient.invalidateQueries({
       queryKey: ["class-contents", route.params.classId],
@@ -162,14 +166,7 @@ const handleSave = async () => {
   }
 };
 
-/* const infoResponseApi = ref({
-  isActive: false,
-  isLoading: computed(() => isLoading.value),
-  isSuccess: computed(() => isSuccess.value),
-  isError: computed(() => isError.value),
-  error: null,
-  data: null,
-}); */
+
 
 const handleCancel = () => {
   taskStore.addTask("modal", { modal: false });

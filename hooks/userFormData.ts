@@ -1,7 +1,7 @@
 import { ref, computed } from "vue";
 
 export interface FormData {
-  course_name: string;
+  name: string;
   description: string;
   category: string;
   level: string;
@@ -15,7 +15,7 @@ export interface FormData {
 export function useFormData() {
   const bulletPoints = ref<string[]>([]);
   const formState = ref<FormData>({
-    course_name: '',
+    name: '',
     description: '',
     category: '',
     level: '',
@@ -29,7 +29,7 @@ export function useFormData() {
   const resetForm = () => {
     bulletPoints.value = [];
     formState.value = {
-      course_name: '',
+      name: '',
       description: '',
       category: '',
       level: '',

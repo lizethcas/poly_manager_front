@@ -1,3 +1,6 @@
+import useRouter from "vue-router";
+
+
 export const createCourse = {
   title: "Create Course",
   showExtraElements: true,
@@ -17,7 +20,7 @@ export const labels = [
   {
     id: 1,
     label_name: "Course Name:",
-    field_name: "course_name",
+    field_name: "name",
     type: "text",
 
   },

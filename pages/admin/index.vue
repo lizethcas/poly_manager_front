@@ -77,7 +77,7 @@ const handleSave = async (formDataEvent: any) => {
 
   try {
     const requestData = {
-      course_name: formData.course_name,
+      name: formData.name,
       description: formData.description,
       category: formData.category || defaultCategory,
       level: formData.level || defaultLevel,

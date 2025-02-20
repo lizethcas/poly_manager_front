@@ -23,6 +23,11 @@ export const axiosDashboard = axios.create({
     : baseURLs.production.dashboard,
 });
 
+
+export const axiosChat = axios.create({
+  baseURL: isDevelopment ? baseURLs.development.chat : baseURLs.production.chat,
+});
+
 // Add request interceptor
 axiosDashboard.interceptors.request.use(
   (config) => {
@@ -47,9 +52,6 @@ axiosDashboard.interceptors.request.use(
 // Update the response interceptor to be more specific
 
 
-export const axiosChat = axios.create({
-  baseURL: isDevelopment ? baseURLs.development.chat : baseURLs.production.chat,
-});
 
 export default {
   axiosDashboard,

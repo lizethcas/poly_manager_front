@@ -89,7 +89,7 @@ const handleSave = async (formDataEvent: any) => {
     const { formData, bulletPoints } = formDataEvent;
 
     const requestData = {
-      class_name: formData.course_name,
+      class_name: formData.name,
       description: formData.description,
       course_id: courseId,
       bullet_points: JSON.stringify(bulletPoints),

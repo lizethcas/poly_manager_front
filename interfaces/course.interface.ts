@@ -8,7 +8,7 @@ export interface Course {
   description: string;
   lessonCount: number;
   cover: string;
-  course_name: string;
+  name: string;
   category: string;
   publish: boolean;
 }

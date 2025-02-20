@@ -2,7 +2,7 @@ export interface ModalProps {
   title: string;
   showExtraElements?: boolean;
   initialData?: {
-    course_name: string;
+    name: string;
     description: string;
     category: string;
     level: string;
@@ -19,7 +19,7 @@ export interface FormDataModal {
 }
 
 export interface CourseForm {
-  course_name: string;
+  name: string;
   description: string;
   cover: File | string | null;
   bullet_points: string[];

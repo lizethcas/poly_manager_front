@@ -137,21 +137,24 @@ const updateSelectField = (field: string, value: string) => {
   formData.value[cleanKey] = value as any;
 };
 
-// Remove the handleSave function and replace it with this simpler version
+// Modify handleSave to ensure bullet points are properly formatted
 const handleSave = () => {
   if (!formData.value.cover && props.actionType !== "edit") {
     error("La imagen es obligatoria");
     return;
   }
 
-  if (!formData.value?.course_name?.trim() && props.actionType !== "edit") {
+  if (!formData.value?.name?.trim() && props.actionType !== "edit") {
     error("El nombre es obligatorio");
     return;
   }
 
+  // Ensure bullet points are in the correct format
+  const cleanBulletPoints = bulletPoints.value.filter(point => point && point.trim());
+
   emits("handleSave", {
     formData: formData.value,
-    bulletPoints: Array.from(bulletPoints.value),
+    bulletPoints: cleanBulletPoints,
   });
 };
 
@@ -178,12 +181,19 @@ const initializeFormData = () => {
       }
     });
 
-    // Inicializar bulletPoints si existen en initialData
-    if (
-      props.initialData.bullet_points &&
-      props.initialData.bullet_points.length > 0
-    ) {
-      bulletPoints.value = [...props.initialData.bullet_points];
+    // Modified bullet_points initialization
+    if (props.initialData.bullet_points) {
+      try {
+        // Handle case where bullet_points might be a string
+        const points = typeof props.initialData.bullet_points === 'string' 
+          ? JSON.parse(props.initialData.bullet_points)
+          : props.initialData.bullet_points;
+        
+        bulletPoints.value = Array.isArray(points) ? points : [];
+      } catch (e) {
+        console.error('Error parsing bullet points:', e);
+        bulletPoints.value = [];
+      }
     }
 
     // Si hay una cover inicial, establecer la URL de previsualización
