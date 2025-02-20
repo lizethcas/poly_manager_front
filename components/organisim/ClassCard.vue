@@ -157,7 +157,7 @@ import { createClass } from "~/data/cardModal";
 import { routes } from "~/data/routes";
 import { useNotify } from "~/composables/useNotify";
 import { useModal } from "~/composables/useModal";
-import { useRoute, useRouter } from "nuxt/app";
+import { useRoute } from "nuxt/app";
 import { useClassMutation } from "~/composables/useClassMutation";
 import IconMolecule from "~/components/atomos/Icon.vue";
 

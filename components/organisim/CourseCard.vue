@@ -26,7 +26,7 @@
         <h2
           class="text-fuscous-gray-600 font-bold text-base md:text-lg w-contain"
         >
-          {{ course.course_name }}
+          {{ course.name }}
         </h2>
         <!-- Level Badge -->
       </div>
@@ -186,7 +186,7 @@ import { useCourseStudents } from "~/composables/useCourseStudents";
 // Updated Props interface with proper typing
 interface Course {
   id: number;
-  course_name: string;
+  name: string;
   description: string;
   category: string;
   level: string;
@@ -283,7 +283,7 @@ const openEditModal = (course: Course) => {
   // Transform the course data to match the form structure
   selectedCourse.value = {
     ...course,
-    course_name: course.course_name,
+    name: course.name,
     description: course.description,
     category: course.category,
     level: course.level,

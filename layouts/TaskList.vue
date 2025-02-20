@@ -1,6 +1,6 @@
 <template>
   <!--   <ListScenarios /> -->
-  <div v-if="classTasks" class="bg-white rounded-xl pb-4">
+  <div v-if="classTasks" class="bg-white rounded-xl pb-4" v-bind="$attrs">
     <div v-for="(task, index) in classTasks.data">
       <div class="mt-4 relative px-4">
         <div
@@ -82,6 +82,10 @@
   />
 </template>
 <script setup lang="ts">
+defineOptions({
+  inheritAttrs: false // Prevent the warning
+})
+
 import { useCapitalizerLetter } from "~/composables/useCapitalizerLetter";
 import ListScenarios from "~/components/organisim/templatesUsers/teachers/ListScenarios.vue";
 import ScenarioListStudent from "~/components/organisim/templatesUsers/students/taskStudents/ScenarioListStudent.vue";
@@ -102,8 +106,6 @@ const {
 } = useClassContents(route.params.classId as string);
 const { delete: deleteContentMutation } = useClassContentMutation();
 
-const editTask = ref(false);
-const editingIndex = ref(-1);
 
 const { capitalizeFirstLetter } = useCapitalizerLetter();
 const getTaskNumber = (currentIndex: number) => {
@@ -133,10 +135,33 @@ const getTaskNumber = (currentIndex: number) => {
 
 const handleEditTask = (task: any) => {
   isModalOpen.value = true;
-  modalTitle.value = "Edit block";
+  if (task.audio !== null || task.video !== null) {
+    modalTitle.value = "Layout block";
+  } else if (task.content_type !== "info_box") {
+    modalTitle.value = "Knowledge check";
+  }
+  switch (task.content_type) {
+    case "info_box":
+      modalTitle.value = "Info block";
+      break;
+    case "video":
+      modalTitle.value = "Video Layout";
+      break;
+    case "image":
+      modalTitle.value = "Gallery Layout";
+      break;
+    case "audio":
+      modalTitle.value = "Multimedia block";
+      break;
+    case "text_block":
+      modalTitle.value = "Text block";
+      break;
+    default:
+      modalTitle.value = task.content_type;
+  }
+
   modalIcon.value = "i-heroicons-pencil-square-20-solid";
-  editTask.value = true;
-  editingIndex.value = task.id;
+  // Store the task data for editing
 };
 
 const showDeleteAlert = ref(false);

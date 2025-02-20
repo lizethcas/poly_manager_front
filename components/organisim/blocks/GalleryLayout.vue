@@ -94,10 +94,11 @@ const taskStore = useTaskStore();
 const mutation = useClassContentMutation();
 const taskInstructions = computed(() => taskStore.getTask("instructions"));
 const taskImgGen = computed(() => taskStore.getTask("img_gen"));
+
 interface Image {
   title: string;
   description: string;
-  image: string;
+  image: File | string; // Aquí ahora es File en vez de string
   preview: string;
   showPreview: boolean;
 }
@@ -123,7 +124,6 @@ watch(
     formData.value.tittle = newValue.title || "";
     formData.value.instructions = newValue.instructions || "";
   },
-
   { deep: true }
 );
 
@@ -136,11 +136,11 @@ const isFormValid = computed(() => {
 
 const handleSave = async () => {
   try {
-    // Preparar las imágenes en el formato correcto
+    // Preparar las imágenes en el formato correcto para enviar al backend
     const images = formData.value.content_details.map((item) => ({
       title: item.title,
       description: item.description,
-      image: item.preview, // Mantener el preview completo
+      image: item.image,
     }));
 
     const contentData = {
@@ -153,6 +153,10 @@ const handleSave = async () => {
       stats: formData.value.stats,
     };
 
+    // Add console logs for debugging
+    console.log('Data being sent to server:', JSON.stringify(contentData, null, 2));
+    console.log('Raw image files:', images.map(img => img.image));
+
     // Validaciones
     if (images.length === 0) {
       throw new Error("Debe agregar al menos una imagen");
@@ -163,6 +167,7 @@ const handleSave = async () => {
     }
 
     const response = await mutation.create.mutateAsync(contentData);
+    console.log('Server response:', response);
 
     if (response.status === "success") {
       taskStore.addTask("modal", { modal: false });
@@ -172,10 +177,10 @@ const handleSave = async () => {
       throw new Error(response.message || "Error al guardar las imágenes");
     }
   } catch (error: any) {
+    console.error('Error details:', error);
     alert(error.message || "Error al guardar las imágenes");
   }
 };
-
 
 // Método para agregar nueva imagen
 const addNewImage = async (file: File) => {
@@ -184,30 +189,18 @@ const addNewImage = async (file: File) => {
     return;
   }
 
-  try {
-    const preview = await getBase64(file);
-    formData.value.content_details.push({
-      title: "",
-      description: "",
-      image: file.name,
-      preview: preview,
-    });
-  } catch (error) {
-    console.error("Error al procesar la imagen:", error);
-  }
+  // Guardar el archivo como objeto 'File' directamente y generar la vista previa
+  const preview = URL.createObjectURL(file);
+  formData.value.content_details.push({
+    title: "",
+    description: "",
+    image: file,  // Guardamos el archivo directamente
+    preview: preview,
+  });
 };
 
 const removeImage = (index: number) => {
   formData.value.content_details.splice(index, 1);
-};
-
-const getBase64 = (file: File): Promise<string> => {
-  return new Promise((resolve, reject) => {
-    const reader = new FileReader();
-    reader.readAsDataURL(file);
-    reader.onload = () => resolve(reader.result as string);
-    reader.onerror = (error) => reject(error);
-  });
 };
 
 const handleCancel = () => {
@@ -216,16 +209,16 @@ const handleCancel = () => {
   formData.value.stats = false;
 };
 
-// Add new refs
+// Agregar nuevos refs
 const showImageGenerator = ref(false);
 
-// Add new method to handle generated images
+// Agregar nuevo método para manejar las imágenes generadas
 const handleGeneratedImage = async (imageUrl: string) => {
   try {
     formData.value.content_details.push({
       title: "",
       description: "",
-      image: imageUrl,
+      image: imageUrl,  // En este caso la imagen generada
       preview: imageUrl,
     });
     showImageGenerator.value = false;
