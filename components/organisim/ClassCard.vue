@@ -43,7 +43,7 @@
             <template class="flex flex-col justify-between h-20 pb-2">
               <div class="flex items-center justify-between mb-2">
                 <h3 class="font-medium text-gray-900 text-xs sm:text-base">
-                  Lesson {{ index }}. {{ classItem.class_name }}
+                  Lesson {{ index }}. {{ classItem.name }}
                 </h3>
 
                 <div
@@ -215,7 +215,7 @@ const openEditClass = (classItem: ClassData) => {
   console.log(classItem);
   selectedClass.value = {
     ...classItem,
-    class_name: classItem.class_name,
+    name: classItem.name,
     description: classItem.description,
     bullet_points: classItem.bullet_points,
     cover: classItem.cover,

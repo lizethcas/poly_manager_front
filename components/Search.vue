@@ -35,7 +35,7 @@
         <h3 class="text-lg font-semibold mb-2">Clases</h3>
         <div class="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
           <div v-for="clase in results.clases" :key="clase.id" class="p-4 border rounded-lg">
-            <h4 class="font-medium">{{ clase.class_name }}</h4>
+            <h4 class="font-medium">{{ clase.name }}</h4>
             <p class="text-sm text-gray-600">{{ clase.description }}</p>
           </div>
         </div>
