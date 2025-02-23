@@ -25,9 +25,9 @@
 
       <!-- Main Content -->
       <div class="flex-1">
-        <div class="flex items-start gap-4 bg-[#f5f5f5] rounded-md">
+        <div class="flex flex-col sm:flex-row items-start gap-4 bg-[#f5f5f5] rounded-md p-4">
           <!-- Image -->
-          <div class="w-20 h-20 flex-shrink-0">
+          <div class="w-full sm:w-20 h-20 flex-shrink-0">
             <img
               v-if="classItem.cover"
               :src="getCoverUrl(classItem.cover)"
@@ -40,7 +40,7 @@
           <!-- Content Section -->
           <div class="flex-1">
             <!-- Header with Title and Counter -->
-            <template class="flex flex-col justify-between h-20 pb-2">
+            <div class="flex flex-col justify-between h-20 pb-2">
               <div class="flex items-center justify-between mb-2">
                 <h3 class="font-medium text-gray-900 text-xs sm:text-base">
                   Lesson {{ index }}. {{ classItem.name }}
@@ -58,18 +58,14 @@
               <div class="flex flex-wrap gap-2">
                 <button
                   class="action-btn"
-                  @click="
-                    navigateTo(
-                      routes.routesAdmin.class(routeCourseId, classItem.id)
-                    )
-                  "
+                  @click="navigateTo(routes.routesAdmin.class(routeCourseId, classItem.id))"
                 >
                   <Icon name="material-symbols:edit-outline" size="14" />
                   <span class="text-xs">edit</span>
                 </button>
-                <button class="action-btn" @click="openEditClass(classItem)">
+                <button class="action-btn bg-blue-500" @click="openEditClass(classItem)">
                   <Icon name="material-symbols:visibility-outline" size="14" />
-                  <span class="text-xs">Settings</span>
+                  <span class="text-xs text-white">Settings</span>
                 </button>
                 <button
                   class="action-btn"
@@ -78,16 +74,6 @@
                   <Icon name="material-symbols:visibility-outline" size="14" />
                   <span class="text-xs">preview</span>
                 </button>
-                <!--  <button 
-                  class="action-btn" 
-                  @click.stop="togglePublish(classItem)"
-                >
-                  <Icon 
-                    :name="classItem.publish ? 'lucide:eye' : 'lucide:eye-off'" 
-                    size="14" 
-                  />
-                  <span class="text-xs">{{ classItem.publish ? 'published' : 'hidden' }}</span>
-                </button> -->
                 <div
                   class="flex md:items-center md:gap-4 mt-1 flex-wrap"
                   @click.stop="togglePublish(classItem)"
@@ -123,7 +109,7 @@
                   <span class="text-xs">delete</span>
                 </button>
               </div>
-            </template>
+            </div>
           </div>
         </div>
       </div>
@@ -165,7 +151,6 @@ const { success, error } = useNotify();
 const { isOpen, openModal, closeModal } = useModal();
 const route = useRoute();
 const courseId = route.params.courseId as string;
-
 
 // Define props
 const props = defineProps<{

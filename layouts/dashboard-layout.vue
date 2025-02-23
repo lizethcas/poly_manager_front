@@ -1,5 +1,5 @@
 <template>
-  <div class="min-h-screen bg-gray-50 flex my-10 w-[90%]">
+  <div class="min-h-screen bg-gray-50 flex my-10 w-full lg:w-[90%]">
     <!-- Update sidebar with mobile responsive classes -->
     <div
       :class="`${
@@ -124,7 +124,7 @@
       </div>
       <!-- Main Content with Right Sidebar Layout -->
       <div
-        class="flex flex-col ml-5 mt-2 m-auto relative lg:m-5"
+        class="flex flex-col ml-5 mt-2   m-auto relative lg:m-5"
         :class="mainContentWidth"
       >
         <!-- Main Content -->
@@ -132,9 +132,11 @@
         <main class="flex-1 mt-2 w-full">
           <NuxtPage />
         </main>
+
+        <!-- Right Sidebar -->
         <div
           v-if="!isClassRoute"
-          class="w-60 mr-5 lg:fixed lg:right-0 lg:top-16 lg:bottom-0 hidden lg:block bg-white shadow-sm border-l border-gray-200 overflow-y-auto"
+          class="w-60 mr-5 hidden lg:b lg:fixed lg:right-0 lg:top-16 lg:bottom-0  lg:block bg-white shadow-sm border-l border-gray-200 overflow-y-auto"
         >
           <div>
             <!--   <Chat /> -->

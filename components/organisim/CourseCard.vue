@@ -7,7 +7,7 @@
     v-for="course in coursesData.slice().reverse()"
     :key="course.id"
     @click="navigateToCourse(course.id)"
-  class="w-full flex flex-col md:flex-row gap-2 bg-blue-50 border rounded-md cursor-pointer mt-4 md:hover:scale-105 transition-all duration-300 p-4"
+  class="w-full flex flex-col md:flex-row gap-2 bg-white border rounded-md cursor-pointer mt-4 md:hover:scale-105 transition-all duration-300 p-4"
   >
     <!-- Course Image -->
     <div class="rounded-md self-center md:self-auto">
@@ -96,14 +96,16 @@
           {{ course.category }}
         </span>
       </div>
-      <div class="text-xs flex flex-col  md:flex-row  gap-2 mt-2 md:mt-0">
-        <button class="text-white bg-blue-500 px-4 py-1 rounded-full border border-blue-500">
+      <div class="text-xs flex flex-row justify-start md:gap-2  mt-5 md:mt-0">
+        <button class="text-white bg-blue-500 px-4 py-1 rounded-full border border-blue-500 text-xs flex items-center gap-1">
+          <IconMolecule :name="IconType.eye" :size="16" :color="'text-white'" />
           preview
         </button>
-        <button
+     <button
           @click.stop="openEditModal(course)"
-          class="text-white  bg-blue-500 px-4 py-1 rounded-full border border-blue-500 text-xs"
+          class="text-white bg-blue-500 px-4 py-1 rounded-full border border-blue-500 text-xs flex items-center gap-1"
         >
+          <IconMolecule :name="IconType.edit" :size="16" :color="'text-white'" />
           edit
         </button>
       </div>
