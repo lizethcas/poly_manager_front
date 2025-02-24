@@ -127,16 +127,18 @@
     </button>
   </UTooltip>
 
-  <div class="flex items-center gap-2 py-4 text-sm">
+  <div class="flex items-center gap-2 py-4 text-sm ">
     <p>Include the stats</p>
     <AtomosToggle v-model="data.stats" />
   </div>
-  <MoleculeActionButtons
+    <MoleculeActionButtons
     @handleSave="handleSave()"
     @handleCancel="handleCancel"
     :isActive="infoResponseApi.isActive"
     :deleteAction="false"
   />
+
+  
 </template>
 
 <script setup lang="ts">
