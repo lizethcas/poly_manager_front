@@ -7,7 +7,7 @@
     v-for="course in coursesData.slice().reverse()"
     :key="course.id"
     @click="navigateToCourse(course.id)"
-  class="w-full flex flex-col md:flex-row gap-2 bg-white border rounded-md cursor-pointer mt-4 md:hover:scale-105 transition-all duration-300 p-4"
+    class="w-full flex flex-col md:flex-row gap-2 bg-white border rounded-md cursor-pointer mt-4 md:hover:scale-105 transition-all duration-300 p-4"
   >
     <!-- Course Image -->
     <div class="rounded-md self-center md:self-auto">
@@ -91,19 +91,19 @@
           {{ course.level.split(".")[0] }}
         </span>
         <span
-          :class="[getLevelColor(course.level, true), 'text-xs font-semibold px-1 py-1 rounded-full text-fuscous-gray-950']"
+          :class="[getLevelColor(course.level, true), 'text-xs font-semibold px-2 py-1 rounded-full text-fuscous-gray-950']"
         >
           {{ course.category }}
         </span>
       </div>
-      <div class="text-xs flex flex-row justify-start md:gap-2  mt-5 md:mt-0">
-        <button class="text-white bg-blue-500 px-4 py-1 rounded-full border border-blue-500 text-xs flex items-center gap-1">
-          <IconMolecule :name="IconType.eye" :size="16" :color="'text-white'" />
+      <div class="text-xs flex flex-row justify-start md:gap-2 py-1 md:mt-0">
+        <button class="action-btn">
+          <IconMolecule :name="IconType.eye" :size="12" :color="'text-white'" />
           preview
         </button>
-     <button
+        <button
           @click.stop="openEditModal(course)"
-          class="text-white bg-blue-500 px-4 py-1 rounded-full border border-blue-500 text-xs flex items-center gap-1"
+          class="action-btn"
         >
           <IconMolecule :name="IconType.edit" :size="16" :color="'text-white'" />
           edit
@@ -302,3 +302,17 @@ const publishCourse = async (courseId: number, event: Event) => {
   }
 };
 </script>
+
+<style scoped>
+.action-btn {
+  @apply flex items-center justify-center px-4 py-1 rounded-full bg-blue-500 text-white text-xs font-semibold transition duration-300;
+}
+
+.action-btn:hover {
+  @apply bg-blue-600;
+}
+
+.category-span {
+  @apply px-2 py-1 rounded-full text-xs font-semibold;
+}
+</style>

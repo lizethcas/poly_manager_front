@@ -1,7 +1,7 @@
 <template>
   <div
     v-if="isOpen"
-    class="fixed inset-0 bg-gray-50 bg-opacity-50 z-50 flex items-center justify-center p-4"
+    class="fixed inset-0 bg-gray-500 bg-opacity-50 z-50 flex items-center justify-center p-4"
   >
     <div
       class="bg-white pr-6 rounded-lg shadow-lg w-[95vw] h-[95vh] overflow-y-auto flex gap-4 relative"
@@ -9,7 +9,7 @@
     >
       <!-- Menú Lateral en móvil (toggle) -->
        <div
-        class="absolute md:hidden inset-y-0 left-0 w-64 bg-gray-100 p-4 rounded-r-lg shadow-md transform transition-transform duration-300 md:static md:translate-x-0 z-20"
+        class="absolute  md:hidden inset-y-0 left-0 w-64 bg-gray-100 p-4 rounded-r-lg shadow-md transform transition-transform duration-300 md:static md:translate-x-0 z-20"
         :class="{'-translate-x-full': !isSidebarOpen, 'translate-x-0': isSidebarOpen}"
       >
         <!-- Contenido del menú -->

@@ -55,7 +55,8 @@
               </div>
 
               <!-- Action Buttons -->
-              <div class="flex flex-wrap gap-2">
+              <div class="flex flex-wrap gap-2 relative">
+                <!-- Always visible buttons -->
                 <button
                   class="action-btn"
                   @click="navigateTo(routes.routesAdmin.class(routeCourseId, classItem.id))"
@@ -63,51 +64,60 @@
                   <Icon name="material-symbols:edit-outline" size="14" />
                   <span class="text-xs">edit</span>
                 </button>
-                <button class="action-btn bg-blue-500" @click="openEditClass(classItem)">
+                <button class="action-btn bg-blue-500 text-white" @click="openEditClass(classItem)">
                   <Icon name="material-symbols:visibility-outline" size="14" />
-                  <span class="text-xs text-white">Settings</span>
+                  <span class="text-xs">Settings</span>
                 </button>
-                <button
-                  class="action-btn"
-                  @click="openModalHandler(classItem.id)"
-                >
-                  <Icon name="material-symbols:visibility-outline" size="14" />
-                  <span class="text-xs">preview</span>
-                </button>
-                <div
-                  class="flex md:items-center md:gap-4 mt-1 flex-wrap"
-                  @click.stop="togglePublish(classItem)"
-                >
-                  <div
-                    v-if="classItem.publish"
-                    class="bg-emerald-100 text-emerald-700 text-xs px-2 rounded-full flex items-center gap-1"
-                  >
-                    <IconMolecule
-                      :name="IconType.eye"
-                      :size="16"
-                      :color="'text-emerald-700'"
-                    />
-                    <span class="leading-none">published</span>
-                  </div>
-                  <div
-                    v-if="!classItem.publish"
-                    class="text-xs px-2 rounded-full flex items-center gap-1 bg-white border border-fuscous-gray-600"
-                  >
-                    <IconMolecule
-                      :name="IconType.eyeOff"
-                      :size="16"
-                      :color="'text-fuscous-gray-600'"
-                    />
-                    <span class="leading-none">hidden</span>
+
+                <!-- Dropdown for additional buttons -->
+                <div class="relative">
+                  <button class="action-btn" @click="toggleDropdown(classItem.id)">
+                    <Icon name="material-symbols:more-vert" size="14" />
+                  </button>
+                  <div v-if="dropdownOpen === classItem.id" class="absolute right-0 mt-2 w-48 bg-white border border-gray-200 rounded-md shadow-lg z-10">
+                    <button
+                      class="action-btn w-full text-left px-4 py-2"
+                      @click="openModalHandler(classItem.id)"
+                    >
+                      <Icon name="material-symbols:visibility-outline" size="14" />
+                      <span class="text-xs">preview</span>
+                    </button>
+                    <div
+                      class="flex items-center gap-4 px-4 py-2 cursor-pointer"
+                      @click.stop="togglePublish(classItem)"
+                    >
+                      <div
+                        v-if="classItem.publish"
+                        class="bg-emerald-100 text-emerald-700 text-xs px-2 rounded-full flex items-center gap-1"
+                      >
+                        <IconMolecule
+                          :name="IconType.eye"
+                          :size="16"
+                          :color="'text-emerald-700'"
+                        />
+                        <span class="leading-none">published</span>
+                      </div>
+                      <div
+                        v-if="!classItem.publish"
+                        class="text-xs px-2 rounded-full flex items-center gap-1 bg-white border border-fuscous-gray-600"
+                      >
+                        <IconMolecule
+                          :name="IconType.eyeOff"
+                          :size="16"
+                          :color="'text-fuscous-gray-600'"
+                        />
+                        <span class="leading-none">hidden</span>
+                      </div>
+                    </div>
+                    <button
+                      class="action-btn w-full text-left px-4 py-2 text-red-500"
+                      @click="handleDelete(classItem.id)"
+                    >
+                      <Icon name="material-symbols:delete-outline" size="14" />
+                      <span class="text-xs">delete</span>
+                    </button>
                   </div>
                 </div>
-                <button
-                  class="action-btn text-red-500"
-                  @click="handleDelete(classItem.id)"
-                >
-                  <Icon name="material-symbols:delete-outline" size="14" />
-                  <span class="text-xs">delete</span>
-                </button>
               </div>
             </div>
           </div>
@@ -269,6 +279,12 @@ const togglePublish = async (classItem: ClassData) => {
     error("Error updating class status");
   }
 };
+
+const dropdownOpen = ref<number | null>(null);
+
+const toggleDropdown = (classId: number) => {
+  dropdownOpen.value = dropdownOpen.value === classId ? null : classId;
+};
 </script>
 
 <style scoped>
@@ -278,8 +294,15 @@ const togglePublish = async (classItem: ClassData) => {
   flex-wrap: wrap;
   border-radius: 0.5rem;
   transition-property: color, background-color;
+  padding: 10px;
+  background-color: white;
+  border: 1px solid #e5e7eb;
+  color: #374151;
 }
 .action-btn:hover {
   background-color: rgb(243 244 246);
+}
+.action-btn span {
+  margin-left: 0.25rem;
 }
 </style>

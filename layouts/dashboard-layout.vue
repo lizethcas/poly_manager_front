@@ -77,9 +77,7 @@
 
           <div>
             <NuxtLink to="/" class="flex items-center">
-              <span class="text-primary-color font-bold text-[20px]"
-                >PolyAcademy</span
-              >
+              <span class="text-primary-color font-bold text-[20px]">PolyAcademy</span>
             </NuxtLink>
           </div>
           <!-- Search bar -->
@@ -124,11 +122,10 @@
       </div>
       <!-- Main Content with Right Sidebar Layout -->
       <div
-        class="flex flex-col ml-5 mt-2   m-auto relative lg:m-5"
+        class="flex flex-col ml-5 mt-2 m-auto relative lg:m-5"
         :class="mainContentWidth"
       >
         <!-- Main Content -->
-
         <main class="flex-1 mt-2 w-full">
           <NuxtPage />
         </main>
@@ -136,10 +133,18 @@
         <!-- Right Sidebar -->
         <div
           v-if="!isClassRoute"
-          class="w-60 mr-5 hidden lg:b lg:fixed lg:right-0 lg:top-16 lg:bottom-0  lg:block bg-white shadow-sm border-l border-gray-200 overflow-y-auto"
+          class="w-60 mr-5 hidden lg:block lg:fixed lg:right-0 lg:top-16 lg:bottom-0 bg-white shadow-sm border-l border-gray-200 overflow-y-auto"
         >
-          <div>
-            <!--   <Chat /> -->
+          <div class="p-4">
+            <div v-for="notification in notifications" :key="notification.id" class="mb-4 p-3 bg-gray-50 rounded-lg shadow-sm" :class="notificationClass(notification.status)">
+              <div class="flex items-center gap-2">
+                <img :src="notification.userImage" alt="User Image" class="w-10 h-10 rounded-full" />
+                <div>
+                  <p class="font-semibold">{{ notification.userName }}</p>
+                  <p class="text-sm text-gray-500">{{ notification.status }}</p>
+                </div>
+              </div>
+            </div>
           </div>
         </div>
       </div>
@@ -182,6 +187,56 @@ const user = {
   profileImage: "https://via.placeholder.com/150",
   name: "Mark Andrew Chernetskiy",
   role: "Student",
+};
+
+const notifications = ref([
+  {
+    id: 1,
+    userImage: "https://plus.unsplash.com/premium_photo-1689551670902-19b441a6afde?q=80&w=1974&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
+    userName: "John Doe",
+    status: "New message received",
+  },
+  {
+    id: 2,
+    userImage: "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?q=80&w=1974&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
+    userName: "Jane Smith",
+    status: "Assignment graded",
+  },
+  {
+    id: 3,
+    userImage: "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?q=80&w=1974&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
+    userName: "Alice Johnson",
+    status: "New course available",
+  },
+  {
+    id: 4,
+    userImage: "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?q=80&w=1974&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
+    userName: "Bob Brown",
+    status: "Payment received",
+  },
+  {
+    id: 5,
+    userImage: "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?q=80&w=1974&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
+    userName: "Emily White",
+    status: "Course completed",
+  },
+]);
+
+const notificationClass = (status: string) => {
+  switch (status) {
+    case "New message received":
+      return "border-l-4 border-green-500";
+    case "Assignment graded":
+      return "border-l-4 border-yellow-500";
+    case "New course available":
+      return "border-l-4 border-blue-500";
+    case "Payment received":
+      return "border-l-4 border-green-500";
+    case "Course completed":
+      return "border-l-4 border-red-500";
+    default:
+      return "";
+  }
 };
 
 interface NavigationRoute {
