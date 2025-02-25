@@ -68,14 +68,14 @@
                   "
                 >
                   <Icon name="material-symbols:edit-outline" size="14" />
-                  <span class="text-xs font-semibold">edit</span>
+                  <span class="text-xs">edit</span>
                 </button>
                 <button
                   class="bg-blue-500 text-white p-1 rounded-full flex items-center gap-1"
                   @click="openEditClass(classItem)"
                 >
                   <Icon name="material-symbols:visibility-outline" size="14" />
-                  <span class="text-xs font-semibold">Settings</span>
+                  <span class="text-xs">Settings</span>
                 </button>
 
                 <!-- Dropdown for additional buttons -->

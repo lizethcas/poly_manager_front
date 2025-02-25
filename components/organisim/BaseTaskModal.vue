@@ -8,10 +8,19 @@
       :class="{ 'overflow-y-hidden': isSidebarOpen }"
     >
       <!-- Menú Lateral en móvil (toggle) -->
-       <div
-        class="absolute  md:hidden inset-y-0 left-0 w-64 bg-gray-100 p-4 rounded-r-lg shadow-md transform transition-transform duration-300 md:static md:translate-x-0 z-20"
+      <div
+        class="fixed md:hidden inset-y-0 left-0 w-64 bg-gray-100 p-4 rounded-r-lg shadow-md transform transition-transform duration-300 z-20"
         :class="{'-translate-x-full': !isSidebarOpen, 'translate-x-0': isSidebarOpen}"
       >
+        <div class="flex justify-end items-center mb-4">
+          
+          <button
+            class="bg-white p-2 rounded-md shadow"
+            @click="isSidebarOpen = false"
+          >
+            <Icon name="material-symbols:close" size="24" />
+          </button>
+        </div>
         <!-- Contenido del menú -->
         <InteractiveTask
           :menuItems="menuItems"
@@ -20,7 +29,7 @@
       </div>
 
       <!-- Main Content -->
-      <div class="flex-1 mt-6 z-10">
+      <div class="flex-1 mt-6 z-10 ">
         <!-- Modal Header -->
         <div
           class="fixed flex justify-between items-center border-b-[1px] w-[95vw] px-4 top-0 bg-white z-10"
@@ -28,7 +37,7 @@
           <div class="flex items-center gap-2 m-2">
             <!-- Botón hamburguesa (solo visible en pantallas pequeñas) -->
             <button
-              class="md:hidden fixed top-4 left-4 mr-4 bg-white p-2 rounded-md shadow "
+              class="md:hidden bg-white p-2 rounded-md shadow"
               @click="isSidebarOpen = !isSidebarOpen"
             >
               <Icon
@@ -40,15 +49,19 @@
                 size="24"
               />
             </button>
+          </div>
+          <div class="flex-1 flex justify-center items-center">
             <Icon :name="icon" size="30" class="text-primary-color" />
             <h2 class="text-m font-bold text-primary-color">{{ title }}</h2>
           </div>
-          <img
-            src="../../assets/images/close.webp"
-            alt="close create course"
-            class="w-5 h-5 cursor-pointer"
-            @click="$emit('close')"
-          />
+          <div class="flex items-center gap-2 m-2">
+            <img
+              src="../../assets/images/close.webp"
+              alt="close create course"
+              class="w-5 h-5 cursor-pointer"
+              @click="$emit('close')"
+            />
+          </div>
         </div>
         <div class="flex gap-4">
           <div
@@ -59,7 +72,7 @@
               @select-task="handleTaskSelection"
             />
           </div>
-          <div class="flex-1">
+          <div class="flex-1 px-3 md:px-0">
             <!-- Common Fields -->
             <div class="space-y-4 my-6">
               <MoleculeInput
