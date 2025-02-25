@@ -25,7 +25,9 @@
 
       <!-- Main Content -->
       <div class="flex-1">
-        <div class="flex flex-col sm:flex-row items-start gap-4 bg-[#f5f5f5] rounded-md p-4">
+        <div
+          class="flex flex-col sm:flex-row items-start gap-4 bg-[#f5f5f5] rounded-md p-4"
+        >
           <!-- Image -->
           <div class="w-full sm:w-20 h-20 flex-shrink-0">
             <img
@@ -58,32 +60,48 @@
               <div class="flex flex-wrap gap-2 relative">
                 <!-- Always visible buttons -->
                 <button
-                  class="action-btn"
-                  @click="navigateTo(routes.routesAdmin.class(routeCourseId, classItem.id))"
+                  class="bg-blue-500 text-white p-1 rounded-full flex items-center gap-1"
+                  @click="
+                    navigateTo(
+                      routes.routesAdmin.class(routeCourseId, classItem.id)
+                    )
+                  "
                 >
                   <Icon name="material-symbols:edit-outline" size="14" />
-                  <span class="text-xs">edit</span>
+                  <span class="text-xs font-semibold">edit</span>
                 </button>
-                <button class="action-btn bg-blue-500 text-white" @click="openEditClass(classItem)">
+                <button
+                  class="bg-blue-500 text-white p-1 rounded-full flex items-center gap-1"
+                  @click="openEditClass(classItem)"
+                >
                   <Icon name="material-symbols:visibility-outline" size="14" />
-                  <span class="text-xs">Settings</span>
+                  <span class="text-xs font-semibold">Settings</span>
                 </button>
 
                 <!-- Dropdown for additional buttons -->
                 <div class="relative">
-                  <button class="action-btn" @click="toggleDropdown(classItem.id)">
+                  <button
+                    class="bg-gray-200 text-gray-600 p-1 rounded-full flex items-center gap-1"
+                    @click="toggleDropdown(classItem.id)"
+                  >
                     <Icon name="material-symbols:more-vert" size="14" />
                   </button>
-                  <div v-if="dropdownOpen === classItem.id" class="absolute right-0 mt-2 w-48 bg-white border border-gray-200 rounded-md shadow-lg z-10">
+                  <div
+                    v-if="dropdownOpen === classItem.id"
+                    class="absolute right-0 mt-2 w-48 bg-white border border-gray-200 rounded-md shadow-lg z-10"
+                  >
                     <button
-                      class="action-btn w-full text-left px-4 py-2"
+                      class="flex items-center w-full text-left px-4 py-2 gap-1 border-t border-gray-200"
                       @click="openModalHandler(classItem.id)"
                     >
-                      <Icon name="material-symbols:visibility-outline" size="14" />
+                      <Icon
+                        name="material-symbols:visibility-outline"
+                        size="14"
+                      />
                       <span class="text-xs">preview</span>
                     </button>
                     <div
-                      class="flex items-center gap-4 px-4 py-2 cursor-pointer"
+                      class="flex items-center gap-4 px-4 py-2 cursor-pointer border-t border-gray-200"
                       @click.stop="togglePublish(classItem)"
                     >
                       <div
@@ -110,7 +128,7 @@
                       </div>
                     </div>
                     <button
-                      class="action-btn w-full text-left px-4 py-2 text-red-500"
+                      class="flex items-center w-full text-left px-4 py-2 gap-1 border-t border-gray-200"
                       @click="handleDelete(classItem.id)"
                     >
                       <Icon name="material-symbols:delete-outline" size="14" />
@@ -286,23 +304,3 @@ const toggleDropdown = (classId: number) => {
   dropdownOpen.value = dropdownOpen.value === classId ? null : classId;
 };
 </script>
-
-<style scoped>
-.action-btn {
-  display: flex;
-  align-items: center;
-  flex-wrap: wrap;
-  border-radius: 0.5rem;
-  transition-property: color, background-color;
-  padding: 10px;
-  background-color: white;
-  border: 1px solid #e5e7eb;
-  color: #374151;
-}
-.action-btn:hover {
-  background-color: rgb(243 244 246);
-}
-.action-btn span {
-  margin-left: 0.25rem;
-}
-</style>
