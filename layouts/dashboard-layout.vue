@@ -97,6 +97,14 @@
             :userName="user.name"
             :userRole="user.role"
           />
+
+          <!-- Notification Button -->
+          <button
+            @click="toggleNotificationSidebar"
+            class="lg:hidden text-gray-600 hover:text-gray-900 items-center flex"
+          >
+            <Icon name="material-symbols:notifications" size="24" />
+          </button>
         </div>
 
         <!-- New slot for course navigation -->
@@ -130,7 +138,7 @@
           <NuxtPage />
         </main>
 
-        <!-- Right Sidebar -->
+        <!-- Notification Sidebar Deskptop -->
         <div
           v-if="!isClassRoute"
           class="w-60 mr-5 hidden lg:block lg:fixed lg:right-0 lg:top-16 lg:bottom-0 bg-white shadow-sm border-l border-gray-200 overflow-y-auto"
@@ -144,6 +152,68 @@
                   <p class="text-sm text-gray-500">{{ notification.status }}</p>
                 </div>
               </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Notification Sidebar Mobile  -->
+
+        <div
+          :class="[
+            isNotificationSidebarOpen ? 'translate-x-0' : 'translate-x-full',
+            'fixed inset-y-0 block md:hidden right-0 max-w-xs w-full bg-white shadow-xl transform transition ease-in-out duration-300 lg:translate-x-0 lg:static lg:inset-auto lg:max-w-sm lg:w-60 lg:transform-none'
+          ]"
+        >
+          <div class="h-full flex flex-col pt-5 pb-4 bg-white">
+            <div class="px-4 flex items-center justify-between">
+              <h2 class="text-lg font-medium text-gray-900">Notifications</h2>
+              <button
+                type="button"
+                class="lg:hidden rounded-md text-gray-400 hover:text-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                @click="toggleNotificationSidebar"
+              >
+                <span class="sr-only">Close panel</span>
+                <svg class="h-6 w-6" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                </svg>
+              </button>
+            </div>
+            <div class="mt-1 relative">
+              <div class="absolute inset-0 flex items-center" aria-hidden="true">
+                <div class="w-full border-t border-gray-300" />
+              </div>
+              <div class="relative flex justify-center">
+                <span class="px-2 bg-white text-sm text-gray-500">5 New</span>
+              </div>
+            </div>
+            <div class="mt-8 flex-1 overflow-y-auto">
+              <ul class="divide-y divide-gray-200">
+                <li v-for="notification in notifications" :key="notification.id" class="px-4 py-4">
+                  <div class="flex items-center space-x-4">
+                    <div class="flex-shrink-0">
+                      <span class="inline-block h-10 w-10 rounded-full overflow-hidden bg-gray-100">
+                        <img :src="notification.userImage" alt="User Image" class="h-full w-full text-gray-300" />
+                      </span>
+                    </div>
+                    <div class="flex-1 min-w-0">
+                      <p class="text-sm font-medium text-gray-900 truncate">{{ notification.userName }}</p>
+                      <p class="text-sm text-gray-500 truncate">{{ notification.status }}</p>
+                    </div>
+                    <div>
+                      <span 
+                        :class="[
+                          'inline-block h-2.5 w-2.5 rounded-full',
+                          {
+                            'bg-green-400': notification.status === 'online',
+                            'bg-yellow-400': notification.status === 'away',
+                            'bg-gray-400': notification.status === 'offline'
+                          }
+                        ]"
+                      ></span>
+                    </div>
+                  </div>
+                </li>
+              </ul>
             </div>
           </div>
         </div>
@@ -162,6 +232,7 @@ import { apiRoutes } from "~/services/routes.api";
 import { IconType } from "~/data/iconsType";
 
 const isSidebarOpen = ref(false);
+const isNotificationSidebarOpen = ref(false);
 const authStore = useAuthStore();
 const route = useRoute();
 const router = useRouter();
@@ -181,6 +252,10 @@ const isClassRoute = computed(() => {
 
 const toggleSidebar = () => {
   isSidebarOpen.value = !isSidebarOpen.value;
+};
+
+const toggleNotificationSidebar = () => {
+  isNotificationSidebarOpen.value = !isNotificationSidebarOpen.value;
 };
 
 const user = {

@@ -22,7 +22,9 @@
     <!-- Course Info -->
     <div class="flex flex-col md:mt-0 md:ml-4 flex-grow justify-between">
       <div class="flex items-center gap-2">
-        <h2 class="text-fuscous-gray-600 font-bold text-base md:text-lg w-contain">
+        <h2
+          class="text-fuscous-gray-600 font-bold text-base md:text-lg w-contain"
+        >
           {{ course.name }}
         </h2>
       </div>
@@ -53,7 +55,9 @@
           />
           <span class="leading-none">hidden</span>
         </div>
-        <div class="flex items-center gap-1 md:gap-2 text-gray-600 text-xs flex-wrap">
+        <div
+          class="flex items-center gap-1 md:gap-2 text-gray-600 text-xs flex-wrap"
+        >
           <span
             class="flex items-center gap-1"
             @click="handleStudents(course.id)"
@@ -86,26 +90,38 @@
     <div class="flex flex-col justify-between text-center mt-2 md:mt-0">
       <div class="flex items-center gap-2">
         <span
-          :class="[getLevelColor(course.level, true), 'text-xs font-semibold px-2 py-1 rounded-full text-fuscous-gray-950']"
+          :class="[
+            getLevelColor(course.level, true),
+            'text-xs font-semibold px-2 py-1 rounded-full text-fuscous-gray-950',
+          ]"
         >
           {{ course.level.split(".")[0] }}
         </span>
         <span
-          :class="[getLevelColor(course.level, true), 'text-xs font-semibold px-2 py-1 rounded-full text-fuscous-gray-950']"
+          :class="[
+            getLevelColor(course.level, true),
+            'text-xs font-semibold px-2 py-1 rounded-full text-fuscous-gray-950',
+          ]"
         >
           {{ course.category }}
         </span>
       </div>
-      <div class="text-xs flex flex-row justify-start md:gap-2 py-1 md:mt-0">
-        <button class="action-btn">
+      <div class="text-xs flex flex-row justify-start gap-2 py-1 mt-5">
+        <button
+          class="flex items-center gap-1 px-2 bg-blue-500 text-white text-xs font-semibold rounded-full transition duration-300"
+        >
           <IconMolecule :name="IconType.eye" :size="12" :color="'text-white'" />
           preview
         </button>
         <button
           @click.stop="openEditModal(course)"
-          class="action-btn"
+          class="flex items-center gap-1 px-2 bg-blue-500 text-white text-xs font-semibold rounded-full transition duration-300"
         >
-          <IconMolecule :name="IconType.edit" :size="16" :color="'text-white'" />
+          <IconMolecule
+            :name="IconType.edit"
+            :size="16"
+            :color="'text-white'"
+          />
           edit
         </button>
       </div>
