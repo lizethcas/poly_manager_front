@@ -2,7 +2,7 @@
   <div class="min-h-screen flex bg-white w-full">
     <!-- Wave pattern container -->
 
-    <div class="flex min-h-screen items-center justify-center px-4">
+    <div class="flex min-h-screen items-center justify-center px-4 w-full">
       <!-- Left side - Login Form -->
       <div
         class="w-full max-w-md space-y-8 bg-transparent opacity-100 p-8 rounded-2xl shadow-lg"
@@ -28,7 +28,7 @@
         </div>
 
         <!-- Welcome Text -->
-        <div class="space-y-2">
+        <div class="space-y-2 text-center">
           <h1 class="text-4xl font-bold text-gray-900">WELCOME</h1>
           <h2 class="text-4xl font-bold text-yellow-400">BACK!</h2>
         </div>
@@ -66,7 +66,7 @@
                   <i class="fas fa-eye"></i>
                 </span>
               </div>
-              <div class="mt-2">
+              <div class="mt-2 text-center">
                 <a
                   href="#"
                   class="text-emerald-400 text-sm hover:text-emerald-500"
@@ -78,7 +78,7 @@
           </div>
 
           <!-- Agregar mensaje de error -->
-          <div v-if="error" class="text-red-500 text-sm mt-2">
+          <div v-if="error" class="text-red-500 text-sm mt-2 text-center">
             {{ error }}
           </div>
 
@@ -93,29 +93,12 @@
             </button>
           </div>
           <LoginGoogle />
-          <!-- Social Login -->
-          <!--   <div class="mt-6">
-            <div class="flex justify-center space-x-4">
-              <button class="p-2 bg-gray-100 rounded-full hover:bg-gray-200">
-                <img src="~/assets/images/google.png" alt="Google" class="w-6 h-6" />
-              </button>
-              <button class="p-2 bg-gray-100 rounded-full hover:bg-gray-200">
-                <img src="~/assets/images/apple.png" alt="Apple" class="w-6 h-6" />
-              </button>
-              <button class="p-2 bg-gray-100 rounded-full hover:bg-gray-200">
-                <img src="~/assets/images/facebook.png" alt="Facebook" class="w-6 h-6" />
-              </button>
-              <button class="p-2 bg-gray-100 rounded-full hover:bg-gray-200">
-                <img src="~/assets/images/instagram.png" alt="Instagram" class="w-6 h-6" />
-              </button>
-            </div>
-          </div> -->
         </form>
       </div>
       <img
         src="~/assets/images/login.png"
         alt="Logo"
-        class="logo z-50 relative w-1/2 h-full"
+        class="logo z-50 relative w-1/2 h-full hidden md:block"
       />
     </div>
   </div>
@@ -125,8 +108,6 @@
 import { ref } from "vue";
 import LoginGoogle from "~/components/organisim/LoginGoogle.vue";
 import { useLogin } from "~/composables/useLogin";
-
-
 
 const email = ref("");
 const password = ref("");

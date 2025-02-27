@@ -41,4 +41,6 @@ export const IconType = {
   menuTasks: "mage:dots-menu",
   paymentsOutline: "material-symbols:payments-outline",
   trash: "material-symbols:delete-outline",
+  edit: "material-symbols:edit-outline",
 };
+

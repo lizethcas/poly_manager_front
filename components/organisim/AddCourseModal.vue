@@ -42,7 +42,7 @@
 
           <!-- Mostrar elementos adicionales si es necesario -->
           <div v-if="showExtraElements && index === 1">
-            <div class="flex gap-4">
+            <div class="flex flex-col md:flex-row md:gap-3">
               <div
                 v-for="(categoryOrLevel, index) in combinedOptions"
                 :key="index"
@@ -80,7 +80,7 @@
       </div>
 
       <!-- Botones de acción -->
-      <div class="flex justify-center gap-4 mt-6">
+      <div class="flex justify-center mt-3">
         <MoleculeActionButtons
           @handleSave="handleSave"
           @handleCancel="closeModal"

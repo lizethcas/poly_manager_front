@@ -25,9 +25,11 @@
 
       <!-- Main Content -->
       <div class="flex-1">
-        <div class="flex items-start gap-4 bg-[#f5f5f5] rounded-md">
+        <div
+          class="flex flex-col sm:flex-row items-start gap-4 bg-[#f5f5f5] rounded-md p-4"
+        >
           <!-- Image -->
-          <div class="w-20 h-20 flex-shrink-0">
+          <div class="w-full sm:w-20 h-20 flex-shrink-0">
             <img
               v-if="classItem.cover"
               :src="getCoverUrl(classItem.cover)"
@@ -40,7 +42,7 @@
           <!-- Content Section -->
           <div class="flex-1">
             <!-- Header with Title and Counter -->
-            <template class="flex flex-col justify-between h-20 pb-2">
+            <div class="flex flex-col justify-between h-20 pb-2">
               <div class="flex items-center justify-between mb-2">
                 <h3 class="font-medium text-gray-900 text-xs sm:text-base">
                   Lesson {{ index }}. {{ classItem.name }}
@@ -55,9 +57,10 @@
               </div>
 
               <!-- Action Buttons -->
-              <div class="flex flex-wrap gap-2">
+              <div class="flex flex-wrap gap-2 relative">
+                <!-- Always visible buttons -->
                 <button
-                  class="action-btn"
+                  class="bg-blue-500 text-white p-1 rounded-full flex items-center gap-1"
                   @click="
                     navigateTo(
                       routes.routesAdmin.class(routeCourseId, classItem.id)
@@ -67,63 +70,74 @@
                   <Icon name="material-symbols:edit-outline" size="14" />
                   <span class="text-xs">edit</span>
                 </button>
-                <button class="action-btn" @click="openEditClass(classItem)">
+                <button
+                  class="bg-blue-500 text-white p-1 rounded-full flex items-center gap-1"
+                  @click="openEditClass(classItem)"
+                >
                   <Icon name="material-symbols:visibility-outline" size="14" />
                   <span class="text-xs">Settings</span>
                 </button>
-                <button
-                  class="action-btn"
-                  @click="openModalHandler(classItem.id)"
-                >
-                  <Icon name="material-symbols:visibility-outline" size="14" />
-                  <span class="text-xs">preview</span>
-                </button>
-                <!--  <button 
-                  class="action-btn" 
-                  @click.stop="togglePublish(classItem)"
-                >
-                  <Icon 
-                    :name="classItem.publish ? 'lucide:eye' : 'lucide:eye-off'" 
-                    size="14" 
-                  />
-                  <span class="text-xs">{{ classItem.publish ? 'published' : 'hidden' }}</span>
-                </button> -->
-                <div
-                  class="flex md:items-center md:gap-4 mt-1 flex-wrap"
-                  @click.stop="togglePublish(classItem)"
-                >
-                  <div
-                    v-if="classItem.publish"
-                    class="bg-emerald-100 text-emerald-700 text-xs px-2 rounded-full flex items-center gap-1"
+
+                <!-- Dropdown for additional buttons -->
+                <div class="relative">
+                  <button
+                    class="bg-gray-200 text-gray-600 p-1 rounded-full flex items-center gap-1"
+                    @click="toggleDropdown(classItem.id)"
                   >
-                    <IconMolecule
-                      :name="IconType.eye"
-                      :size="16"
-                      :color="'text-emerald-700'"
-                    />
-                    <span class="leading-none">published</span>
-                  </div>
+                    <Icon name="material-symbols:more-vert" size="14" />
+                  </button>
                   <div
-                    v-if="!classItem.publish"
-                    class="text-xs px-2 rounded-full flex items-center gap-1 bg-white border border-fuscous-gray-600"
+                    v-if="dropdownOpen === classItem.id"
+                    class="absolute right-0 mt-2 w-48 bg-white border border-gray-200 rounded-md shadow-lg z-10"
                   >
-                    <IconMolecule
-                      :name="IconType.eyeOff"
-                      :size="16"
-                      :color="'text-fuscous-gray-600'"
-                    />
-                    <span class="leading-none">hidden</span>
+                    <button
+                      class="flex items-center w-full text-left px-4 py-2 gap-1 border-t border-gray-200"
+                      @click="openModalHandler(classItem.id)"
+                    >
+                      <Icon
+                        name="material-symbols:visibility-outline"
+                        size="14"
+                      />
+                      <span class="text-xs">preview</span>
+                    </button>
+                    <div
+                      class="flex items-center gap-4 px-4 py-2 cursor-pointer border-t border-gray-200"
+                      @click.stop="togglePublish(classItem)"
+                    >
+                      <div
+                        v-if="classItem.publish"
+                        class="bg-emerald-100 text-emerald-700 text-xs px-2 rounded-full flex items-center gap-1"
+                      >
+                        <IconMolecule
+                          :name="IconType.eye"
+                          :size="16"
+                          :color="'text-emerald-700'"
+                        />
+                        <span class="leading-none">published</span>
+                      </div>
+                      <div
+                        v-if="!classItem.publish"
+                        class="text-xs px-2 rounded-full flex items-center gap-1 bg-white border border-fuscous-gray-600"
+                      >
+                        <IconMolecule
+                          :name="IconType.eyeOff"
+                          :size="16"
+                          :color="'text-fuscous-gray-600'"
+                        />
+                        <span class="leading-none">hidden</span>
+                      </div>
+                    </div>
+                    <button
+                      class="flex items-center w-full text-left px-4 py-2 gap-1 border-t border-gray-200"
+                      @click="handleDelete(classItem.id)"
+                    >
+                      <Icon name="material-symbols:delete-outline" size="14" />
+                      <span class="text-xs">delete</span>
+                    </button>
                   </div>
                 </div>
-                <button
-                  class="action-btn text-red-500"
-                  @click="handleDelete(classItem.id)"
-                >
-                  <Icon name="material-symbols:delete-outline" size="14" />
-                  <span class="text-xs">delete</span>
-                </button>
               </div>
-            </template>
+            </div>
           </div>
         </div>
       </div>
@@ -165,7 +179,6 @@ const { success, error } = useNotify();
 const { isOpen, openModal, closeModal } = useModal();
 const route = useRoute();
 const courseId = route.params.courseId as string;
-
 
 // Define props
 const props = defineProps<{
@@ -294,17 +307,10 @@ const togglePublish = async (classItem: ClassData) => {
     error("Error updating class status");
   }
 };
-</script>
 
-<style scoped>
-.action-btn {
-  display: flex;
-  align-items: center;
-  flex-wrap: wrap;
-  border-radius: 0.5rem;
-  transition-property: color, background-color;
-}
-.action-btn:hover {
-  background-color: rgb(243 244 246);
-}
-</style>
+const dropdownOpen = ref<number | null>(null);
+
+const toggleDropdown = (classId: number) => {
+  dropdownOpen.value = dropdownOpen.value === classId ? null : classId;
+};
+</script>

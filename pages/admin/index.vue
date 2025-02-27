@@ -11,7 +11,7 @@
     >
       <div
         v-if="isOpen"
-        class="fixed top-0 left-0 w-full min-h-full bg-gray-600 bg-opacity-50 flex justify-center items-start overflow-y-auto z-50"
+        class="fixed top-0 left-0 w-full min-h-full bg-gray-500 bg-opacity-50 flex justify-center items-start overflow-y-auto z-50"
       >
         <div class="w-full max-w-5xl m-auto p-5">
           <AddCourseModal

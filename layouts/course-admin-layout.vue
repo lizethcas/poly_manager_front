@@ -11,12 +11,12 @@
     <!-- Contenido principal del layout -->
     <div v-else>
       <!-- Navbar Persistente -->
-      <nav class="flex gap-8 border-b border-gray-300 mt-6 px-8">
-        <ul class="flex gap-8">
+      <nav class="flex flex-col md:flex-row gap-4 md:gap-8 border-b border-gray-300 mt-6 px-4 md:px-8">
+        <ul class="flex flex-col md:flex-row gap-4 md:gap-8">
           <li>
             <NuxtLink
               :to="routes.routesAdmin.classes(routeCourseId)"
-              class="relative pb-2 font-bold text-gray-60 hover:text-tarawera-700"
+              class="relative pb-2 font-bold text-gray-600 hover:text-tarawera-700"
               :class="{
                 'text-primary-color underline-active':
                   $route.path === `/admin/course-${routeCourseId}/classes`,
@@ -28,7 +28,7 @@
           <li>
             <NuxtLink
               :to="routes.routesAdmin.students[1](routeCourseId)"
-              class="relative pb-2 font-medium text-gray-60 hover:text-tarawera-700"
+              class="relative pb-2 font-medium text-gray-600 hover:text-tarawera-700"
               :class="{
                 'text-tarawera-700 underline-active':
                   $route.path === `/admin/course-${routeCourseId}/students`,
@@ -40,7 +40,7 @@
           <li>
             <NuxtLink
               :to="routes.routesAdmin.statistics(routeCourseId)"
-              class="relative pb-2 font-medium text-gray-60 hover:text-tarawera-700"
+              class="relative pb-2 font-medium text-gray-600 hover:text-tarawera-700"
               :class="{
                 'text-tarawera-700 underline-active':
                   $route.path === `/admin/course-${routeCourseId}/statistics`,
@@ -53,7 +53,7 @@
       </nav>
 
       <!-- Contenido dinámico de la ruta -->
-      <div class="p-8">
+      <div class="p-4 md:p-8">
         <NuxtPage />
       </div>
     </div>

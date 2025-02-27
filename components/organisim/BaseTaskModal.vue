@@ -1,40 +1,78 @@
 <template>
   <div
     v-if="isOpen"
-    class="fixed top-0 left-0 w-full min-h-full bg-gray-600 bg-opacity-50 flex justify-center items-center z-20"
+    class="fixed inset-0 bg-gray-500 bg-opacity-50 z-50 flex items-center justify-center p-4"
   >
     <div
-      class="bg-white pr-6 rounded-lg shadow-lg w-[95vw] h-[95vh] overflow-y-auto flex gap-4"
+      class="bg-white pr-6 rounded-lg shadow-lg w-[95vw] h-[95vh] overflow-y-auto flex gap-4 relative"
+      :class="{ 'overflow-y-hidden': isSidebarOpen }"
     >
-      <!-- Lateral Menu -->
+      <!-- Menú Lateral en móvil (toggle) -->
+      <div
+        class="fixed md:hidden inset-y-0 left-0 w-64 bg-gray-100 p-4 rounded-r-lg shadow-md transform transition-transform duration-300 z-20"
+        :class="{'-translate-x-full': !isSidebarOpen, 'translate-x-0': isSidebarOpen}"
+      >
+        <div class="flex justify-end items-center mb-4">
+          
+          <button
+            class="bg-white p-2 rounded-md shadow"
+            @click="isSidebarOpen = false"
+          >
+            <Icon name="material-symbols:close" size="24" />
+          </button>
+        </div>
+        <!-- Contenido del menú -->
+        <InteractiveTask
+          :menuItems="menuItems"
+          @select-task="handleTaskSelection"
+        />
+      </div>
 
       <!-- Main Content -->
-      <div class="flex-1 mt-6">
+      <div class="flex-1 mt-6 z-10 ">
         <!-- Modal Header -->
         <div
-          class="fixed flex justify-between items-center  border-b-[1px] w-[95vw] px-4 top-0 bg-white z-10" 
+          class="fixed flex justify-between items-center border-b-[1px] w-[95vw] px-4 top-0 bg-white z-10"
         >
-          <div class="flex items-center gap-2 m-2 ">
+          <div class="flex items-center gap-2 m-2">
+            <!-- Botón hamburguesa (solo visible en pantallas pequeñas) -->
+            <button
+              class="md:hidden bg-white p-2 rounded-md shadow"
+              @click="isSidebarOpen = !isSidebarOpen"
+            >
+              <Icon
+                :name="
+                  isSidebarOpen
+                    ? 'material-symbols:close'
+                    : 'material-symbols:menu'
+                "
+                size="24"
+              />
+            </button>
+          </div>
+          <div class="flex-1 flex justify-center items-center">
             <Icon :name="icon" size="30" class="text-primary-color" />
-
-
             <h2 class="text-m font-bold text-primary-color">{{ title }}</h2>
           </div>
-          <img
-            src="../../assets/images/close.webp"
-            alt="close create course"
-            class="w-5 h-5 cursor-pointer"
-            @click="$emit('close')"
-          />
+          <div class="flex items-center gap-2 m-2">
+            <img
+              src="../../assets/images/close.webp"
+              alt="close create course"
+              class="w-5 h-5 cursor-pointer"
+              @click="$emit('close')"
+            />
+          </div>
         </div>
         <div class="flex gap-4">
-          <div class="w-48 bg-gray-100 p-4 rounded-lg max-h-100vh overflow-y-auto sticky top-6">
+          <div
+            class="w-48 bg-gray-100 hidden md:block p-4 rounded-lg max-h-100vh overflow-y-auto sticky top-6"
+          >
             <InteractiveTask
               :menuItems="menuItems"
               @select-task="handleTaskSelection"
             />
           </div>
-          <div class="flex-1">
+          <div class="flex-1 px-3 md:px-0">
             <!-- Common Fields -->
             <div class="space-y-4 my-6">
               <MoleculeInput
@@ -61,20 +99,16 @@
                 :is="getCurrentComponent(title)"
                 :selectedTask="taskTitle"
               />
-            <!--   <IaChatGPT /> -->
             </div>
           </div>
-
-          <!-- Slot for specific content -->
         </div>
-
-        <!-- Submit Button -->
       </div>
     </div>
   </div>
 </template>
 
 <script setup lang="ts">
+import { ref, watch } from "vue";
 import { ref, watch } from "vue";
 import { useTaskStore } from "~/stores/task.store";
 import { useGetComponent } from "~/composables/useGetComponent";
@@ -132,11 +166,31 @@ watch(
 
 const emit = defineEmits(["update:modelValue", "close"]);
 
-// Add handler for task selection
+// Maneja la selección de tareas
 const handleTaskSelection = (task: TaskMenuItem) => {
   taskStore.addTask("taskTitle", task.name);
   taskStore.addTask("typeTask", task.type);
   taskTitle.value = task.name;
- 
+  isSidebarOpen.value = false; // Cierra el menú al seleccionar un ítem
 };
 </script>
+
+<style scoped>
+/* Scrollbar personalizado */
+::-webkit-scrollbar {
+  width: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: #f1f1f1;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #888;
+  border-radius: 3px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #666;
+}
+</style>

@@ -7,7 +7,7 @@
     v-for="course in coursesData.slice().reverse()"
     :key="course.id"
     @click="navigateToCourse(course.id)"
-    class="w-full flex flex-row gap-2 md:gap-0 max-[480px]:flex-col bg-white border rounded-md cursor-pointer mt-4 hover:scale-105 transition-all duration-300 p-2"
+    class="w-full flex flex-col md:flex-row gap-2 bg-white border rounded-md cursor-pointer mt-4 md:hover:scale-105 transition-all duration-300 p-4"
   >
     <!-- Course Image -->
     <div class="rounded-md self-center md:self-auto">
@@ -15,12 +15,11 @@
         v-if="course.cover"
         :src="getCoverUrl(course.cover)"
         alt=""
-        class="rounded-md object-cover h-20 w-20"
+        class="rounded-md object-cover h-20 w-20 md:h-24 md:w-24"
       />
     </div>
 
     <!-- Course Info -->
-
     <div class="flex flex-col md:mt-0 md:ml-4 flex-grow justify-between">
       <div class="flex items-center gap-2">
         <h2
@@ -28,7 +27,6 @@
         >
           {{ course.name }}
         </h2>
-        <!-- Level Badge -->
       </div>
 
       <div
@@ -57,7 +55,6 @@
           />
           <span class="leading-none">hidden</span>
         </div>
-        <!-- Modified stats section with responsive classes -->
         <div
           class="flex items-center gap-1 md:gap-2 text-gray-600 text-xs flex-wrap"
         >
@@ -90,7 +87,7 @@
     </div>
 
     <!-- Action Buttons -->
-    <div class="flex flex-col justify-between text-center">
+    <div class="flex flex-col justify-between text-center mt-2 md:mt-0">
       <div class="flex items-center gap-2">
         <span
           :class="[
@@ -100,25 +97,31 @@
         >
           {{ course.level.split(".")[0] }}
         </span>
-        <!-- Course Type -->
         <span
           :class="[
             getLevelColor(course.level, true),
-            'text-xs font-semibold px-1 py-1 rounded-full text-fuscous-gray-950',
+            'text-xs font-semibold px-2 py-1 rounded-full text-fuscous-gray-950',
           ]"
-          >{{ course.category }}</span
         >
+          {{ course.category }}
+        </span>
       </div>
-      <div class="text-xs flex items-center gap-2">
+      <div class="text-xs flex flex-row justify-start gap-2 py-1 mt-5">
         <button
-          class="text-blue-500 px-4 py-1 rounded-full border border-blue-500"
+          class="flex items-center gap-1 px-2 bg-blue-500 text-white text-xs font-semibold rounded-full transition duration-300"
         >
+          <IconMolecule :name="IconType.eye" :size="12" :color="'text-white'" />
           preview
         </button>
         <button
           @click.stop="openEditModal(course)"
-          class="text-blue-500 px-4 py-1 rounded-full border border-blue-500 text-xs"
+          class="flex items-center gap-1 px-2 bg-blue-500 text-white text-xs font-semibold rounded-full transition duration-300"
         >
+          <IconMolecule
+            :name="IconType.edit"
+            :size="16"
+            :color="'text-white'"
+          />
           edit
         </button>
       </div>
@@ -182,7 +185,6 @@ import { useModal } from "~/composables/useModal";
 import { useCourseMutation } from "~/composables/useCourseMutation";
 import { useCourseStudents } from "~/composables/useCourseStudents";
 
-// Updated Props interface with proper typing
 interface Course {
   id: number;
   name: string;
@@ -207,7 +209,6 @@ const classes = taskStore.getTask("classes");
 
 const activeDropdown = ref<number | null>(null);
 
-// Add these new refs and emits
 const selectedCourse = ref<Course | null>(null);
 const confirmDelete = ref(false);
 const emit = defineEmits(["openModal"]);
@@ -216,8 +217,6 @@ const { updateCourseMutation, deleteCourseMutation } = useCourseMutation();
 const handleStudents = (courseId: number) => {
   console.log(courseId);
 };
-
-// Improved click outside handler
 
 onMounted(() => {
   document.addEventListener("click", (e: Event) => {
@@ -229,7 +228,6 @@ onMounted(() => {
 });
 
 const navigateToCourse = (courseId: number) => {
-  // Verificar que el ID existe antes de navegar
   const course = props.coursesData?.find((c) => c.id === courseId);
   if (course) {
     navigateTo(routes.routesAdmin.classes(courseId.toString()));
@@ -238,13 +236,11 @@ const navigateToCourse = (courseId: number) => {
   }
 };
 
-// Update the handleCourseAction function
 const handleCourseAction = async (formData: any) => {
   if (!selectedCourse.value?.id) return;
 
   const formDataToSend = new FormData();
 
-  // Add non-file fields to FormData
   Object.entries(formData.formData).forEach(([key, value]) => {
     if (key === "cover") return;
 
@@ -253,12 +249,10 @@ const handleCourseAction = async (formData: any) => {
     }
   });
 
-  // Handle cover file
   if (formData.formData.cover instanceof File) {
     formDataToSend.append("cover", formData.formData.cover);
   }
 
-  // Add bullet points
   if (formData.bulletPoints?.length > 0) {
     formDataToSend.append(
       "bullet_points",
@@ -266,7 +260,6 @@ const handleCourseAction = async (formData: any) => {
     );
   }
 
-  // Add stats to FormData
   formDataToSend.append("stats", formData.formData.stats);
 
   await updateCourseMutation.mutateAsync({
@@ -277,9 +270,7 @@ const handleCourseAction = async (formData: any) => {
   closeModal();
 };
 
-// Modify the openEditModal function
 const openEditModal = (course: Course) => {
-  // Transform the course data to match the form structure
   selectedCourse.value = {
     ...course,
     name: course.name,
@@ -309,7 +300,7 @@ const confirmDeleteCourse = async () => {
 };
 
 const publishCourse = async (courseId: number, event: Event) => {
-  event.stopPropagation(); // Prevent navigation when clicking publish/hidden
+  event.stopPropagation();
   const course = props.coursesData?.find((c) => c.id === courseId);
   if (!course) return;
 
@@ -326,3 +317,17 @@ const publishCourse = async (courseId: number, event: Event) => {
   }
 };
 </script>
+
+<style scoped>
+.action-btn {
+  @apply flex items-center justify-center px-4 py-1 rounded-full bg-blue-500 text-white text-xs font-semibold transition duration-300;
+}
+
+.action-btn:hover {
+  @apply bg-blue-600;
+}
+
+.category-span {
+  @apply px-2 py-1 rounded-full text-xs font-semibold;
+}
+</style>

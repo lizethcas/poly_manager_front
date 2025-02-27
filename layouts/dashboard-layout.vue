@@ -1,5 +1,5 @@
 <template>
-  <div class="min-h-screen bg-gray-50 flex my-10 w-[90%]">
+  <div class="min-h-screen bg-gray-50 flex my-10 w-full lg:w-[90%]">
     <!-- Update sidebar with mobile responsive classes -->
     <div
       :class="`${
@@ -78,9 +78,7 @@
 
           <div>
             <NuxtLink to="/" class="flex items-center">
-              <span class="text-primary-color font-bold text-[20px]"
-                >PolyAcademy</span
-              >
+              <span class="text-primary-color font-bold text-[20px]">PolyAcademy</span>
             </NuxtLink>
           </div>
           <!-- Search bar -->
@@ -100,6 +98,14 @@
             :userName="user.name"
             :userRole="user.role"
           />
+
+          <!-- Notification Button -->
+          <button
+            @click="toggleNotificationSidebar"
+            class="lg:hidden text-gray-600 hover:text-gray-900 items-center flex"
+          >
+            <Icon name="material-symbols:notifications" size="24" />
+          </button>
         </div>
 
         <!-- New slot for course navigation -->
@@ -129,16 +135,87 @@
         :class="mainContentWidth"
       >
         <!-- Main Content -->
-
         <main class="flex-1 mt-2 w-full">
           <NuxtPage />
         </main>
+
+        <!-- Notification Sidebar Deskptop -->
         <div
           v-if="!isClassRoute"
-          class="w-60 mr-5 lg:fixed lg:right-0 lg:top-16 lg:bottom-0 hidden lg:block bg-white shadow-sm border-l border-gray-200 overflow-y-auto"
+          class="w-60 mr-5 hidden lg:block lg:fixed lg:right-0 lg:top-16 lg:bottom-0 bg-white shadow-sm border-l border-gray-200 overflow-y-auto"
         >
-          <div>
-            <!--   <Chat /> -->
+          <div class="p-4">
+            <div v-for="notification in notifications" :key="notification.id" class="mb-4 p-3 bg-gray-50 rounded-lg shadow-sm" :class="notificationClass(notification.status)">
+              <div class="flex items-center gap-2">
+                <img :src="notification.userImage" alt="User Image" class="w-10 h-10 rounded-full" />
+                <div>
+                  <p class="font-semibold">{{ notification.userName }}</p>
+                  <p class="text-sm text-gray-500">{{ notification.status }}</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Notification Sidebar Mobile  -->
+
+        <div
+          :class="[
+            isNotificationSidebarOpen ? 'translate-x-0' : 'translate-x-full',
+            'fixed inset-y-0 block md:hidden right-0 max-w-xs w-full bg-white shadow-xl transform transition ease-in-out duration-300 lg:translate-x-0 lg:static lg:inset-auto lg:max-w-sm lg:w-60 lg:transform-none'
+          ]"
+        >
+          <div class="h-full flex flex-col pt-5 pb-4 bg-white">
+            <div class="px-4 flex items-center justify-between">
+              <h2 class="text-lg font-medium text-gray-900">Notifications</h2>
+              <button
+                type="button"
+                class="lg:hidden rounded-md text-gray-400 hover:text-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                @click="toggleNotificationSidebar"
+              >
+                <span class="sr-only">Close panel</span>
+                <svg class="h-6 w-6" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                </svg>
+              </button>
+            </div>
+            <div class="mt-1 relative">
+              <div class="absolute inset-0 flex items-center" aria-hidden="true">
+                <div class="w-full border-t border-gray-300" />
+              </div>
+              <div class="relative flex justify-center">
+                <span class="px-2 bg-white text-sm text-gray-500">5 New</span>
+              </div>
+            </div>
+            <div class="mt-8 flex-1 overflow-y-auto">
+              <ul class="divide-y divide-gray-200">
+                <li v-for="notification in notifications" :key="notification.id" class="px-4 py-4">
+                  <div class="flex items-center space-x-4">
+                    <div class="flex-shrink-0">
+                      <span class="inline-block h-10 w-10 rounded-full overflow-hidden bg-gray-100">
+                        <img :src="notification.userImage" alt="User Image" class="h-full w-full text-gray-300" />
+                      </span>
+                    </div>
+                    <div class="flex-1 min-w-0">
+                      <p class="text-sm font-medium text-gray-900 truncate">{{ notification.userName }}</p>
+                      <p class="text-sm text-gray-500 truncate">{{ notification.status }}</p>
+                    </div>
+                    <div>
+                      <span 
+                        :class="[
+                          'inline-block h-2.5 w-2.5 rounded-full',
+                          {
+                            'bg-green-400': notification.status === 'online',
+                            'bg-yellow-400': notification.status === 'away',
+                            'bg-gray-400': notification.status === 'offline'
+                          }
+                        ]"
+                      ></span>
+                    </div>
+                  </div>
+                </li>
+              </ul>
+            </div>
           </div>
         </div>
       </div>
@@ -156,6 +233,7 @@ import { apiRoutes } from "~/services/routes.api";
 import { IconType } from "~/data/iconsType";
 
 const isSidebarOpen = ref(false);
+const isNotificationSidebarOpen = ref(false);
 const authStore = useAuthStore();
 const route = useRoute();
 const studentId = computed(() => authStore.getUserId());
@@ -176,10 +254,64 @@ const toggleSidebar = () => {
   isSidebarOpen.value = !isSidebarOpen.value;
 };
 
+const toggleNotificationSidebar = () => {
+  isNotificationSidebarOpen.value = !isNotificationSidebarOpen.value;
+};
+
 const user = {
   profileImage: "https://via.placeholder.com/150",
   name: "Mark Andrew Chernetskiy",
   role: "Student",
+};
+
+const notifications = ref([
+  {
+    id: 1,
+    userImage: "https://plus.unsplash.com/premium_photo-1689551670902-19b441a6afde?q=80&w=1974&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
+    userName: "John Doe",
+    status: "New message received",
+  },
+  {
+    id: 2,
+    userImage: "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?q=80&w=1974&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
+    userName: "Jane Smith",
+    status: "Assignment graded",
+  },
+  {
+    id: 3,
+    userImage: "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?q=80&w=1974&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
+    userName: "Alice Johnson",
+    status: "New course available",
+  },
+  {
+    id: 4,
+    userImage: "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?q=80&w=1974&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
+    userName: "Bob Brown",
+    status: "Payment received",
+  },
+  {
+    id: 5,
+    userImage: "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?q=80&w=1974&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
+    userName: "Emily White",
+    status: "Course completed",
+  },
+]);
+
+const notificationClass = (status: string) => {
+  switch (status) {
+    case "New message received":
+      return "border-l-4 border-green-500";
+    case "Assignment graded":
+      return "border-l-4 border-yellow-500";
+    case "New course available":
+      return "border-l-4 border-blue-500";
+    case "Payment received":
+      return "border-l-4 border-green-500";
+    case "Course completed":
+      return "border-l-4 border-red-500";
+    default:
+      return "";
+  }
 };
 
 interface NavigationRoute {
