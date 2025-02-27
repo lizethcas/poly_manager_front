@@ -43,7 +43,7 @@
             <template class="flex flex-col justify-between h-20 pb-2">
               <div class="flex items-center justify-between mb-2">
                 <h3 class="font-medium text-gray-900 text-xs sm:text-base">
-                  Lesson {{ index }}. {{ classItem.class_name }}
+                  Lesson {{ index }}. {{ classItem.name }}
                 </h3>
 
                 <div
@@ -215,7 +215,7 @@ const openEditClass = (classItem: ClassData) => {
   console.log(classItem);
   selectedClass.value = {
     ...classItem,
-    class_name: classItem.class_name,
+    name: classItem.name,
     description: classItem.description,
     bullet_points: classItem.bullet_points,
     cover: classItem.cover,
@@ -265,21 +265,31 @@ const handleSave = async (formData: any) => {
   }
 };
 
+// Add emit definition in script setup
+const emit = defineEmits(['update:classes']);
+
+// Update the togglePublish function
 const togglePublish = async (classItem: ClassData) => {
   const formData = new FormData();
-  // Toggle the publish status immediately for instant UI feedback
-  classItem.publish = !classItem.publish;
-  formData.append("publish", classItem.publish.toString());
+  const newPublishState = !classItem.publish;
+  formData.append("publish", newPublishState.toString());
 
   try {
     await updateClassMutation.mutateAsync({
       id: classItem.id,
       formData: formData,
     });
+    
+    // Update the classes array immutably
+    const updatedClasses = props.classes.map(item => 
+      item.id === classItem.id 
+        ? { ...item, publish: newPublishState }
+        : item
+    );
+    
+    emit('update:classes', updatedClasses);
     success("Class status updated successfully");
   } catch (err) {
-    // Revert the change if the API call fails
-    classItem.publish = !classItem.publish;
     console.error("Error updating class status:", err);
     error("Error updating class status");
   }

@@ -26,6 +26,7 @@
                 :class="{ 'text-[#478ADF]': $route.path === route.path }"
                 @click="isSidebarOpen = false"
               >
+    
                 <Icon 
                   :name="route.icon" 
                   size="20" 
@@ -149,7 +150,7 @@
 import { ref, computed } from "vue";
 import UserProfile from "~/components/organisim/UserProfile.vue";
 import { useAuthStore } from "~/stores/auth";
-import { useRoute, useRouter } from "vue-router";
+import { useRoute } from "vue-router";
 import { post } from "~/services/routes.api";
 import { apiRoutes } from "~/services/routes.api";
 import { IconType } from "~/data/iconsType";
@@ -157,7 +158,6 @@ import { IconType } from "~/data/iconsType";
 const isSidebarOpen = ref(false);
 const authStore = useAuthStore();
 const route = useRoute();
-const router = useRouter();
 const studentId = computed(() => authStore.getUserId());
 console.log(studentId.value);
 // Add isProgressRoute computed property

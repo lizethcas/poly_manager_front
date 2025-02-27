@@ -30,10 +30,8 @@
         </div>
         <!-- Iterar sobre los labels para los campos del formulario -->
         <div v-for="(item, index) in labels" :key="'label-' + index">
-
-
           <MoleculeInput
-            :title="item.label_name"
+            :title="item.getLabelName ? item.getLabelName(title) : item.label_name"
             :type="item.type"
             :modelValue="formData[item.field_name as keyof typeof formData] || props.initialData?.[item.field_name]"
             @update:modelValue="

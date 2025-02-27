@@ -23,7 +23,7 @@
             <!-- Title section -->
 
             <div class="mb-2">
-              <h2 class="text-lg font-medium">{{ classItem.class_name }}</h2>
+              <h2 class="text-lg font-medium">{{ classItem.name }}</h2>
               <p class="text-gray-600 text-sm">
                 {{
                   getDisplayedDescription(classItem.description, classItem.id)
@@ -79,7 +79,7 @@
       <div class="w-72 h-full">
         <img
           :src="classItem.cover"
-          :alt="classItem.class_name"
+          :alt="classItem.name"
           class="w-full h-full object-cover"
         />
       </div>
@@ -90,7 +90,7 @@
     :class-item="selectedClass"
     :is-open="isDescriptionVisible"
     @close="isDescriptionVisible = false"
-    :name="selectedClass.class_name"
+    :name="selectedClass.name"
     :description="selectedClass.description"
     :bullet-points="selectedClass.bullet_points"
     :cover="selectedClass.cover"

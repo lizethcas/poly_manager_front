@@ -4,9 +4,10 @@
   >
     <InputFile
       fileType="image"
-      icon="true"
+      :icon="true"
       title="Main image:"
       @file-selected="data.image = $event"
+      :previewUrl="files?.image"
     />
     <div class="flex flex-col justify-between items-center">
       <AtomosButtonAtom type="crop" />
@@ -19,9 +20,11 @@
       
       <InputFile
         fileType="audio"
-        icon="true"
+        :icon="true"
         title="Audio file:"
         @file-selected="data.audio = $event"
+        :previewUrl="files?.audio"
+        :showPreview="true"
       />
       <div class="flex flex-col justify-between items-center">
         <AtomosButtonAtom type="swap" />
@@ -37,19 +40,20 @@ import AtomosButtonAtom from "../atomos/ButtonAtom.vue";
 import { useTaskStore } from "~/stores/task.store";
 
 const taskStore = useTaskStore();
+const files = computed(() => taskStore.getTask("files"));
+console.log(files.value);
 const data = ref({
   image: null as File | null,
   audio: null as File | null,
 });
 
-watch(
-  data,
-  (newValue) => {
-    taskStore.addTask("files", {
-      image: newValue.image,
-      audio: newValue.audio,
+// Watch for changes in data and update the store if needed
+watch(data, (newData) => {
+  if (newData.image || newData.audio) {
+    taskStore.addTask('files', {
+      image: newData.image ? URL.createObjectURL(newData.image) : files.value?.image,
+      audio: newData.audio ? URL.createObjectURL(newData.audio) : files.value?.audio
     });
-  },
-  { deep: true }
-);
+  }
+}, { deep: true });
 </script>

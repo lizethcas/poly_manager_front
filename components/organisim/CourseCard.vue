@@ -1,5 +1,5 @@
 <template>
-  <p v-if="coursesData.length === 0" class="text-title-color">
+  <p v-if="coursesData?.length === 0" class="text-title-color">
     there are no courses yet
   </p>
   <div
@@ -131,7 +131,6 @@
     <div class="w-full max-w-5xl mx-auto">
       <AddCourseModal
         :title="createCourse.title"
-        :type="createCourse.type"
         @closeModal="closeModal"
         :showExtraElements="true"
         @handleSave="handleCourseAction"
@@ -296,7 +295,6 @@ const openEditModal = (course: Course) => {
 const handleDelete = async () => {
   if (!selectedCourse.value?.id) return;
   confirmDelete.value = true;
-  
 };
 
 const confirmDeleteCourse = async () => {

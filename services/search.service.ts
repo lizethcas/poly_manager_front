@@ -4,6 +4,7 @@ export const searchService = {
   async search(query: string) {
     try {
       const response = await axiosDashboard.get(`search/?q=${encodeURIComponent(query)}`)
+      console.log(response.data);
       return response.data
     } catch (error) {
       console.error('Error en la búsqueda:', error)

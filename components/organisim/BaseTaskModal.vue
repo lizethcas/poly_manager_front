@@ -75,20 +75,24 @@
 </template>
 
 <script setup lang="ts">
-import { ref } from "vue";
+import { ref, watch } from "vue";
 import { useTaskStore } from "~/stores/task.store";
 import { useGetComponent } from "~/composables/useGetComponent";
 import InteractiveTask from "./InteractiveTask.vue";
 
 const { getCurrentComponent } = useGetComponent();
 
-defineProps({
+const props = defineProps({
   isOpen: Boolean,
   title: String,
   modelValue: Object,
   icon: String,
   type: String,
   menuItems: Array,
+  editData: {
+    type: Object,
+    default: () => null
+  }
 });
 
 interface TaskMenuItem {
@@ -102,6 +106,19 @@ const formData = ref({
   title: "",
   instructions: "",
 });
+
+// Add watch for editData to populate form when editing
+watch(() => props.editData, (newData) => {
+  if (newData) {
+    formData.value = {
+      title: newData.tittle || "",
+      instructions: newData.instructions || ""
+    };
+    if (newData.content_type) {
+      taskTitle.value = newData.content_type;
+    }
+  }
+}, { immediate: true });
 
 // Observa los cambios en formData y registra en consola
 watch(

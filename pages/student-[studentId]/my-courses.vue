@@ -1,11 +1,10 @@
 <template>
-  
   <div v-if="isLoading">Loading...</div>
   <div v-else-if="error">Error loading courses</div>
   <template v-else>
-    <CourseCardStudent :courses="courses" v-if="courses && courses.length > 0" />
+    <CourseCardStudent :courses="courses?.data" v-show="courses?.data?.length > 0" />
     <InfoCourses
-      v-else
+      v-show="courses?.data?.length === 0"
       v-for="course in infoCourses"
       :key="course.title"
       :title="course.title"
@@ -26,8 +25,8 @@ import { useCoursesQuery } from "~/composables/useCourseQuery";
 import { useRoute } from "vue-router";
 
 const route = useRoute();
-const studentId = route.params.id;
-console.log(studentId);
+const studentId = route.params.studentId;
+console.log(route.params.studentId);
 
 const {
   data: courses,

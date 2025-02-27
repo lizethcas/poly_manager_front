@@ -14,6 +14,7 @@ const { loginMutation } = useLogin();
 // handle success event
 const handleLoginSuccess = async (response: CredentialResponse) => {
   const { credential } = response;
+  console.log(credential);
   await loginMutation.mutate({ token: credential });
 };
 

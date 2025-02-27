@@ -20,12 +20,17 @@
       <div class="flex">
         <!-- Course Image -->
         <div class="rounded-xl">
+        
           <img
             v-if="course.cover"
             :src="getCoverUrl(course.cover)"
-            alt=""
+            alt="Course cover"
             class="rounded-xl object-cover w-20 h-20"
+            @error="handleImageError"
           />
+          <div v-else class="w-20 h-20 bg-gray-200 rounded-xl flex items-center justify-center">
+            <span class="text-gray-400">No image</span>
+          </div>
         </div>
 
         <!-- Course Info -->
@@ -37,13 +42,13 @@
           </div>
           <div class="mb-2">
             <p class="text-gray-600 text-sm">
-              {{ getDisplayedDescription(course.description, course.id) }}
+              {{ getDisplayedDescription(course.description, course.id.toString()) }}
               <button
                 v-if="
                   course.description &&
                   course.description.length > MAX_DESCRIPTION_LENGTH
                 "
-                @click="toggleDescription(course.id)"
+                @click="toggleDescription(course.id.toString())"
                 class="text-blue-500 hover:text-blue-700 ml-1"
               >
                 {{
@@ -137,6 +142,8 @@ const filteredCourses = computed(() => {
   return props.courses.filter((course) => course.publish === true);
 });
 
+console.log(filteredCourses.value);
+
 const MAX_DESCRIPTION_LENGTH = 100;
 
 const truncatedDescriptions = ref<{ [key: string]: boolean }>({});
@@ -156,7 +163,7 @@ const toggleDescription = (classId: string) => {
 };
 
 const showCourseDescription = (course: Course, index: number) => {
-  console.log(course);
+
   selectedCourse.value = {
     ...course,
     unit: index,
@@ -178,5 +185,12 @@ const handleClick = async (courseId: number) => {
     // Error handling is managed by the mutation
     console.error("Enrollment failed:", error);
   }
+};
+
+const handleImageError = (e: Event) => {
+  const target = e.target as HTMLImageElement;
+  console.error('Image failed to load:', target.src);
+  // Optionally set a fallback image
+  // target.src = '/path/to/fallback-image.png';
 };
 </script>

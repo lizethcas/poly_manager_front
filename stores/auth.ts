@@ -46,11 +46,13 @@ export const useAuthStore = defineStore('auth', {
       this.userType = payload.userType;
       this.userId = payload.userId;
       
-      // Persist in localStorage
+      // Persist in localStorage with validation
       localStorage.setItem('token', payload.token);
       localStorage.setItem('user', JSON.stringify(payload.user));
       localStorage.setItem('userType', payload.userType);
-      localStorage.setItem('userId', payload.userId.toString());
+      if (payload.userId !== undefined) {
+        localStorage.setItem('userId', payload.userId.toString());
+      }
     },
 
     setToken(token: string) {
@@ -104,6 +106,7 @@ export const useAuthStore = defineStore('auth', {
     },
 
     getUserId() {
+      console.log('Current userId:', this.userId);
       return this.userId;
     }
   }

@@ -24,7 +24,7 @@ definePageMeta({
   layout: "dashboard-layout",
   middleware: ["auth"],
 });
-import { useCoursesQuery } from "~/composables/useCourseQuery";
+import { useClassesQuery } from "~/composables/useClassesQuery";
 import ClassCardStudent from "~/components/organisim/templatesUsers/students/ClassCardStudent.vue";
 import CourseCardStudent from "~/components/organisim/templatesUsers/students/CourseCardStudent.vue";
 import { useRoute } from "vue-router";
@@ -34,14 +34,17 @@ import type { Course } from "~/interfaces/course.interface";
 const route = useRoute();
 const courseId = route.params.courseid;
 
-const { data: courses, isLoading, error } = useCoursesQuery();
+const { data: classes, isLoading, error } = useClassesQuery(courseId as string);
+console.log(classes);
 // Get only the current course based on courseId
 const currentCourse = computed(() => {
-  if (!courses.value) return [];
-  return courses.value.filter(
+  if (!classes.value) return [];
+  return classes.value.filter(
     (course: Course) => course.id === Number(courseId)
   );
 });
+
+console.log(currentCourse.value);
 
 const handleBackNavigation = () => {
   navigateTo("/student/courses");

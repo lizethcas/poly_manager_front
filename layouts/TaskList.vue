@@ -77,14 +77,61 @@
     :is-open="isModalOpen"
     :title="modalTitle"
     :icon="modalIcon"
+    :edit-data="taskStore.getTask('editData')"
     @close="closeModal"
     :menuItems="getDataMenu(modalTitle)"
   />
 </template>
 <script setup lang="ts">
+/**
+ * @component TaskList
+ * @description A component that displays a list of educational tasks/blocks in a class.
+ * It handles both student and admin/teacher views with different functionalities.
+ *
+ * Key Features:
+ * - Displays numbered tasks with titles and instructions
+ * - Provides edit and delete functionality for tasks (admin view)
+ * - Supports different content types (video, info_box, text_block, etc.)
+ * - Integrates with scenario lists for both students and admins
+ * - Includes a dropdown menu for task actions
+ * - Shows confirmation alerts for deletions
+ * 
+ * Props:
+ * @prop {number} currentTaskIndex - Optional. Used in student view to control which tasks are visible
+ * 
+ * Components Used:
+ * - ListScenarios: Admin view for scenario management
+ * - ScenarioListStudent: Student view for scenarios
+ * - IconMolecule: Icon component for UI elements
+ * - BaseTaskModal: Modal for task editing
+ * - UDropdown: Dropdown menu component
+ * - UAlert: Alert component for confirmations
+ *
+ * Key Methods:
+ * @method getTaskNumber - Generates the task numbering (e.g., "1.1", "1.2")
+ * @method handleEditTask - Manages task editing and modal display
+ * @method handleDeleteTask - Initiates task deletion process
+ * @method confirmDelete - Executes task deletion
+ * @method closeModal - Closes the edit modal
+ *
+ * States:
+ * - showDeleteAlert: Controls deletion confirmation dialog
+ * - isModalOpen: Controls edit modal visibility
+ * - modalTitle: Sets the title for the edit modal
+ * - modalIcon: Sets the icon for the edit modal
+ * 
+ * Content Types Supported:
+ * - info_box
+ * - video
+ * - image
+ * - audio
+ * - text_block
+ * - knowledge check (default)
+ * - layout block (for content with audio or image)
+ */
 defineOptions({
-  inheritAttrs: false // Prevent the warning
-})
+  inheritAttrs: false, // Prevent the warning
+});
 
 import { useCapitalizerLetter } from "~/composables/useCapitalizerLetter";
 import ListScenarios from "~/components/organisim/templatesUsers/teachers/ListScenarios.vue";
@@ -98,6 +145,7 @@ import BaseTaskModal from "~/components/organisim/BaseTaskModal.vue";
 import { useDataMenu } from "~/composables/useDataMenu";
 import { useTaskStore } from "~/stores/task.store";
 
+
 const route = useRoute();
 const {
   classContents: classTasks,
@@ -105,7 +153,6 @@ const {
   error,
 } = useClassContents(route.params.classId as string);
 const { delete: deleteContentMutation } = useClassContentMutation();
-
 
 const { capitalizeFirstLetter } = useCapitalizerLetter();
 const getTaskNumber = (currentIndex: number) => {
@@ -134,12 +181,10 @@ const getTaskNumber = (currentIndex: number) => {
 };
 
 const handleEditTask = (task: any) => {
+  console.log(task);
   isModalOpen.value = true;
-  if (task.audio !== null || task.video !== null) {
-    modalTitle.value = "Layout block";
-  } else if (task.content_type !== "info_box") {
-    modalTitle.value = "Knowledge check";
-  }
+  
+  // First check specific content types
   switch (task.content_type) {
     case "info_box":
       modalTitle.value = "Info block";
@@ -157,11 +202,22 @@ const handleEditTask = (task: any) => {
       modalTitle.value = "Text block";
       break;
     default:
-      modalTitle.value = task.content_type;
+      if (task.audio || task.image) {
+        modalTitle.value = "Layout block";
+        // Update the files data structure with boolean icon value
+        taskStore.addTask("files", {
+          audio: task.audio,
+          image: task.image,
+          modelValue: task.image || null,
+          icon: true  // Changed from "true" to true
+        });
+      } else {
+        modalTitle.value = "Knowledge check";
+      }
   }
-
+  
   modalIcon.value = "i-heroicons-pencil-square-20-solid";
-  // Store the task data for editing
+  taskStore.addTask("editData", task);
 };
 
 const showDeleteAlert = ref(false);
@@ -172,6 +228,7 @@ const handleDeleteTask = (task: any) => {
   taskToDelete.value = task;
 };
 
+
 const confirmDelete = () => {
   if (taskToDelete.value) {
     deleteContentMutation.mutate(taskToDelete.value.id);
@@ -179,7 +236,6 @@ const confirmDelete = () => {
     taskToDelete.value = null;
   }
 };
-
 // Add currentTaskIndex to props
 defineProps<{
   currentTaskIndex?: number;

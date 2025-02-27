@@ -17,18 +17,23 @@
                 'rounded overflow-hidden',
                 fileType === 'video' ? 'w-64 h-36' : fileType === 'audio' ? '' : 'w-16 h-16'
             ]">
-                <slot></slot>
-                <!-- Update image preview to use props.previewUrl as fallback -->
+                <!-- Image preview -->
                 <ImgAtom 
-                    v-if="(fileType === 'image' && previewUrl) || props.previewUrl" 
+                    v-if="fileType === 'image' && (previewUrl || props.previewUrl)" 
                     :image="previewUrl || props.previewUrl" 
                     alt="Preview" 
                 />
                 <!-- Video preview -->
-                <video v-if="fileType === 'video' && previewUrl" :src="previewUrl" controls
-                    class="w-full h-full object-cover"></video>
+                <video v-else-if="fileType === 'video' && (previewUrl || props.previewUrl)" 
+                    :src="previewUrl || props.previewUrl" 
+                    controls
+                    class="w-full h-full object-cover">
+                </video>
                 <!-- Audio preview -->
-                <audio v-if="fileType === 'audio' && previewUrl" :src="previewUrl" controls ></audio>
+                <audio v-else-if="fileType === 'audio' && (previewUrl || props.previewUrl)" 
+                    :src="previewUrl || props.previewUrl" 
+                    controls>
+                </audio>
                 
                 <!-- File name for other types -->
                 <div v-if="!['image', 'video', 'audio'].includes(fileType) && fileName" class="text-sm">
@@ -47,47 +52,68 @@
         </div>
 
         <!-- Hidden input -->
-        <input id="file-upload" type="file" class="hidden" ref="fileInput" @change="handleChange"  />
+        <input id="file-upload" type="file" class="hidden" ref="fileInput" @change="handleChange" accept="{{ accept }}" />
 
     </div>
 </template>
 
 <script setup lang="ts">
 import ImgAtom from "./atomos/ImgAtom.vue";
-import { ref, defineProps, defineEmits, onMounted } from "vue";
+import { ref, defineProps, defineEmits, onMounted, watch, onUnmounted } from "vue";
 import EventBus from '~/composables/useEvenBus';
 import { useTaskStore } from '~/stores/task.store';
 
+// Update props interface for better type safety and organization
+interface FileInputProps {
+  
+  accept?: string
+  maxSize?: number
+  title?: string
+  icon?: boolean
+  showPreview?: boolean
+  previewUrl?: string
+  fileType?: 'image' | 'audio' | 'video' | 'other'  // Add specific file type prop
+}
 
+const props = withDefaults(defineProps<FileInputProps>(), {
+  title: 'Upload File',
+  icon: false,
+  showPreview: true,
+  previewUrl: '',
+  accept: 'image/*,video/*,audio/*',
+  maxSize: 10,
+  fileType: 'other',
 
-// Props and events
-const props = defineProps({
-    modelValue: {},
-    title: {},
-    icon: {},
-    showPreview: {
-        type: Boolean,
-        default: true
-    },
-    previewUrl: {
-        type: String,
-        default: ''
-    }
 });
-const emit = defineEmits(['update:modelValue', 'file-selected']);
-const taskStore = useTaskStore();
-// References
-const fileInput = ref(null);
-const previewUrl = ref(null);
-const fileType = ref("");
-const fileName = ref(null);
 
-// Initialize fileType if previewUrl is provided
+const emit = defineEmits<{
+  'update:modelValue': [File | null]
+  'file-selected': [{ file: File, preview: string }]
+  'file-error': [string]
+}>();
+
+const taskStore = useTaskStore();
+const fileInput = ref<HTMLInputElement | null>(null);
+const previewUrl = ref<string>(props.previewUrl || '');
+const fileType = ref<string>('');
+const fileName = ref<string | null>(null);
+
+// Update onMounted to handle initial preview
 onMounted(() => {
     if (props.previewUrl) {
-        fileType.value = 'image';
+        fileType.value = getFileTypeFromUrl(props.previewUrl);
+        previewUrl.value = props.previewUrl;
     }
 });
+
+// Add helper function to determine file type from URL
+const getFileTypeFromUrl = (url: string): string => {
+    const extension = url.split('.').pop()?.toLowerCase();
+    if (['jpg', 'jpeg', 'png', 'gif', 'webp'].includes(extension)) return 'image';
+    if (['mp4', 'webm', 'ogg'].includes(extension)) return 'video';
+    if (['mp3', 'wav'].includes(extension)) return 'audio';
+    return 'other';
+};
 
 // Trigger file input on button click
 const triggerFileUpload = () => {
@@ -99,29 +125,97 @@ watch(previewUrl, (newValue) => {
   
 }, { deep: true });
 
-// Handle file selection
-const handleChange = (event) => {
-    const file = event.target.files[0];
- 
+// Simplified file handling with clear validation
+const handleChange = async (event: Event) => {
+    const input = event.target as HTMLInputElement;
+    const file = input.files?.[0];
+    
+    // Clear previous state
+    previewUrl.value = '';
+    fileName.value = '';
+    fileType.value = '';
+    
+    if (!file) {
+        emit('update:modelValue', null);
+        return;
+    }
 
-    if (file) {
+    try {
+        // Validate file
+        await validateFile(file);
+        
+        // Update component state
         fileName.value = file.name;
-        fileType.value = file.type.split('/')[0];
+        fileType.value = getFileCategory(file.type);
+        previewUrl.value = URL.createObjectURL(file);
 
-        // Create preview URL for supported types
-        if (['image', 'video', 'audio'].includes(fileType.value)) {
-            previewUrl.value = URL.createObjectURL(file);
-        }
-        // Emit the actual file along with the preview URL
-        EventBus.emit('file-selected', { 
-            file: file,  // Add the actual file
-            url: URL.createObjectURL(file), 
-            fileType: file.type.split('/')[0] 
+        // Emit consistent events
+        emit('update:modelValue', file);
+        emit('file-selected', {
+            file,
+            preview: previewUrl.value
         });
-        emit('update:modelValue', previewUrl.value);
-        emit('file-selected', file); // Emit the file instead of the URL
 
+    } catch (error) {
+        emit('file-error', error.message);
+        // Reset input
+        input.value = '';
     }
 };
+
+// Clear validation functions
+const validateFile = async (file: File): Promise<void> => {
+    // Size validation
+    const fileSizeInMB = file.size / (1024 * 1024);
+    if (fileSizeInMB > props.maxSize) {
+        throw new Error(`File size exceeds ${props.maxSize}MB limit`);
+    }
+
+    // Type validation
+    if (!isValidFileType(file)) {
+        throw new Error('Unsupported file type');
+    }
+
+    // For images, validate dimensions if needed
+    if (file.type.startsWith('image/')) {
+        await validateImageDimensions(file);
+    }
+};
+
+const validateImageDimensions = (file: File): Promise<void> => {
+    return new Promise((resolve, reject) => {
+        const img = new Image();
+        img.src = URL.createObjectURL(file);
+        img.onload = () => {
+            URL.revokeObjectURL(img.src);
+            // Example validation: max 5000x5000
+            if (img.width > 5000 || img.height > 5000) {
+                reject(new Error('Image dimensions too large'));
+            }
+            resolve();
+        };
+        img.onerror = () => reject(new Error('Invalid image file'));
+    });
+};
+
+const getFileCategory = (mimeType: string): string => {
+    const category = mimeType.split('/')[0];
+    return ['image', 'video', 'audio'].includes(category) ? category : 'other';
+};
+
+const isValidFileType = (file: File): boolean => {
+    const acceptedTypes = props.accept.split(',')
+        .map(type => type.trim())
+        .map(type => type.replace('*', ''));
+    
+    return acceptedTypes.some(type => file.type.startsWith(type));
+};
+
+// Cleanup URLs on component unmount
+onUnmounted(() => {
+    if (previewUrl.value.startsWith('blob:')) {
+        URL.revokeObjectURL(previewUrl.value);
+    }
+});
 </script>
 

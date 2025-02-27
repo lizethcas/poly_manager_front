@@ -1,11 +1,12 @@
 import { useMutation, useQueryClient } from '@tanstack/vue-query'
 import { apiRoutes } from '~/services/routes.api'
 import { axiosDashboard } from '~/services/axios.config'
+import { useNotify } from "~/composables/useNotify";
 
 export function useClassContentMutation() {
   const queryClient = useQueryClient()
   const route = useRoute()
-
+  const { success, error } = useNotify();
   const createClassContentMutation = async (data: any) => {
     try {
       const isFormData = data instanceof FormData;
@@ -72,7 +73,7 @@ export function useClassContentMutation() {
       queryClient.invalidateQueries(['class-contents', route.params.classId]);
     },
     onSuccess: (data) => {
-      // Handle success
+      success("Content created successfully")
     },
   });
 
@@ -83,6 +84,7 @@ export function useClassContentMutation() {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['class-contents', route.params.classId] })
+      success("Content deleted successfully")
     }
   })
 

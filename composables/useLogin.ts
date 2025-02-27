@@ -16,6 +16,7 @@ export const useLogin = () => {
       if (data.status !== "success") {
         throw new Error(data.message || 'Login failed');
       }
+      console.log(data);
       return data;
     },
     onSuccess: async (data) => {
@@ -24,14 +25,15 @@ export const useLogin = () => {
         token: data.token,
         user: data.user_data,
         userType: data.user_type,
-        userId: data.user.id
+        userId: data.user.user_id
       });
 
 
       if (data.user_type === "teacher") {
         navigateTo("/admin/dashboard");
       } else if (data.user_type === "student") {
-        const studentId = data.user.id;
+        const studentId = data.user.user_id;
+        console.log(studentId);
         navigateTo(`/student-${studentId}/classes`);
       }
     },
