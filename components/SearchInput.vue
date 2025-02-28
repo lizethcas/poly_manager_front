@@ -76,54 +76,27 @@
 
 <script setup>
 import { ref, computed, onMounted, onUnmounted } from 'vue';
+import { useSearch } from '~/composables/useSearch';
 
-const query = ref('');
-const isOpen = ref(false);
 const searchRef = ref(null);
 const selectedItem = ref(null);
 const selectedCategory = ref(null);
 
-// Mock search results based on query
-const searchResults = [
-  {
-    category: "PolyAcademy classes:",
-    items: [
-      "What would you like to have for breakfast?",
-      "My ideal breakfast",
-      "What's in the fridge?",
-      "Welcome to my house!"
-    ]
-  },
-  {
-    category: "Speaking Scenarios:",
-    items: [
-      "The Present Simple for regular actions",
-      "Giving Instructions in English"
-    ]
-  },
-  {
-    category: "Grammar Plus:",
-    items: [
-      "The Present Simple for regular actions",
-      "Giving Instructions in English"
-    ]
-  },
-  {
-    category: "My notes:",
-    items: [
-      "12/07/2024, para saludar a tu jefe en ingles ..."
-    ]
-  }
-];
+// Use the search composable
+const { searchTerm, searchResults: apiResults, isLoading, updateSearch } = useSearch();
 
+// Update query to use searchTerm from composable
+const query = computed({
+  get: () => searchTerm.value,
+  set: (value) => updateSearch(value)
+});
+
+const isOpen = computed(() => query.value.length > 0 && !isLoading.value);
+
+// Update filteredResults to use API results
 const filteredResults = computed(() => {
-  if (!query.value) return [];
-  
-  return searchResults.filter(category => 
-    category.items.some(item => 
-      item.toLowerCase().includes(query.value.toLowerCase())
-    )
-  );
+  if (!apiResults.value) return [];
+  return apiResults.value;
 });
 
 const selectedDescription = computed(() => {
@@ -142,7 +115,7 @@ const openLesson = () => {
 };
 
 const handleInput = () => {
-  isOpen.value = query.value.length > 0;
+  // Remove isOpen setting as it's now handled by computed property
 };
 
 const handleFocus = () => {

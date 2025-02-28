@@ -84,12 +84,7 @@
           <!-- Search bar -->
           <div class="flex-1 max-w-2xl px-4 hidden sm:block">
             <SearchInput class="w-full" />
-            <NuxtLink to="/search" class="flex items-center">
-              <Icon
-                name="i-heroicons-magnifying-glass-20-solid"
-                class="text-gray-500"
-              />
-            </NuxtLink>
+        
           </div>
 
           <!-- User Profile -->
