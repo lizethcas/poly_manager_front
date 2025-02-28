@@ -125,7 +125,7 @@ const handleFocus = () => {
 };
 
 const handleClickOutside = (event) => {
-  if (searchRef.value && !searchRef.value.contains(event.target)) {
+  if (searchRef.value?.$el && !searchRef.value.$el.contains(event.target)) {
     isOpen.value = false;
     selectedItem.value = null;
   }
