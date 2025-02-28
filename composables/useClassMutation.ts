@@ -1,7 +1,7 @@
 import { useMutation, useQueryClient } from "@tanstack/vue-query";
 import { apiRoutes } from "~/services/routes.api";
 import { axiosDashboard } from "~/services/axios.config";
-
+const { success, error } = useNotify();
 export const useClassMutation = () => {
   const queryClient = useQueryClient();
 
@@ -26,7 +26,12 @@ export const useClassMutation = () => {
   const updateMutation = useMutation({
     mutationFn: updateClassMutation,
     onSuccess: (_, variables) => {
-      queryClient.invalidateQueries({ queryKey: ["classes", variables.id] });
+      queryClient.invalidateQueries({ queryKey: ["classes"] });
+      queryClient.invalidateQueries({ queryKey: ["class", variables.id] });
+      success("Class updated successfully");
+    },
+    onError: (err) => {
+      error("Error updating class");
     },
   });
 
@@ -49,11 +54,13 @@ export const useClassMutation = () => {
         });
 
         return { previousClasses, courseId };
+        
       },
       onError: (err, newClass, context) => {
         if (context?.courseId) {
           queryClient.setQueryData(["classes", context.courseId], context.previousClasses);
         }
+        error("Error creating class");
       },
       onSettled: (_, newClass) => {
         if (newClass?.course_id) {

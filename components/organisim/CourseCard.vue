@@ -33,28 +33,21 @@
         class="flex md:items-center md:gap-4 mt-1 flex-wrap"
         @click="(event) => publishCourse(course.id, event)"
       >
-        <div
+        <IconButton
           v-show="course.publish"
-          class="bg-emerald-100 text-emerald-700 text-xs px-2 rounded-full flex items-center gap-1"
-        >
-          <IconMolecule
-            :name="IconType.eye"
-            :size="16"
-            :color="'text-emerald-700'"
-          />
-          <span class="leading-none">published</span>
-        </div>
-        <div
+          :icon="IconType.eye"
+          :label="'published'"
+          :customClass="'bg-emerald-100 text-emerald-700 rounded-full'"
+          :color="'text-emerald-700'"
+        />
+        <IconButton
           v-show="!course.publish"
-          class="text-xs px-2 rounded-full flex items-center gap-1 bg-white border border-fuscous-gray-600"
-        >
-          <IconMolecule
-            :name="IconType.eyeOff"
-            :size="16"
-            :color="'text-fuscous-gray-600'"
-          />
-          <span class="leading-none">hidden</span>
-        </div>
+          :icon="IconType.eyeOff"
+          :label="'hidden'"
+          :customClass="'bg-white text-fuscous-gray-600 rounded-full'"
+          :color="'text-fuscous-gray-600'"
+        />
+
         <div
           class="flex items-center gap-1 md:gap-2 text-gray-600 text-xs flex-wrap"
         >
@@ -172,7 +165,7 @@
 
 <script lang="ts" setup>
 import { createCourse } from "~/data/cardModal";
-
+import IconButton from "~/components/molecule/IconButton.vue";
 import AddCourseModal from "./AddCourseModal.vue";
 import IconMolecule from "~/components/atomos/Icon.vue";
 import { useGetColor } from "~/composables/useGetColor";

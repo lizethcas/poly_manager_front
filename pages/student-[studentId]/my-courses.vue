@@ -1,10 +1,14 @@
 <template>
   <div v-if="isLoading">Loading...</div>
-  <div v-else-if="error">Error loading courses</div>
+  <div v-else-if="error">{{ error.message || 'Error loading courses' }}</div>
   <template v-else>
-    <CourseCardStudent :courses="courses?.data" v-show="courses?.data?.length > 0" />
+    <div v-if="!courses">No courses data available</div>
+    <CourseCardStudent 
+      :courses="courses?.data || []" 
+      v-if="courses?.data && courses.data.length > 0" 
+    />
     <InfoCourses
-      v-show="courses?.data?.length === 0"
+      v-if="!courses?.data?.length"
       v-for="course in infoCourses"
       :key="course.title"
       :title="course.title"
@@ -23,15 +27,23 @@ import { infoCourses } from "~/data/infoCourses";
 import CourseCardStudent from "~/components/organisim/templatesUsers/students/CourseCardStudent.vue";
 import { useCoursesQuery } from "~/composables/useCourseQuery";
 import { useRoute } from "vue-router";
+import { watchEffect } from "vue";
 
 const route = useRoute();
 const studentId = route.params.studentId;
-console.log(route.params.studentId);
+
 
 const {
   data: courses,
   isLoading,
   error,
 } = useCoursesQuery(studentId as string);
-console.log(courses);
+console.log(courses.value);
+
+watchEffect(() => {
+  console.log('Current studentId:', studentId);
+  console.log('Courses loading state:', isLoading.value);
+  console.log('Courses error:', error.value);
+  console.log('Courses data structure:', courses.value);
+});
 </script>

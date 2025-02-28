@@ -1,10 +1,11 @@
 <template>
+
   <div class="mt-4 flex flex-col pl-20">
     <div v-if="isPending">Loading...</div>
     <div v-else-if="error">Error: {{ error.message }}</div>
 
     <div
-      v-for="(classItem, index) in filteredClasses"
+      v-for="(classItem, index) in classes"
       :key="classItem.id"
       class="bg-white border rounded-lg shadow-sm hover:shadow-md transition-all duration-300 mb-4 flex w-full"
     >
@@ -71,7 +72,7 @@
             <span class="text-gray-600">completed</span>
           </div>
           <button @click="showClassDescription(classItem, index)">
-            {{textButton}}
+            start lesson
           </button>
         </div>
       </div>
@@ -110,8 +111,8 @@ const route = useRoute();
 const courseId = route.params.courseid;
 const selectedClass = ref({});
 const { data: classes, isPending, error } = useClassesQuery(courseId as string);
-
-const filteredClasses = computed(() => {
+console.log(classes.value);
+/* const filteredClasses = computed(() => {
   if (!classes.value) return [];
   return classes.value.filter((classItem: any) => {
     return (
@@ -122,7 +123,7 @@ const filteredClasses = computed(() => {
 
     );
   });
-});
+}); */
 
 const isDescriptionVisible = ref(false);
 

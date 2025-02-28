@@ -1,7 +1,7 @@
 <template>
   <div
-    v-if="isOpen"
     class="fixed inset-0 bg-gray-500 bg-opacity-50 z-50 flex items-center justify-center p-4"
+    v-if="isOpen"
   >
     <div
       class="bg-white pr-6 rounded-lg shadow-lg w-[95vw] h-[95vh] overflow-y-auto flex gap-4 relative"
@@ -109,7 +109,6 @@
 
 <script setup lang="ts">
 import { ref, watch } from "vue";
-import { ref, watch } from "vue";
 import { useTaskStore } from "~/stores/task.store";
 import { useGetComponent } from "~/composables/useGetComponent";
 import InteractiveTask from "./InteractiveTask.vue";
@@ -140,6 +139,7 @@ const formData = ref({
   title: "",
   instructions: "",
 });
+const isSidebarOpen = ref(false);
 
 // Add watch for editData to populate form when editing
 watch(() => props.editData, (newData) => {

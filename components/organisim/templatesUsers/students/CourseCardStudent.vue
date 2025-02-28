@@ -1,12 +1,17 @@
 <template>
-  <p v-if="!courses" class="text-title-color">no hay cursos</p>
+  <p v-if="!filteredCourses" class="text-title-color">no hay cursos</p>
+
   <div
-    v-if="courses"
+    v-if="filteredCourses"
     v-for="(course, index) in filteredCourses"
     :key="course.id"
     class="w-full flex bg-white border rounded-xl cursor-pointer mt-2 hover:scale-105 transition-all duration-300 p-2"
   >
     <!-- Move "My Current Course" to the top -->
+    <div class="flex flex-col w-full p-1" v-show="!course.publish">
+      <p class="text-fuscous-gray-600">This course is not published</p>
+    </div>
+    
     <div class="flex flex-col w-full p-1" v-show="course.publish">
       <div class="flex justify-between" v-show="route.path.includes('/course')">
         <!--      <h2 class="text-fuscous-gray-600 font-bold text-lg mb-2 w-contain">
@@ -20,7 +25,6 @@
       <div class="flex">
         <!-- Course Image -->
         <div class="rounded-xl">
-        
           <img
             v-if="course.cover"
             :src="getCoverUrl(course.cover)"
@@ -28,7 +32,10 @@
             class="rounded-xl object-cover w-20 h-20"
             @error="handleImageError"
           />
-          <div v-else class="w-20 h-20 bg-gray-200 rounded-xl flex items-center justify-center">
+          <div
+            v-else
+            class="w-20 h-20 bg-gray-200 rounded-xl flex items-center justify-center"
+          >
             <span class="text-gray-400">No image</span>
           </div>
         </div>
@@ -42,7 +49,12 @@
           </div>
           <div class="mb-2">
             <p class="text-gray-600 text-sm">
-              {{ getDisplayedDescription(course.description, course.id.toString()) }}
+              {{
+                getDisplayedDescription(
+                  course.description,
+                  course.id.toString()
+                )
+              }}
               <button
                 v-if="
                   course.description &&
@@ -57,19 +69,17 @@
               </button>
             </p>
           </div>
-          <button v-if="route.path.includes('/courses')"
+          <button
+            v-if="route.path.includes('/courses')"
             @click="showCourseDescription(course, index)"
             class="text-blue-500 hover:text-blue-700 text-left text-sm"
           >
             View course details
           </button>
-          <nuxt-link v-else :to="`/student-${route.params.id}/classes`" >
+          <nuxt-link v-else :to="`/student-${route.params.studentId}/classes`">
             <button class="text-blue-500 hover:text-blue-700 text-left text-sm">
               View course details
             </button>
-
-
-
           </nuxt-link>
         </div>
 
@@ -101,7 +111,7 @@
     </div>
   </div>
   <ClassDescription
-    v-if="isDescriptionVisible "
+    v-if="isDescriptionVisible"
     :course="selectedCourse"
     :is-open="isDescriptionVisible"
     @close="isDescriptionVisible = false"
@@ -121,12 +131,16 @@ import { useRoute } from "vue-router";
 import type { Course } from "~/interfaces/course.interface";
 import { useGetCover } from "~/composables/useGetcover";
 import { useGetColor } from "~/composables/useGetColor";
-import { computed } from "vue";
+import { computed, watchEffect } from "vue";
 import ClassDescription from "~/components/organisim/templatesUsers/students/ClassDescription.vue"; // Adjust the path according to your project structure
 import { useEnrollMutation } from "~/composables/useEnrollMutation";
 import { useToast } from "vue-toastification";
+import Courses from "~/pages/courses.vue";
 
 const route = useRoute();
+
+
+
 
 const { getCoverUrl } = useGetCover();
 const { getLevelColor } = useGetColor();
@@ -137,12 +151,14 @@ const toast = useToast();
 const props = defineProps<{
   courses: Course[];
 }>();
-
+console.log(props.courses);
+// Move filteredCourses definition before the watchEffect
 const filteredCourses = computed(() => {
-  return props.courses.filter((course) => course.publish === true);
+  if (!props.courses) return [];
+  return props.courses.filter((course) => course?.publish === true);
 });
 
-console.log(filteredCourses.value);
+
 
 const MAX_DESCRIPTION_LENGTH = 100;
 
@@ -163,7 +179,6 @@ const toggleDescription = (classId: string) => {
 };
 
 const showCourseDescription = (course: Course, index: number) => {
-
   selectedCourse.value = {
     ...course,
     unit: index,
@@ -189,8 +204,6 @@ const handleClick = async (courseId: number) => {
 
 const handleImageError = (e: Event) => {
   const target = e.target as HTMLImageElement;
-  console.error('Image failed to load:', target.src);
-  // Optionally set a fallback image
-  // target.src = '/path/to/fallback-image.png';
+  console.error("Image failed to load:", target.src);
 };
 </script>

@@ -59,7 +59,8 @@ import { computed } from "vue";
 const route = useRoute();
 const classMutation = useClassMutation();
 
-const courseId = route.params.courseId;
+const courseId = 1;
+
 const { success, error } = useNotify();
 const {
   data,
@@ -72,7 +73,7 @@ const {
 const filteredData = computed(() => {
   return data.value?.filter((item: any) => item.course_id == courseId) || [];
 });
-
+console.log(filteredData.value);
 const { isOpen, openModal, closeModal } = useModal();
 
 const handleAdd = () => {

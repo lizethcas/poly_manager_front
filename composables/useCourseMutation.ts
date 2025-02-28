@@ -9,12 +9,19 @@ export const useCourseMutation = () => {
 
   const createCourseMutation = useMutation({
     mutationFn: async (courseData: any) => {
-      const response = await axiosDashboard.post(apiRoutes.courses, courseData, {
-        headers: {
-          "Content-Type": "multipart/form-data",
-          Accept: "application/json",
-        },
-      });
+      console.log("Creating course with data:", courseData);
+
+      const response = await axiosDashboard.post(
+        apiRoutes.courses,
+        courseData,
+        {
+          headers: {
+            "Content-Type": "multipart/form-data",
+            Accept: "application/json",
+          },
+        }
+      );
+      console.log(response.data);
       return response.data;
     },
     onMutate: async (newCourse) => {
@@ -49,41 +56,53 @@ export const useCourseMutation = () => {
   });
 
   const updateCourseMutation = useMutation({
-    mutationFn: async ({ id, formData }: { id: number; formData: FormData }) => {
-      return await axiosDashboard.patch(apiRoutes.course.update(id.toString()), formData, {
-        headers: {
-          "Content-Type": "multipart/form-data",
-          Accept: "application/json",
-        },
-      });
+    mutationFn: async ({
+      id,
+      formData,
+    }: {
+      id: number;
+      formData: FormData;
+    }) => {
+      return await axiosDashboard.patch(
+        apiRoutes.course.update(id.toString()),
+        formData,
+        {
+          headers: {
+            "Content-Type": "multipart/form-data",
+            Accept: "application/json",
+          },
+        }
+      );
     },
     onSuccess: () => {
-      success('Course updated successfully');
-      queryClient.invalidateQueries({ queryKey: ['courses'] });
+      success("Course updated successfully");
+      queryClient.invalidateQueries({ queryKey: ["courses"] });
     },
     onError: (err) => {
-      showError('Error updating course');
-      console.error('Update error:', err);
-    }
+      showError("Error updating course");
+      console.error("Update error:", err);
+    },
   });
 
   const deleteCourseMutation = useMutation({
     mutationFn: async (courseId: number) => {
-      return await axiosDashboard.delete(apiRoutes.course.delete(courseId.toString()));
+      return await axiosDashboard.delete(
+        apiRoutes.course.delete(courseId.toString())
+      );
     },
     onSuccess: () => {
-      success('Course deleted successfully');
-      queryClient.invalidateQueries({ queryKey: ['courses'] });
+      success("Course deleted successfully");
+      queryClient.invalidateQueries({ queryKey: ["courses"] });
     },
     onError: (err) => {
-      showError('Error deleting course');
-      console.error('Delete error:', err);
-    }
+      showError("Error deleting course");
+      console.error("Delete error:", err);
+    },
   });
 
   return {
     createCourseMutation,
     updateCourseMutation,
-    deleteCourseMutation
+    deleteCourseMutation,
   };
 };

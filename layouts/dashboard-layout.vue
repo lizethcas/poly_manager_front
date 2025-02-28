@@ -131,7 +131,7 @@
       </div>
       <!-- Main Content with Right Sidebar Layout -->
       <div
-        class="flex flex-col ml-5 mt-2 m-auto relative lg:m-5"
+        class="flex flex-col  mt-2 m-auto relative lg:m-5"
         :class="mainContentWidth"
       >
         <!-- Main Content -->

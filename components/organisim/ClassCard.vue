@@ -51,7 +51,7 @@
                 <div
                   class="text-sm px-2 py-1 bg-gray-100 rounded-full flex items-center gap-2"
                 >
-                  <Icon name="bi:collection-fill" size="14" />
+                  <Icon :name="IconType.collection" size="14" />
                   {{ index }}/{{ props.classes.length }}
                 </div>
               </div>
@@ -59,81 +59,76 @@
               <!-- Action Buttons -->
               <div class="flex flex-wrap gap-2 relative">
                 <!-- Always visible buttons -->
-                <button
-                  class="bg-blue-500 text-white p-1 rounded-full flex items-center gap-1"
-                  @click="
-                    navigateTo(
-                      routes.routesAdmin.class(routeCourseId, classItem.id)
-                    )
+                <IconButton
+                  :icon="IconType.edit"
+                  :label="'edit'"
+                  :customClass="'bg-blue-500 text-white'"
+                  :color="'text-white'"
+                  :handleClick="
+                    () =>
+                      navigateTo(
+                        routes.routesAdmin.class(
+                          routeCourseId,
+                          classItem.id.toString()
+                        )
+                      )
                   "
-                >
-                  <Icon name="material-symbols:edit-outline" size="14" />
-                  <span class="text-xs">edit</span>
-                </button>
-                <button
-                  class="bg-blue-500 text-white p-1 rounded-full flex items-center gap-1"
-                  @click="openEditClass(classItem)"
-                >
-                  <Icon name="material-symbols:visibility-outline" size="14" />
-                  <span class="text-xs">Settings</span>
-                </button>
+                />
+
+                <IconButton
+                  :icon="IconType.settings"
+                  :label="'Settings'"
+                  :customClass="'bg-blue-500 text-white rounded-full'"
+                  :color="'text-white'"
+                  :handleClick="() => openEditClass(classItem)"
+                />
 
                 <!-- Dropdown for additional buttons -->
                 <div class="relative">
-                  <button
-                    class="bg-gray-200 text-gray-600 p-1 rounded-full flex items-center gap-1"
-                    @click="toggleDropdown(classItem.id)"
-                  >
-                    <Icon name="material-symbols:more-vert" size="14" />
-                  </button>
+                  <IconButton
+                    :icon="IconType.menuMore"
+                    :customClass="'bg-gray-200 text-fuscous-gray-600 text-center items-end  rounded-full px-2 py-1'"
+                    :handleClick="() => toggleDropdown(classItem.id)"
+                  />
                   <div
                     v-if="dropdownOpen === classItem.id"
                     class="absolute right-0 mt-2 w-48 bg-white border border-gray-200 rounded-md shadow-lg z-10"
                   >
-                    <button
-                      class="flex items-center w-full text-left px-4 py-2 gap-1 border-t border-gray-200"
-                      @click="openModalHandler(classItem.id)"
-                    >
-                      <Icon
-                        name="material-symbols:visibility-outline"
-                        size="14"
-                      />
-                      <span class="text-xs">preview</span>
-                    </button>
+                    <IconButton
+                      :icon="IconType.eye"
+                      :label="'preview'"
+                      :customClass="'bg-none rounded-full text-fuscous-gray-600'"
+                      :color="'text-fuscous-gray-600 '"
+                      :handleClick="() => openModalHandler(classItem.id)"
+                    />
+
                     <div
-                      class="flex items-center gap-4 px-4 py-2 cursor-pointer border-t border-gray-200"
-                      @click.stop="togglePublish(classItem)"
+                      class="flex items-center gap-4 py-2 cursor-pointer border-gray-200"
+                      @click.stop="(event) => togglePublish(classItem, event)"
                     >
-                      <div
-                        v-if="classItem.publish"
-                        class="bg-emerald-100 text-emerald-700 text-xs px-2 rounded-full flex items-center gap-1"
-                      >
-                        <IconMolecule
-                          :name="IconType.eye"
-                          :size="16"
-                          :color="'text-emerald-700'"
-                        />
-                        <span class="leading-none">published</span>
-                      </div>
-                      <div
-                        v-if="!classItem.publish"
-                        class="text-xs px-2 rounded-full flex items-center gap-1 bg-white border border-fuscous-gray-600"
-                      >
-                        <IconMolecule
-                          :name="IconType.eyeOff"
-                          :size="16"
-                          :color="'text-fuscous-gray-600'"
-                        />
-                        <span class="leading-none">hidden</span>
-                      </div>
+                      <IconButton
+                        v-show="classItem.publish"
+                        :icon="IconType.eye"
+                        :label="'published'"
+                        :customClass="'bg-emerald-100 text-emerald-700 rounded-full'"
+                        :color="'text-emerald-700 '"
+                      />
+
+                      <IconButton
+                        v-show="!classItem.publish"
+                        :icon="IconType.eyeOff"
+                        :label="'hidden'"
+                        :customClass="'bg-white text-fuscous-gray-600 rounded-full'"
+                        :color="'text-fuscous-gray-600'"
+                      />
                     </div>
-                    <button
-                      class="flex items-center w-full text-left px-4 py-2 gap-1 border-t border-gray-200"
-                      @click="handleDelete(classItem.id)"
-                    >
-                      <Icon name="material-symbols:delete-outline" size="14" />
-                      <span class="text-xs">delete</span>
-                    </button>
+                    <IconButton
+                      :icon="IconType.trash"
+                      :label="'delete'"
+                      :customClass="'bg-none rounded-full text-fuscous-gray-600'"
+                      :color="'text-fuscous-gray-600'"
+                      :handleClick="() => handleDelete(classItem.id)"
+                    />
                   </div>
                 </div>
               </div>
@@ -169,13 +164,11 @@ import AddCourseModal from "./AddCourseModal.vue";
 import { IconType } from "~/data/iconsType";
 import { createClass } from "~/data/cardModal";
 import { routes } from "~/data/routes";
-import { useNotify } from "~/composables/useNotify";
 import { useModal } from "~/composables/useModal";
 import { useRoute } from "nuxt/app";
 import { useClassMutation } from "~/composables/useClassMutation";
-import IconMolecule from "~/components/atomos/Icon.vue";
+import IconButton from "~/components/molecule/IconButton.vue";
 
-const { success, error } = useNotify();
 const { isOpen, openModal, closeModal } = useModal();
 const route = useRoute();
 const courseId = route.params.courseId as string;
@@ -209,14 +202,15 @@ const { deleteClass, isDeletingClass } = useClassesQuery(courseId);
 const { updateClassMutation } = useClassMutation();
 
 const openModalHandler = (classId: number) => {
-  navigateTo(routes.routesStudent.class(routeCourseId, classId));
+  navigateTo(routes.routesStudent.class(routeCourseId, classId.toString()));
 };
 
-const handleDelete = async (classId: number) => {
+const handleDelete = async (classId: number | undefined) => {
+  if (!classId) return;
+
   if (confirm("Are you sure you want to delete this class?")) {
     try {
       await deleteClass(classId);
-      success("Class deleted successfully");
     } catch (err) {
       console.error("Error deleting class:", err);
       error("Error deleting class");
@@ -266,11 +260,13 @@ const handleSave = async (formData: any) => {
   }
 
   try {
+    if (typeof selectedClass.value.id !== "number") return;
+
     await updateClassMutation.mutateAsync({
       id: selectedClass.value.id,
       formData: formDataToSend,
     });
-    success("Class updated successfully");
+
     closeModal();
   } catch (err) {
     console.error("Error updating class:", err);
@@ -279,32 +275,29 @@ const handleSave = async (formData: any) => {
 };
 
 // Add emit definition in script setup
-const emit = defineEmits(['update:classes']);
+const emit = defineEmits(["update:classes"]);
 
 // Update the togglePublish function
-const togglePublish = async (classItem: ClassData) => {
+
+const togglePublish = async (classItem: ClassData, event: Event) => {
+  event.stopPropagation();
+  const item = props.classes?.find((c) => c.id === classItem.id);
+  if (!item) return;
+
   const formData = new FormData();
-  const newPublishState = !classItem.publish;
-  formData.append("publish", newPublishState.toString());
+  const newPublishStatus = !item.publish;
+  formData.append("publish", newPublishStatus.toString());
 
   try {
     await updateClassMutation.mutateAsync({
-      id: classItem.id,
+      id: classItem.id as number,
       formData: formData,
     });
-    
-    // Update the classes array immutably
-    const updatedClasses = props.classes.map(item => 
-      item.id === classItem.id 
-        ? { ...item, publish: newPublishState }
-        : item
-    );
-    
-    emit('update:classes', updatedClasses);
-    success("Class status updated successfully");
-  } catch (err) {
-    console.error("Error updating class status:", err);
-    error("Error updating class status");
+
+    // Close dropdown after successful update
+    dropdownOpen.value = null;
+  } catch (error) {
+    console.error("Error updating publish status:", error);
   }
 };
 

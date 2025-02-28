@@ -2,8 +2,8 @@ export const IconType = {
   close: "material-symbols:close",
   info: "flat-color-icons:info",
   add: "icon-park-solid:add",
-  eye: "mdi:eye-outline",
-  eyeOff: "mdi:eye-off-outline",
+  eye: "icon-park-outline:preview-open",
+  eyeOff: "bxs:hide",
   students: "mdi:people",
   collection: "bi:collection-fill",
   imgGen: "hugeicons:ai-image",
@@ -40,7 +40,9 @@ export const IconType = {
   person: "material-symbols:person-outline",
   menuTasks: "mage:dots-menu",
   paymentsOutline: "material-symbols:payments-outline",
-  trash: "material-symbols:delete-outline",
-  edit: "material-symbols:edit-outline",
+  trash: "material-symbols:delete",
+  edit: "tabler:edit",
+  menuMore: "ri:more-line",
+  settings: "material-symbols:settings",
 };
 
