@@ -6,6 +6,8 @@ export const routes = {
       "/admin/students",
       (courseId: string) => `/admin/course-${courseId}/students`,
     ],
+
+
     course: (courseId: string) => `/admin/course-${courseId}`,
     classes: (courseId: string) => `/admin/course-${courseId}/classes`,
     class: (courseId: string, classId: string) =>
@@ -13,10 +15,13 @@ export const routes = {
     statistics: (courseId: string) => `/admin/course-${courseId}/statistics`,
   },
   routesStudent: {
-    classes: (courseId: string) => `/student/course-${courseId}/classes`,
-    courses: "/student/courses",
-    course: (courseId: string) => `/student/course-${courseId}`,
+    classes: (courseId: string) => `/student-${courseId}/classes`,
+    classByStudent: ( studentId: string) =>
+      `/student-${studentId}/classes`,
+    courses: "/student-${courseId}/courses",
+    course: (courseId: string) => `/student-${courseId}/course-${courseId}`,
     progress: "/student/progress",
+    totalStudentsbyCourse: (studentId: string) => `courses/${studentId}/students`,
     class: (courseId: string, classId: string) =>
       `/student/course-${courseId}/class-${classId}`,
   },

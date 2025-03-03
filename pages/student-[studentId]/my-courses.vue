@@ -2,10 +2,11 @@
   <div v-if="isLoading">Loading...</div>
   <div v-else-if="error">{{ error.message || 'Error loading courses' }}</div>
   <template v-else>
+
     <div v-if="!courses">No courses data available</div>
     <CourseCardStudent 
-      :courses="courses?.data || []" 
-      v-if="courses?.data && courses.data.length > 0" 
+      :courses="courses.data" 
+     
     />
     <InfoCourses
       v-if="!courses?.data?.length"

@@ -1,7 +1,7 @@
 import { useQuery } from "@tanstack/vue-query";
 import { apiRoutes, get } from "@/services/routes.api";
 
-export const useCoursesQuery = (studentId?: string) => {
+export const useCoursesQuery = (studentId?: string, courseId?: number) => {
   const fetchCourses = async () => {
     try {
       // If studentId is provided, use student-specific endpoint
