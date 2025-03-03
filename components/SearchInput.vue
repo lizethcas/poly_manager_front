@@ -23,19 +23,25 @@
       </template>
     </UInput>
 
-    <div 
-      v-if="isOpen && filteredResults.length > 0" 
+    <div
+      v-if="isOpen && filteredResults.length > 0"
       class="absolute mt-1 w-full bg-white border rounded-lg shadow-lg z-10 overflow-hidden"
     >
       <div class="flex">
         <!-- Lista de resultados -->
         <div class="w-1/2 border-r max-h-[70vh] overflow-y-auto p-2">
-          <div v-for="(category, index) in filteredResults" :key="index" class="mb-4">
-            <h3 class="text-sm font-medium text-blue-600 mb-1">{{ category.category }}</h3>
+          <div
+            v-for="(category, index) in filteredResults"
+            :key="index"
+            class="mb-4"
+          >
+            <h3 class="text-sm font-medium text-blue-600 mb-1">
+              {{ category.category }}
+            </h3>
             <ul class="space-y-1">
-              <li 
-                v-for="(item, itemIndex) in category.items" 
-                :key="itemIndex" 
+              <li
+                v-for="(item, itemIndex) in category.items"
+                :key="itemIndex"
                 class="text-sm py-1 px-2 hover:bg-gray-100 rounded cursor-pointer flex items-start"
                 @click="selectItem(item, category.category)"
                 :class="{ 'bg-gray-100': selectedItem === item }"
@@ -49,8 +55,8 @@
 
         <!-- Panel de detalles -->
         <div v-if="selectedItem" class="w-1/2 p-4 max-h-[70vh] overflow-y-auto">
-          <component 
-            :is="getDetailComponent(selectedCategory)" 
+          <component
+            :is="getDetailComponent(selectedCategory)"
             :item="selectedItem"
           />
         </div>
@@ -90,18 +96,9 @@ const filteredResults = computed(() => {
       category: 'Cursos',
       items: data.cursos.map(course => ({
         id: course.id,
-        name: course.name,
+        title: course.name,
         description: course.description,
         cover: course.cover
-      }))
-    },
-    {
-      category: 'Contenidos',
-      items: data.contenidos.map(content => ({
-        id: content.id,
-        title: content.tittle,
-        instructions: content.instructions,
-        image: content.image
       }))
     },
     {
@@ -111,6 +108,15 @@ const filteredResults = computed(() => {
         title: clase.name,
         description: clase.description,
         image: clase.cover
+      }))
+    },
+    {
+      category: 'Contenidos',
+      items: data.contenidos.map(content => ({
+        id: content.id,
+        title: content.tittle,
+        instructions: content.instructions,
+        image: content.image
       }))
     }
   ];
