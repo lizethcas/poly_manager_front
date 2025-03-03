@@ -41,7 +41,7 @@
                 :class="{ 'bg-gray-100': selectedItem === item }"
               >
                 <span class="text-gray-400 mr-2">•</span>
-                {{ item }}
+                {{ item.name || item.title }}
               </li>
             </ul>
           </div>
@@ -49,25 +49,10 @@
 
         <!-- Panel de detalles -->
         <div v-if="selectedItem" class="w-1/2 p-4 max-h-[70vh] overflow-y-auto">
-          <div class="flex flex-col">
-            <div class="w-full mb-4">
-              <img 
-                :src="'/placeholder.svg?height=150&width=150'" 
-                alt="Lesson thumbnail"
-                class="rounded-lg w-32 h-32 object-cover mx-auto"
-              />
-            </div>
-            <h3 class="text-lg font-semibold mb-2">{{ selectedItem }}</h3>
-            <p class="text-sm text-gray-600 mb-4">
-              {{ selectedDescription }}
-            </p>
-            <button 
-              @click="openLesson"
-              class="bg-blue-500 text-white px-4 py-2 rounded-md hover:bg-blue-600 transition-colors w-full"
-            >
-              Open
-            </button>
-          </div>
+          <component 
+            :is="getDetailComponent(selectedCategory)" 
+            :item="selectedItem"
+          />
         </div>
       </div>
     </div>
@@ -77,6 +62,9 @@
 <script setup>
 import { ref, computed, onMounted, onUnmounted } from 'vue';
 import { useSearch } from '~/composables/useSearch';
+import CourseDetails from '~/components/Search/CourseDetails.vue';
+import ContentDetails from '~/components/Search/ContentDetails.vue';
+import ClassDetails from '~/components/Search/ClassDetails.vue';
 
 const searchRef = ref(null);
 const selectedItem = ref(null);
@@ -96,13 +84,50 @@ const isOpen = computed(() => query.value.length > 0 && !isLoading.value);
 // Update filteredResults to use API results
 const filteredResults = computed(() => {
   if (!apiResults.value) return [];
-  return apiResults.value;
+  const data = apiResults.value;
+  return [
+    {
+      category: 'Cursos',
+      items: data.cursos.map(course => ({
+        id: course.id,
+        name: course.name,
+        description: course.description,
+        cover: course.cover
+      }))
+    },
+    {
+      category: 'Contenidos',
+      items: data.contenidos.map(content => ({
+        id: content.id,
+        title: content.tittle,
+        instructions: content.instructions,
+        image: content.image
+      }))
+    },
+    {
+      category: 'Clases',
+      items: data.clases.map(clase => ({
+        id: clase.id,
+        title: clase.name,
+        description: clase.description,
+        image: clase.cover
+      }))
+    }
+  ];
 });
 
-const selectedDescription = computed(() => {
-  if (!selectedItem.value) return '';
-  return `This is a detailed description of "${selectedItem.value}" from the ${selectedCategory.value} section. The lesson includes interactive exercises and practice materials to help you master the content.`;
-});
+const getDetailComponent = (category) => {
+  switch (category) {
+    case 'Cursos':
+      return CourseDetails;
+    case 'Contenidos':
+      return ContentDetails;
+    case 'Clases':
+      return ClassDetails;
+    default:
+      return null;
+  }
+};
 
 const selectItem = (item, category) => {
   selectedItem.value = item;
@@ -115,7 +140,9 @@ const openLesson = () => {
 };
 
 const handleInput = () => {
-  // Remove isOpen setting as it's now handled by computed property
+  if (query.value) {
+    isOpen.value = true;
+  }
 };
 
 const handleFocus = () => {
