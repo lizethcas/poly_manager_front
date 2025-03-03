@@ -76,7 +76,7 @@
           >
             View course details
           </button>
-          <nuxt-link v-else :to="`/student-${route.params.studentId}/classes`">
+          <nuxt-link v-else :to="`/student-${route.params.studentId}/course-${course.id}`">
             <button class="text-blue-500 hover:text-blue-700 text-left text-sm">
               View course details
             </button>

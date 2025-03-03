@@ -98,6 +98,7 @@
     :course-id="selectedClass.course_id"
     :id="selectedClass.id"
     text-button="Start lesson"
+    @handleClick="handleClick"
   />
 </template>
 
@@ -111,21 +112,15 @@ const route = useRoute();
 const courseId = route.params.courseid;
 const selectedClass = ref({});
 const { data: classes, isPending, error } = useClassesQuery(courseId as string);
-console.log(classes.value);
-/* const filteredClasses = computed(() => {
-  if (!classes.value) return [];
-  return classes.value.filter((classItem: any) => {
-    return (
-      classItem &&
-      classItem.course_id &&
-      classItem.course_id.toString() === courseId &&
-      classItem.publish === true
 
-    );
-  });
-}); */
+
 
 const isDescriptionVisible = ref(false);
+
+const handleClick = (classId: string, id: string) => {
+  navigateTo(`/student-${route.params.studentId}/course-${courseId}/class-${classId}`);
+  console.log(classId, id);
+};
 
 const showClassDescription = (classItem: any, index: number) => {
   selectedClass.value = {

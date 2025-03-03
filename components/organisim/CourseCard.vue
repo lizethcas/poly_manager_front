@@ -6,7 +6,6 @@
     v-if="coursesData && coursesData.length > 0"
     v-for="course in coursesData.slice().reverse()"
     :key="course.id"
-    @click="navigateToCourse(course.id)"
     class="w-full flex flex-col md:flex-row gap-2 bg-white border rounded-md cursor-pointer mt-4 md:hover:scale-105 transition-all duration-300 p-4"
   >
     <!-- Course Image -->
@@ -29,16 +28,14 @@
         </h2>
       </div>
 
-      <div
-        class="flex md:items-center md:gap-4 mt-1 flex-wrap"
-        @click="(event) => publishCourse(course.id, event)"
-      >
+      <div class="flex md:items-center md:gap-4 mt-1 flex-wrap">
         <IconButton
           v-show="course.publish"
           :icon="IconType.eye"
           :label="'published'"
           :customClass="'bg-emerald-100 text-emerald-700 rounded-full'"
           :color="'text-emerald-700'"
+          @click.stop="publishCourse(course.id)"
         />
         <IconButton
           v-show="!course.publish"
@@ -46,35 +43,27 @@
           :label="'hidden'"
           :customClass="'bg-white text-fuscous-gray-600 rounded-full'"
           :color="'text-fuscous-gray-600'"
+          @click.stop="publishCourse(course.id)"
         />
 
         <div
           class="flex items-center gap-1 md:gap-2 text-gray-600 text-xs flex-wrap"
         >
-          <span
-            class="flex items-center gap-1"
+          <IconButton
+            :icon="IconType.students"
+            :label="`${
+              studentClassesMap[course.id]?.students?.data?.total_students || 0
+            } students`"
+            :customClass="'bg-white text-fuscous-gray-600 rounded-full'"
+            :color="'text-fuscous-gray-600'"
             @click="handleStudents(course.id)"
-          >
-            <IconMolecule
-              :name="IconType.students"
-              :size="16"
-              :color="'text-gray-600'"
-            />
-            {{
-              useCourseStudents(course.id).students?.value?.data
-                .total_students || 0
-            }}
-            students
-          </span>
-          <span class="flex items-center gap-1">
-            <IconMolecule
-              :name="IconType.collection"
-              :size="16"
-              :color="'text-gray-600'"
-            />
-            {{ classes }}
-            {{ classes === 1 ? "lesson" : "lessons" }}
-          </span>
+          />
+          <IconButton
+            :icon="IconType.collection"
+            :label="`${classes} ${classes === 1 ? 'lesson' : 'lessons'}`"
+            :customClass="'bg-white text-fuscous-gray-600 rounded-full'"
+            :color="'text-fuscous-gray-600'"
+          />
         </div>
       </div>
     </div>
@@ -100,26 +89,40 @@
         </span>
       </div>
       <div class="text-xs flex flex-row justify-start gap-2 py-1 mt-5">
-        <button
-          class="flex items-center gap-1 px-2 bg-blue-500 text-white text-xs font-semibold rounded-full transition duration-300"
-        >
-          <IconMolecule :name="IconType.eye" :size="12" :color="'text-white'" />
-          preview
-        </button>
-        <button
-          @click.stop="openEditModal(course)"
-          class="flex items-center gap-1 px-2 bg-blue-500 text-white text-xs font-semibold rounded-full transition duration-300"
-        >
-          <IconMolecule
-            :name="IconType.edit"
-            :size="16"
-            :color="'text-white'"
-          />
-          edit
-        </button>
+        <IconButton
+          :icon="IconType.eye"
+          :label="'preview'"
+          :customClass="'bg-blue-500 text-white rounded-full'"
+          :color="'text-white'"
+          @click="navigateToCourse(course.id)"
+        />
+
+        <IconButton
+          :icon="IconType.edit"
+          :label="'edit'"
+          :customClass="'bg-blue-500 text-white rounded-full'"
+          :color="'text-white'"
+          @click="openEditModal(course)"
+        />
       </div>
     </div>
   </div>
+
+  <!-- Modal students-->
+  <div
+    class="fixed inset-0 bg-gray-600 bg-opacity-50 z-50 flex justify-center items-center"
+    v-if="isStudentModalOpen"
+  >
+    <div class="w-full max-w-5xl mx-auto">
+      <StudentList
+        :students="students"
+        @close="isStudentModalOpen = false"
+      
+      />
+    </div>
+  </div>
+
+  <!-- Modal edit course-->
   <div
     v-if="isOpen"
     class="fixed inset-0 bg-gray-600 bg-opacity-50 z-50 flex justify-center items-center"
@@ -164,8 +167,10 @@
 </template>
 
 <script lang="ts" setup>
+import { ref, watchEffect } from "vue";
 import { createCourse } from "~/data/cardModal";
 import IconButton from "~/components/molecule/IconButton.vue";
+import StudentList from "./templatesUsers/teachers/StudentList.vue";
 import AddCourseModal from "./AddCourseModal.vue";
 import IconMolecule from "~/components/atomos/Icon.vue";
 import { useGetColor } from "~/composables/useGetColor";
@@ -173,10 +178,9 @@ import { useGetCover } from "~/composables/useGetcover";
 import { useTaskStore } from "~/stores/task.store";
 import { IconType } from "~/data/iconsType";
 import { routes } from "~/data/routes";
-import { ref } from "vue";
 import { useModal } from "~/composables/useModal";
 import { useCourseMutation } from "~/composables/useCourseMutation";
-import { useCourseStudents } from "~/composables/useCourseStudents";
+import { useStudentClasses } from "~/composables/useStudentClasses";
 
 interface Course {
   id: number;
@@ -192,33 +196,55 @@ interface Course {
 interface Props {
   coursesData?: Course[];
 }
-
 const props = defineProps<Props>();
 const { isOpen, openModal, closeModal } = useModal();
 const { getLevelColor } = useGetColor();
 const { getCoverUrl } = useGetCover();
 const taskStore = useTaskStore();
 const classes = taskStore.getTask("classes");
-
 const activeDropdown = ref<number | null>(null);
-
 const selectedCourse = ref<Course | null>(null);
 const confirmDelete = ref(false);
-const emit = defineEmits(["openModal"]);
-const { updateCourseMutation, deleteCourseMutation } = useCourseMutation();
+const isStudentModalOpen = ref(false);
 
-const handleStudents = (courseId: number) => {
-  console.log(courseId);
+const students = ref([]);
+const currentCourseId = ref<number | null>(null);
+
+const emit = defineEmits<{
+  (e: "openModal"): void;
+}>();
+
+const { getTotalStudents } = useStudentClasses();
+const { updateCourseMutation, deleteCourseMutation } = useCourseMutation();
+const { coursesData } = props;
+const studentClassesMap = ref<
+  Record<number, { students: { data: { total_students: number } } }>
+>({});
+
+// Replace the watchEffect with proper setup-time queries
+if (coursesData) {
+  coursesData.forEach(async (course) => {
+    const students = await getTotalStudents(course.id.toString());
+    studentClassesMap.value[course.id] = { students };
+  });
+}
+
+const handleStudents = async (courseId: number) => {
+  currentCourseId.value = courseId;
+  const courseStudents =
+    studentClassesMap.value[courseId]?.students?.data?.students || [];
+  students.value = courseStudents;
+  isStudentModalOpen.value = true;
 };
 
-onMounted(() => {
+/* onMounted(() => {
   document.addEventListener("click", (e: Event) => {
     const target = e.target as HTMLElement;
     if (!target.closest(".relative")) {
       activeDropdown.value = null;
     }
   });
-});
+}); */
 
 const navigateToCourse = (courseId: number) => {
   const course = props.coursesData?.find((c) => c.id === courseId);
@@ -286,14 +312,14 @@ const confirmDeleteCourse = async () => {
   try {
     await deleteCourseMutation.mutateAsync(selectedCourse.value.id);
     confirmDelete.value = false;
+
     closeModal();
   } catch (error) {
     console.error("Error deleting course:", error);
   }
 };
 
-const publishCourse = async (courseId: number, event: Event) => {
-  event.stopPropagation();
+const publishCourse = async (courseId: number) => {
   const course = props.coursesData?.find((c) => c.id === courseId);
   if (!course) return;
 

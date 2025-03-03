@@ -1,10 +1,10 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/vue-query";
 import { apiRoutes, get, del } from "@/services/routes.api";
 
-export const useClassesQuery = (courseId: string) => {
+export const useClassesQuery = (courseId: string, studentId: string) => {
   const fetchClasses = async () => {
     try {
-      const response = await get(apiRoutes.classes.getByCourseId(courseId));
+      const response = await get(apiRoutes.classes.getByCourseId(courseId ));
       if (!response) {
         throw new Error("No classes found");
       }
@@ -62,6 +62,29 @@ export const useClassByIdQuery = (classId: number) => {
   return useQuery({
     queryKey: [ "class", classId],
     queryFn: fetchClassById,
+    refetchOnMount: "always",
+    refetchOnWindowFocus: true,
+    staleTime: 0,
+  });
+};
+
+export const useClassesByStudentIdQuery = (studentId: string) => {
+  const fetchClassesByStudentId = async () => {
+    try {
+      const response = await get(apiRoutes.students.getClassesByStudent(studentId));
+      if (!response) {
+        throw new Error("No classes found for student");
+      }
+      return response.data;
+    } catch (error: any) {
+      console.error("Error fetching student classes:", error);
+      throw error;
+    }
+  };
+
+  return useQuery({
+    queryKey: ["classes", "student", studentId],
+    queryFn: fetchClassesByStudentId,
     refetchOnMount: "always",
     refetchOnWindowFocus: true,
     staleTime: 0,
