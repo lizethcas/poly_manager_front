@@ -233,6 +233,7 @@ const openEditClass = (classItem: ClassData) => {
 };
 
 const handleSave = async (formData: any) => {
+  console.log(formData);
   if (!selectedClass.value?.id) return;
 
   const formDataToSend = new FormData();

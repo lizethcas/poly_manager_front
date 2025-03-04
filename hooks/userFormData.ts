@@ -42,7 +42,7 @@ export function useFormData() {
 
 
   const handleEmit = () => {
-    bulletPoints.value.push('');
+    bulletPoints.value = [...bulletPoints.value, ''];
   };
 
   const handleEmitSave = () => {

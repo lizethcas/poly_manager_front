@@ -59,7 +59,7 @@ import { computed } from "vue";
 const route = useRoute();
 const classMutation = useClassMutation();
 
-const courseId = 1;
+const courseId = route.params.courseId;
 
 const { success, error } = useNotify();
 const {
@@ -67,7 +67,7 @@ const {
   error: classesError,
   isLoading,
   refetch: refresh,
-} = useClassesQuery(courseId as string);
+} = useClassesQuery( courseId as string);
 
 
 const filteredData = computed(() => {
@@ -90,6 +90,7 @@ const handleSave = async (formDataEvent: any) => {
     const { formData, bulletPoints } = formDataEvent;
 
     const requestData = {
+    
       name: formData.name,
       description: formData.description,
       course_id: courseId,

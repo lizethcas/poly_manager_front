@@ -1,11 +1,14 @@
 import { useMutation, useQueryClient } from "@tanstack/vue-query";
 import { apiRoutes } from "~/services/routes.api";
 import { axiosDashboard } from "~/services/axios.config";
+import { useNotify } from "@/composables/useNotify";
+
 const { success, error } = useNotify();
 export const useClassMutation = () => {
   const queryClient = useQueryClient();
 
   const createClassMutation = async (classData: any) => {
+    console.log(classData);
     const response = await axiosDashboard.post(apiRoutes.classes.getByCourseId(classData.course_id), classData, {
       headers: {
         "Content-Type": "multipart/form-data",
@@ -15,11 +18,16 @@ export const useClassMutation = () => {
   };
 
   const updateClassMutation = async ({ id, formData }: { id: number; formData: FormData }) => {
+    console.log(formData);
     const response = await axiosDashboard.patch(apiRoutes.classes.getById(id), formData, {
       headers: {
         "Content-Type": "multipart/form-data",
       },
     });
+    console.log(response.data);
+    if (response.data.status === "error") {
+      error(response.data.message);
+    }
     return response.data;
   };
 
@@ -28,7 +36,7 @@ export const useClassMutation = () => {
     onSuccess: (_, variables) => {
       queryClient.invalidateQueries({ queryKey: ["classes"] });
       queryClient.invalidateQueries({ queryKey: ["class", variables.id] });
-      success("Class updated successfully");
+     
     },
     onError: (err) => {
       error("Error updating class");

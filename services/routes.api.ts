@@ -38,6 +38,7 @@ export const apiRoutes = {
       `/courses/${courseId}/students/`,
   },
   classes: {
+    update: (classId: number) => `classes/${classId}/`,
     getByCourseId: (courseId: string | string[]) =>
       `/classes/?courseId=${courseId}`,
 

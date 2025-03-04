@@ -1,7 +1,8 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/vue-query";
 import { apiRoutes, get, del } from "@/services/routes.api";
+import { useNotify } from "@/composables/useNotify";
 
-export const useClassesQuery = (courseId: string, studentId: string) => {
+export const useClassesQuery = (courseId: string, studentId?: string) => {
   const fetchClasses = async () => {
     try {
       const response = await get(apiRoutes.classes.getByCourseId(courseId ));
