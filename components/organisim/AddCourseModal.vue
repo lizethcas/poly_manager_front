@@ -28,6 +28,16 @@
             />
           </div>
         </div>
+
+        <!-- Añadir el icono para abrir el modal de recorte -->
+        <div v-if="previewUrl" class="my-4 flex items-center">
+          <img :src="previewUrl" alt="Preview" class="w-32 h-32 object-cover rounded-md mr-4" />
+          <button @click="openCropperModal" class="text-gray-500 hover:text-gray-700">
+            <!-- <i class="i-heroicons-adjustments-20-solid"></i> -->
+            Abrir 
+          </button>
+        </div>
+
         <!-- Iterar sobre los labels para los campos del formulario -->
         <div v-for="(item, index) in labels" :key="'label-' + index">
           <MoleculeInput
@@ -90,12 +100,23 @@
         />
       </div>
     </form>
+
+    <!-- Modal de recorte de imagen -->
+    <CropperModal
+      :img="previewUrl"
+      :isOpen="isCropperModalOpen"
+      @close="closeCropperModal"
+      @save="updateCroppedImage"
+    />
   </div>
 </template>
 
 <script lang="ts" setup>
 import { defineProps, onMounted, ref } from "vue";
 import BulletPoint from "../molecule/BulletPoint.vue";
+import 'vue-advanced-cropper/dist/style.css';
+import CropperModal from '../CropperModal.vue';
+import InputFile from '../InputFile.vue';
 
 import { createCourse, labels } from "~/data/cardModal";
 import type { ModalProps } from "~/interfaces/modal.interface";
@@ -160,13 +181,35 @@ const handleSave = () => {
 const previewUrl = ref<string | null>(null);
 
 // Modifica la función handleCoverImage
-const handleCoverImage = (imageFile: File) => {
-  // Crear nuevo archivo con nombre sin espacios
-  const newFileName = imageFile.name.replace(/\s+/g, "_");
-  const newFile = new File([imageFile], newFileName, { type: imageFile.type });
+const handleCoverImage = ({ file, preview }) => {
+  if (!(file instanceof Blob || file instanceof File)) {
+    console.error("El archivo seleccionado no es válido:", file);
+    return;
+  }
+
+  // Si ya hay una URL creada, liberarla antes de asignar una nueva
+  if (previewUrl.value) {
+    URL.revokeObjectURL(previewUrl.value);
+  }
+
+  const newFileName = file.name.replace(/\s+/g, "_");
+  const newFile = new File([file], newFileName, { type: file.type });
+
   formData.value.cover = newFile;
-  // Actualizar la URL de previsualización
   previewUrl.value = URL.createObjectURL(newFile);
+};
+
+// Función para convertir una URL de datos en un objeto File
+const dataURLtoFile = (dataurl, filename) => {
+  const arr = dataurl.split(',');
+  const mime = arr[0].match(/:(.*?);/)[1];
+  const bstr = atob(arr[1]);
+  let n = bstr.length;
+  const u8arr = new Uint8Array(n);
+  while (n--) {
+    u8arr[n] = bstr.charCodeAt(n);
+  }
+  return new File([u8arr], filename, { type: mime });
 };
 
 // Modifica la función initializeFormData para manejar la URL inicial
@@ -205,4 +248,27 @@ const initializeFormData = () => {
 onMounted(() => {
   initializeFormData();
 });
+
+// Añadir referencia para el recorte de la imagen
+const croppedImage = ref<string | null>(null);
+
+// Estado para controlar la apertura del modal de recorte
+const isCropperModalOpen = ref(false);
+
+// Función para abrir el modal de recorte
+const openCropperModal = () => {
+  isCropperModalOpen.value = true;
+};
+
+// Función para cerrar el modal de recorte
+const closeCropperModal = () => {
+  isCropperModalOpen.value = false;
+};
+
+// Función para actualizar la imagen recortada
+const updateCroppedImage = (croppedImg) => {
+  const file = dataURLtoFile(croppedImg, 'cropped_image.png');
+  previewUrl.value = URL.createObjectURL(file);
+  formData.value.cover = file;
+};
 </script>

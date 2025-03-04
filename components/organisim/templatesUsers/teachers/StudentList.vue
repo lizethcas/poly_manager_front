@@ -1,14 +1,21 @@
 <template>
-  <div class="bg-white rounded-md p-4">
+  <div class="bg-white rounded-md p-4 h-screen my-5">
     <button @click="$emit('close')">Close</button>
-    <UTable :columns="columns" :rows="students" />
-
-   <!--  <h1>{{students}}</h1> -->
+    <UTable :columns="columns" :rows="students">
+      <template #functions-data="{ row }">
+        <div class="flex space-x-2">
+          <UButton color="gray" variant="ghost" icon="i-heroicons-pencil-square-20-solid" @click="handleEdit(row)" />
+          <UButton color="gray" variant="ghost" icon="i-heroicons-trash-20-solid" @click="handleDelete(row)" />
+          <UButton color="gray" variant="ghost" icon="i-heroicons-eye-20-solid" @click="handleView(row)" />
+        </div>
+      </template>
+    </UTable>
   </div>
-  
 </template>
 
 <script lang="ts" setup>
+import { ref } from 'vue';
+
 interface Students {
   id: number;
   user_username: string;
@@ -18,52 +25,43 @@ interface Students {
   created_at: string;
 }
 
-
-
 const props = defineProps<{
   students: Students[];
 }>();
-console.log(props.students);
 
 defineEmits<{
   (e: "close"): void;
 }>();
 
-const functions = [
-  {
-    id: 1,
-    name: "Edit",
-  },
-  {
-    id: 2,
-    name: "Delete",
-  },
-  {
-    id: 3,
-    name: "View",
-  },
-];
-const algo ="algo"
-
 const columns = [
-  
   {
     key: "user_username",
     label: "Name",
     sortable: true,
   },
- 
   {
     key: "created_at",
-    label: "Starting date ",
+    label: "Starting date",
     sortable: true,
-    
   },
   {
-    key: "algo",
+    key: "functions",
     label: "Functions",
   },
 ];
 
+const handleEdit = (row: Students) => {
+  console.log('Edit:', row);
+  // Aquí puedes agregar la lógica para editar el estudiante
+};
 
+const handleDelete = (row: Students) => {
+  console.log('Delete:', row);
+  // Aquí puedes agregar la lógica para eliminar el estudiante
+};
+
+const handleView = (row: Students) => {
+  console.log('View:', row);
+  // Aquí puedes agregar la lógica para ver los detalles del estudiante
+};
 </script>

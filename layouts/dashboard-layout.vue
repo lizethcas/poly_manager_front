@@ -83,7 +83,8 @@
           </div>
           <!-- Search bar -->
           <div class="flex-1 max-w-2xl px-4 hidden sm:block">
-            <SearchInput class="w-full" />
+            <!-- <SearchInput class="w-full" /> -->
+            <SearchMaqueta class="w-full" />
         
           </div>
 
