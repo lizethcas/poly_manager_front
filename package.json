@@ -44,6 +44,7 @@
     "unhead": "^1.8.0",
     "uuid": "^11.0.3",
     "vue": "latest",
+    "vue-advanced-cropper": "^2.8.9",
     "vue-query": "^1.26.0",
     "vue-router": "latest",
     "vue-toastification": "^2.0.0-rc.5",
