@@ -2,7 +2,8 @@
 import { axiosDashboard } from "./axios.config";
 
 export const apiRoutes = {
-  search: (query: string) => `search/?q=${encodeURIComponent(query)}`,
+  search: (query: string, studentId?: string) =>
+    `search/?q=${encodeURIComponent(query)}${studentId ? `&student_id=${studentId}` : ''}`,
   login: "login/",
   loginGoogle: "google-login/",
   logout: "logout/",

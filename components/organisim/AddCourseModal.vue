@@ -31,7 +31,7 @@
 
         <!-- Añadir el icono para abrir el modal de recorte -->
         <div v-if="previewUrl" class="my-4 flex items-center">
-          <img :src="previewUrl" alt="Preview" class="w-32 h-32 object-cover rounded-md mr-4" />
+          
           <button @click="openCropperModal" class="text-gray-500 hover:text-gray-700">
             <!-- <i class="i-heroicons-adjustments-20-solid"></i> -->
             Abrir 
@@ -103,6 +103,7 @@
 
     <!-- Modal de recorte de imagen -->
     <CropperModal
+      v-if="previewUrl"
       :img="previewUrl"
       :isOpen="isCropperModalOpen"
       @close="closeCropperModal"
@@ -132,6 +133,13 @@ const { bulletPoints, formData, handleEmit, updateFormField, resetForm } =
 
 // Propiedades del modal
 const props = defineProps<ModalProps>();
+
+// Añadir referencia para el recorte de la imagen
+const croppedImage = ref<string | null>(null);
+
+// Estado para controlar la apertura del modal de recorte
+const isCropperModalOpen = ref(false);
+
 /* const routeCourseId = route.params.courseId; */
 // Opciones para los selects (categorías y niveles)
 const combinedOptions = [
@@ -249,11 +257,6 @@ onMounted(() => {
   initializeFormData();
 });
 
-// Añadir referencia para el recorte de la imagen
-const croppedImage = ref<string | null>(null);
-
-// Estado para controlar la apertura del modal de recorte
-const isCropperModalOpen = ref(false);
 
 // Función para abrir el modal de recorte
 const openCropperModal = () => {

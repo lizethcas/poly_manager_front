@@ -42,6 +42,8 @@ const props = defineProps({
   item: Object,
 });
 
+console.log(props.item);
+
 const openLesson = () => {
   console.log("Opening course:", props.item);
 };

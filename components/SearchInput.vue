@@ -65,24 +65,25 @@
   </div>
 </template>
 
-<script setup>
+<script setup lang="ts">
+import { useRoute } from 'vue-router';
 import { ref, computed, onMounted, onUnmounted } from 'vue';
 import { useSearch } from '~/composables/useSearch';
 import CourseDetails from '~/components/Search/CourseDetails.vue';
 import ContentDetails from '~/components/Search/ContentDetails.vue';
 import ClassDetails from '~/components/Search/ClassDetails.vue';
 
-const searchRef = ref(null);
-const selectedItem = ref(null);
-const selectedCategory = ref(null);
-
+const searchRef: Ref<any> = ref(null);
+const selectedItem: Ref<any> = ref(null);
+const selectedCategory: Ref<string | null> = ref(null);
+const studentId: string = useRoute().params.studentId;
 // Use the search composable
-const { searchTerm, searchResults: apiResults, isLoading, updateSearch } = useSearch();
-
+const { searchTerm, searchResults: apiResults, isLoading, updateSearch } = useSearch(studentId);
+console.log(apiResults);
 // Update query to use searchTerm from composable
 const query = computed({
   get: () => searchTerm.value,
-  set: (value) => updateSearch(value)
+  set: (value) => updateSearch(value, studentId)
 });
 
 const isOpen = computed(() => query.value.length > 0 && !isLoading.value);

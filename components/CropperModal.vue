@@ -21,54 +21,39 @@
   </div>
 </template>
 
-<script>
-import { ref } from 'vue';
-import { Cropper } from 'vue-advanced-cropper';
-import 'vue-advanced-cropper/dist/style.css';
+<script setup lang="ts">
+import { ref } from 'vue'
+import { Cropper } from 'vue-advanced-cropper'
+import 'vue-advanced-cropper/dist/style.css'
 
-export default {
-  components: {
-    Cropper,
-  },
-  props: {
-    img: {
-      type: String,
-      required: true,
-    },
-    isOpen: {
-      type: Boolean,
-      required: true,
-    },
-  },
-  emits: ['close', 'save'],
-  setup(props, { emit }) {
-    const croppedImage = ref(null);
+interface Props {
+  img: string
+  isOpen: boolean
+}
 
-    const handleCropChange = ({ coordinates, canvas }) => {
-      if (canvas) {
-        croppedImage.value = canvas.toDataURL();
-      }
-    };
+const props = defineProps<Props>()
+const emit = defineEmits<{
+  close: []
+  save: [croppedImage: string]
+}>()
 
-    const closeModal = () => {
-      emit('close');
-    };
+const croppedImage = ref<string | null>(null)
 
-    const saveCroppedImage = () => {
-      emit('save', croppedImage.value);
-      closeModal();
-    };
+const handleCropChange = ({ coordinates, canvas }: { coordinates: any, canvas: HTMLCanvasElement }) => {
+  if (canvas) {
+    croppedImage.value = canvas.toDataURL()
+  }
+}
 
-    return {
-      croppedImage,
-      handleCropChange,
-      closeModal,
-      saveCroppedImage,
-    };
-  },
-};
+const closeModal = () => {
+  emit('close')
+}
+
+const saveCroppedImage = () => {
+  if (croppedImage.value) {
+    emit('save', croppedImage.value)
+    closeModal()
+  }
+}
 </script>
 
-<style scoped>
-/* Puedes agregar estilos adicionales aquí si es necesario */
-</style>
