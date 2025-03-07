@@ -11,7 +11,7 @@
       <div class="flex justify-center items-center flex-1">
         <InputFile
           fileType="image"
-          icon="true"
+          :icon="true"
           @file-selected="addNewImage"
           :showPreview="false"
           :preview="false"
@@ -160,7 +160,7 @@ watch(
   { deep: true }
 );
 
-const addNewImage = async (file: File) => {
+const addNewImage = async ({ file, preview }: { file: File; preview: string }) => {
   try {
     formData.cover = file;
     const base64Image = await getBase64(file);
