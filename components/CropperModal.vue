@@ -12,7 +12,10 @@
         :stencil-props="{ aspectRatio: 1 }"
         @change="handleCropChange"
       />
-      <div class="flex justify-end mt-4">
+      <div class="flex justify-end mt-4 space-x-2">
+        <button @click="closeModal" class="bg-gray-500 text-white px-4 py-2 rounded-md hover:bg-gray-600">
+          Cancelar
+        </button>
         <button @click="saveCroppedImage" class="bg-blue-500 text-white px-4 py-2 rounded-md hover:bg-blue-600">
           Guardar
         </button>
@@ -56,4 +59,3 @@ const saveCroppedImage = () => {
   }
 }
 </script>
-

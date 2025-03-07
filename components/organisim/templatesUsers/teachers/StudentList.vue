@@ -4,9 +4,24 @@
     <UTable :columns="columns" :rows="students">
       <template #functions-data="{ row }">
         <div class="flex space-x-2">
-          <UButton color="gray" variant="ghost" icon="i-heroicons-pencil-square-20-solid" @click="handleEdit(row)" />
-          <UButton color="gray" variant="ghost" icon="i-heroicons-trash-20-solid" @click="handleDelete(row)" />
-          <UButton color="gray" variant="ghost" icon="i-heroicons-eye-20-solid" @click="handleView(row)" />
+          <Icon
+            :name="IconType.block"
+            :size="20"
+            color="text-blue-500"
+            @handleClick="handleEdit(row)"
+          />
+          <Icon
+            :name="IconType.content"
+            :size="20"
+            color="text-blue-500"
+            @handleClick="handleView(row)"
+          />
+          <Icon
+            :name="IconType.delete"
+            :size="20"
+            color="text-blue-500"
+            @handleClick="handleDelete(row)"
+          />
         </div>
       </template>
     </UTable>
@@ -15,6 +30,8 @@
 
 <script lang="ts" setup>
 import { ref } from 'vue';
+import Icon from '~/components/atomos/Icon.vue';
+import { IconType } from '~/data/iconsType';
 
 interface Students {
   id: number;
