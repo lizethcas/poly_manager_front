@@ -71,7 +71,7 @@ const handleAdd = () => {
 };
 
 const handleSave = async (formDataEvent: any) => {
-
+console.log(formDataEvent);
   const { formData, bulletPoints } = formDataEvent;
   
 
@@ -86,6 +86,7 @@ const handleSave = async (formDataEvent: any) => {
       cover: formData.cover,
       publish: formData.publish,
     };
+    console.log(requestData);
     await courseMutation.createCourseMutation.mutateAsync(requestData);
     success("Course created successfully");
 

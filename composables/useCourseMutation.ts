@@ -63,7 +63,7 @@ export const useCourseMutation = () => {
       id: number;
       formData: FormData;
     }) => {
-      return await axiosDashboard.patch(
+      const response = await axiosDashboard.patch(
         apiRoutes.course.update(id.toString()),
         formData,
         {
@@ -73,10 +73,26 @@ export const useCourseMutation = () => {
           },
         }
       );
+      return response.data;
     },
-    onSuccess: () => {
+    onSuccess: (data, variables) => {
       success("Course updated successfully");
-      queryClient.invalidateQueries({ queryKey: ["courses"] });
+      
+      // Force refetch all course-related queries
+      queryClient.resetQueries({ queryKey: ["courses"] });
+      
+      // If you have specific course queries with ID
+      queryClient.resetQueries({ queryKey: ["courses", variables.id] });
+      
+      // For any other potentially related queries
+      queryClient.resetQueries({ 
+        predicate: (query) => {
+          const queryKey = query.queryKey;
+          return Array.isArray(queryKey) && 
+                 (queryKey[0] === "courses" || 
+                  (queryKey.length > 1 && queryKey[1] === variables.id));
+        }
+      });
     },
     onError: (err) => {
       showError("Error updating course");
