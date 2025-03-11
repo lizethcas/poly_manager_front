@@ -337,6 +337,11 @@ const adminRoutes = [
         name: "Students",
         icon: "material-symbols:person-outline",
       },
+      {
+        path:"admin/agenda",
+        name:"Agenda",
+        icon: "material-symbols:person-outline",
+      }
     ],
   },
 ];
