@@ -27,9 +27,9 @@
       v-if="isOpen && filteredResults.length > 0"
       class="absolute mt-1 w-full bg-white border rounded-lg shadow-lg z-10 overflow-hidden"
     >
-      <div class="flex">
+      <div class="flex flex-col md:flex-row">
         <!-- Lista de resultados -->
-        <div class="w-1/2 border-r max-h-[70vh] overflow-y-auto p-2">
+        <div class="w-full md:w-1/2 border-r max-h-[70vh] overflow-y-auto p-2">
           <div
             v-for="(category, index) in filteredResults"
             :key="index"
@@ -54,7 +54,10 @@
         </div>
 
         <!-- Panel de detalles -->
-        <div v-if="selectedItem" class="w-1/2 p-4 max-h-[70vh] overflow-y-auto">
+        <div
+          v-if="selectedItem"
+          class="w-full md:w-1/2 p-4 max-h-[70vh] overflow-y-auto"
+        >
           <component
             :is="getDetailComponent(selectedCategory)"
             :item="selectedItem"
@@ -66,24 +69,31 @@
 </template>
 
 <script setup lang="ts">
-import { useRoute } from 'vue-router';
-import { ref, computed, onMounted, onUnmounted } from 'vue';
-import { useSearch } from '~/composables/useSearch';
-import CourseDetails from '~/components/Search/CourseDetails.vue';
-import ContentDetails from '~/components/Search/ContentDetails.vue';
-import ClassDetails from '~/components/Search/ClassDetails.vue';
+import { useRoute } from "vue-router";
+import { ref, computed, onMounted, onUnmounted } from "vue";
+import { useSearch } from "~/composables/useSearch";
+import CourseDetails from "~/components/Search/CourseDetails.vue";
+import ContentDetails from "~/components/Search/ContentDetails.vue";
+import ClassDetails from "~/components/Search/ClassDetails.vue";
+import NotesDetails from "~/components/Search/NotesDetails.vue";
+import ScenarioDetails from "~/components/Search/ScenarioDetails.vue"; 
 
 const searchRef: Ref<any> = ref(null);
 const selectedItem: Ref<any> = ref(null);
 const selectedCategory: Ref<string | null> = ref(null);
 const studentId: string = useRoute().params.studentId;
 // Use the search composable
-const { searchTerm, searchResults: apiResults, isLoading, updateSearch } = useSearch(studentId);
+const {
+  searchTerm,
+  searchResults: apiResults,
+  isLoading,
+  updateSearch,
+} = useSearch(studentId);
 console.log(apiResults);
 // Update query to use searchTerm from composable
 const query = computed({
   get: () => searchTerm.value,
-  set: (value) => updateSearch(value, studentId)
+  set: (value) => updateSearch(value, studentId),
 });
 
 const isOpen = computed(() => query.value.length > 0 && !isLoading.value);
@@ -92,45 +102,81 @@ const isOpen = computed(() => query.value.length > 0 && !isLoading.value);
 const filteredResults = computed(() => {
   if (!apiResults.value) return [];
   const data = apiResults.value;
+ 
   return [
     {
-      category: 'Cursos',
-      items: data.cursos.map(course => ({
+      category: "Cursos",
+      items: data.cursos.map((course) => ({
         id: course.id,
         title: course.name,
         description: course.description,
-        cover: course.cover
-      }))
+        cover: course.cover,
+      })),
     },
     {
-      category: 'Clases',
-      items: data.clases.map(clase => ({
+      category: "Clases",
+      items: data.clases.map((clase) => ({
         id: clase.id,
         title: clase.name,
         description: clase.description,
-        image: clase.cover
-      }))
+        image: clase.cover,
+      })),
     },
     {
-      category: 'Contenidos',
-      items: data.contenidos.map(content => ({
-        id: content.id,
-        title: content.tittle,
-        instructions: content.instructions,
-        image: content.image
-      }))
-    }
+      category: "Notas",
+      items: data.notas.map((nota) => ({
+        id: nota.id,
+        title: nota.title,
+        content: nota.content,
+        note_type: nota.note_type,
+        tags: nota.tags,
+        highlighted: nota.highlighted,
+        color: nota.color,
+        related_url: nota.related_url,
+        related_content: nota.related_content,
+        created_at: nota.created_at,
+        updated_at: nota.updated_at,
+      })),
+    },
+    {
+      category: "Escenarios",
+      items: data.escenarios.map((escenario) => ({
+        id: escenario.id,
+        name: escenario.name,
+        description: escenario.description,
+        cover: escenario.cover,
+        goals: escenario.goals,
+        objectives: escenario.objectives,
+        student_information: escenario.student_information,
+        role_polly: escenario.role_polly,
+        role_student: escenario.role_student,
+        conversation_starter: escenario.conversation_starter,
+        vocabulary: escenario.vocabulary,
+        key_expressions: escenario.key_expressions,
+        end_conversation: escenario.end_conversation,
+        end_conversation_saying: escenario.end_conversation_saying,
+        feedback: escenario.feedback,
+        scoring: escenario.scoring,
+        additional_info: escenario.additional_info,
+        created_at: escenario.created_at,
+        updated_at: escenario.updated_at,
+      })),
+    },
   ];
 });
 
 const getDetailComponent = (category) => {
   switch (category) {
-    case 'Cursos':
+    case "Cursos":
       return CourseDetails;
-    case 'Contenidos':
+    case "Contenidos":
       return ContentDetails;
-    case 'Clases':
+    case "Clases":
       return ClassDetails;
+    case "Notas":
+      return NotesDetails;
+    case "Escenarios":
+      return ScenarioDetails; // Asegúrate de tener un componente ScenarioDetails.vue
     default:
       return null;
   }
@@ -143,7 +189,7 @@ const selectItem = (item, category) => {
 
 const openLesson = () => {
   // Aquí puedes implementar la lógica para abrir la lección
-  console.log('Opening lesson:', selectedItem.value);
+  console.log("Opening lesson:", selectedItem.value);
 };
 
 const handleInput = () => {
@@ -165,13 +211,13 @@ const handleClickOutside = (event) => {
   }
 };
 
-onMounted(() => {
-  document.addEventListener('mousedown', handleClickOutside);
-});
+// onMounted(() => {
+//   document.addEventListener('mousedown', handleClickOutside);
+// });
 
-onUnmounted(() => {
-  document.removeEventListener('mousedown', handleClickOutside);
-});
+// onUnmounted(() => {
+//   document.removeEventListener('mousedown', handleClickOutside);
+// });
 </script>
 
 <style scoped>

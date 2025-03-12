@@ -1,50 +1,39 @@
 <template>
-  <div class="bg-white rounded-lg overflow-hidden shadow-lg">
-    <div class="relative">
-      <img
-        :src="item.cover || 'https://via.placeholder.com/400x200'"
-        alt="Class preview"
-        class="w-full h-48 object-cover"
-      />
-      <div class="absolute top-2 left-2 flex items-center space-x-2">
-        <span class="bg-green-500 text-white text-xs px-2 py-1 rounded"
-          >NEW</span
-        >
-        <span
-          class="bg-gray-800 bg-opacity-50 text-white text-xs px-2 py-1 rounded"
-          >3D AGO</span
-        >
-      </div>
-    </div>
-    <div class="p-4">
-      <h3 class="text-lg font-semibold mb-2 text-blue-400">{{ item.title }}</h3>
-      <p class="text-sm text-gray-600 mb-4">{{ item.description }}</p>
-      <div class="flex justify-between items-center">
-        <button
-          @click="openLesson"
-          class="bg-blue-500 text-white px-6 rounded-lg hover:bg-blue-600 transition-colors"
-        >
-          Open
-        </button>
-        <button class="text-gray-400 hover:text-gray-600">
-          <Icon name="more-horizontal" size="20" />
-        </button>
-      </div>
-    </div>
+  <div class="flex flex-col border-t-2 md:border-t-0 bg-white rounded-lg overflow-hidden p-2">
+    <img 
+      :src="item.cover || '/placeholder.svg?height=200&width=200'"
+      alt="Class preview"
+      class="w-full md:w-32 h-32 rounded-2xl object-cover mb-4"
+    />
+    <h3 class="text-blue-500 text-lg font-bold mb-2">{{ item.title || 'Level 3. Lesson 13' }}</h3>
+    <p class="text-gray-600 text-sm mb-4 leading-relaxed">
+      {{ item.description || 'The description of the lesson taken directly from the class description that we set at the lesson creation step. The search result should show any lesson from any course even if the student is not subscribed, the lesson should be indexed in any case.' }}
+    </p>
+    <button @click="openLesson" class="bg-blue-500 text-white px-8 py-1 rounded-lg  md:w-fit ">
+      Open
+    </button>
   </div>
 </template>
 
 <script setup>
 import { defineProps } from "vue";
-import Icon from "~/components/atomos/Icon.vue";
 
 const props = defineProps({
-  item: Object,
+  item: {
+    type: Object,
+    default: () => ({
+      cover: '/placeholder.svg?height=200&width=200',
+      title: 'Level 3. Lesson 13',
+      description: 'The description of the lesson taken directly from the class description that we set at the lesson creation step. The search result should show any lesson from any course even if the student is not subscribed, the lesson should be indexed in any case.'
+    })
+  }
 });
-
-console.log(props.item);
 
 const openLesson = () => {
   console.log("Opening course:", props.item);
 };
 </script>
+
+<style scoped>
+/* Puedes agregar estilos adicionales aquí si es necesario */
+</style>

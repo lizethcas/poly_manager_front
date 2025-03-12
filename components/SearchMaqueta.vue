@@ -92,21 +92,49 @@
 
           <!-- Card para Speaking Scenarios -->
           <div v-else-if="selectedCategory === 'Speaking Scenarios:'" class="p-4">
-            <div class="bg-gradient-to-r from-blue-50 to-indigo-50 rounded-lg p-4">
-              <div class="flex justify-between items-start mb-4">
-                <h3 class="text-lg font-semibold">{{ selectedItem }}</h3>
-                <span class="bg-blue-100 text-blue-800 text-xs px-2 py-1 rounded">Practice</span>
-              </div>
-              <p class="text-sm text-gray-600 mb-4">
-                Master common speaking patterns and improve your conversation skills.
-              </p>
-              <div class="flex space-x-2">
-                <button class="bg-blue-500 text-white px-4 py-2 rounded-md hover:bg-blue-600 transition-colors flex-1">
-                  Start Practice
-                </button>
-                <button class="border border-blue-500 text-blue-500 px-4 py-2 rounded-md hover:bg-blue-50 transition-colors">
-                  Preview
-                </button>
+            <div class="relative w-full h-full rounded-xl overflow-hidden aspect-[4/3]">
+              <!-- Imagen de fondo -->
+              <img 
+                src="https://s3-alpha-sig.figma.com/img/6f9b/4774/8a1347a33aab910106378d8208c38390?Expires=1742169600&Key-Pair-Id=APKAQ4GOSFWCW27IBOMQ&Signature=Bk1i4g77nnVwYJBovSosEzhu-Pt2q3OXAX1hbw2kHYfTaxJSPTYSeieT346HBYSFxD-eUWxPNB6ggrDaiNctJAIqg5HgqBVJ-jzLwk~tycmGQan9YUJVpezlEACeEBAmxAjsPLLv95tSo7kIWS7C2Kxp7LFz3y02zElDLacvQoD644Tn9dxCUbQLT-se7VTHIohixXBblnC4g1uDV8X6qtv7vyOT~qPaMXeX7FaebKIHO9Ptgth1CSEGaRs~eiWOFUQ3KKmWXiJH3ShtwQELkLjuEstICAPGD8IH9AZQV8eQRYDrPWhrdBwV0~IZQZIgoaPxkpg~yFWfTVtU7tcKPg__"
+                alt="Scenario preview"
+                class="w-full h-full object-cover"
+              />
+              
+              <!-- Overlay gradiente -->
+              <div class="absolute inset-0 bg-gradient-to-b from-black/30 via-black/50 to-black/80"></div>
+              
+              <!-- Contenido superpuesto -->
+              <div class="absolute inset-0 p-4 flex flex-col justify-between ">
+                <!-- Header -->
+                <div class="flex justify-between items-start">
+                  <div class="flex gap-2">
+                    <span class="bg-green-500 text-white text-xs px-2 py-1 rounded-md font-medium">
+                      NEW
+                    </span>
+                    <span class="bg-black/50 text-white text-xs px-2 py-1 rounded-md backdrop-blur-sm">
+                      3D AGO
+                    </span>
+                  </div>
+                </div>
+                
+                <!-- Footer content -->
+                <div >
+                  <h3 class="text-white text-sm font-semibold mb-1">
+                    {{ selectedItem }}
+                  </h3>
+                  <p class="text-white/90 text-sm mb-4">
+                    Practice a conversation with someone you meet for the first time
+                  </p>
+                  <div class="flex items-center justify-between">
+                    <button class="bg-white text-black px-6 py-2 rounded-md hover:bg-gray-100 transition-colors flex items-center gap-2">
+                      <Icon name="play" size="20" />
+                      start
+                    </button>
+                    <button class="text-white p-2 hover:bg-white/10 rounded-full transition-colors">
+                      <Icon name="more-horizontal" size="20" />
+                    </button>
+                  </div>
+                </div>
               </div>
             </div>
           </div>

@@ -229,11 +229,21 @@ if (coursesData) {
   });
 }
 
+
+const formatDate = (dateString: string) => {
+  const options: Intl.DateTimeFormatOptions = { year: 'numeric', month: 'long', day: 'numeric' };
+  return new Date(dateString).toLocaleDateString(undefined, options);
+};
+
 const handleStudents = async (courseId: number) => {
   currentCourseId.value = courseId;
   const courseStudents =
     studentClassesMap.value[courseId]?.students?.data?.students || [];
-  students.value = courseStudents;
+  // Formatear las fechas de los estudiantes
+  students.value = courseStudents.map(student => ({
+    ...student,
+    created_at: formatDate(student.created_at),
+  }));
   isStudentModalOpen.value = true;
 };
 

@@ -1,6 +1,6 @@
 <template>
   <div
-    class="bg-[#f5f5f5] p-4 rounded-md shadow-md my-4 flex flex-col gap-2 justify-center"
+    class="bg-[#f5f5f5] p-4 rounded-md shadow-md my-4 flex flex-col gap-2 justify-center relative"
     :class="{ 'min-h-96': !previewImage && !aiImage }"
   >
     <h2 class="text-xl text-fuscous-gray-600 font-bold text-center">
@@ -27,13 +27,27 @@
       <IaGeneratorModal v-model="showImageGenerator" source="chat" />
     </template>
 
-    <img
-      v-else-if="index === 0"
-      :src="previewImage || aiImage?.url || aiImage"
-      alt="Preview Image"
-      class="w-full h-96 object-cover cursor-pointer"
-      @click="handleImageClick"
-    />
+    <div v-else-if="index === 0" class="relative group">
+      <img
+        :src="previewImage || aiImage?.url || aiImage"
+        alt="Preview Image"
+        class="w-full h-96 object-cover cursor-pointer"
+      />
+      <!-- Capa de superposición con opacidad más sutil -->
+      <div class="absolute inset-0 bg-gray-600 bg-opacity-0 group-hover:bg-opacity-15 transition-opacity duration-300"></div>
+      <div class="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+        <button @click.stop="openCropper" class="bg-black text-black px-4 py-2 rounded-md mx-2 hover:bg-gray-100 shadow-md">
+          <Icon :name="IconType.crop"  :size="18" class="mr-2 text-white" />
+        </button>
+        <button @click.stop="clearPreview" class="bg-black text-black px-4 py-2 rounded-md mx-2 hover:bg-gray-100 shadow-md">
+          <Icon :name="IconType.delete"  :size="22" class="mr-2 text-white text-md" />
+        </button>
+        <button @click.stop="triggerFileInput" class="bg-black text-black px-4 py-2 rounded-md mx-2 hover:bg-gray-100 shadow-md"> 
+          <Icon :name="IconType.upload"  :size="18" class="mr-2 text-white" />
+        </button>
+        <input type="file" ref="fileInput" class="hidden" @change="handleFileChange" />
+      </div>
+    </div>
 
     <template v-if="index >= 1">
       <div class="flex flex-col gap-2 w-full">
@@ -89,9 +103,13 @@
   <div v-if="isCreating">
     <p>Creating scenario...</p>
   </div>
+
+  <!-- Cropper Modal -->
+  <CropperModal v-if="isCropperOpen" :isOpen="isCropperOpen" :img="previewImage" @close="closeCropper" @save="saveCroppedImage" />
 </template>
 
 <script setup lang="ts">
+import { ref, computed, reactive, watch } from 'vue';
 import { IconType } from "~/data/iconsType";
 import IconMolecule from "~/components/atomos/Icon.vue";
 import IaGeneratorModal from "../IA/IaGeneratorModal.vue";
@@ -102,6 +120,7 @@ import { useNotify } from "~/composables/useNotify";
 import { useMutation } from "@tanstack/vue-query";
 import { apiRoutes, post } from "~/services/routes.api";
 import { useRoute } from "vue-router";
+import CropperModal from '~/components/CropperModal.vue';
 
 defineProps<{
   selectedTask?: string;
@@ -131,6 +150,7 @@ const previewImage = ref("");
 const aiImage = computed(() => taskStore.getTask("img_gen"));
 const taskInstructions = computed(() => taskStore.getTask("instructions"));
 const showImageGenerator = ref(false);
+const isCropperOpen = ref(false);
 const formData = reactive({
   class_id: route.params.classId as number,
   cover: null as unknown as File | string,
@@ -197,6 +217,30 @@ const clearPreview = () => {
   previewImage.value = "";
   formData.cover = null as unknown as File | string;
   taskStore.addTask("img_gen", "");
+};
+
+const loadNewImage = () => {
+  clearPreview();
+  index.value = 0;
+};
+
+const cropImage = () => {
+  isCropperOpen.value = true;
+};
+
+const fileInput = ref<HTMLInputElement | null>(null);
+
+const triggerFileInput = () => {
+  fileInput.value?.click();
+};
+
+const handleFileChange = async (event: Event) => {
+  const target = event.target as HTMLInputElement;
+  if (target.files && target.files.length > 0) {
+    const file = target.files[0];
+    const preview = URL.createObjectURL(file);
+    await addNewImage({ file, preview });
+  }
 };
 
 // Add mutation for creating scenario
@@ -356,4 +400,25 @@ const handleImageClick = () => {
   // Reset index to 0 to show image selection options
   index.value = 0;
 };
+
+const openCropper = () => {
+  isCropperOpen.value = true;
+};
+
+const closeCropper = () => {
+  isCropperOpen.value = false;
+};
+
+const saveCroppedImage = (croppedImage: string) => {
+  previewImage.value = croppedImage;
+  formData.cover = croppedImage;
+  closeCropper();
+};
 </script>
+
+<style scoped>
+/* Añadir algunos estilos adicionales para asegurar que el hover funcione correctamente */
+.group:hover .opacity-0 {
+  opacity: 1 !important;
+}
+</style>

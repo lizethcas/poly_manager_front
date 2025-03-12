@@ -150,23 +150,29 @@
             placeholder="Mensaje..."
             rows="3"
             class="bg-white opacity-50 focus:outline-none rounded-lg"
-            :disabled="isLoading || !chatSocket || connectionError"
+            :class="{'input-expanded': activeButton === 'text', 'input-collapsed': activeButton === 'microphone'}"
           ></textarea>
           <div class="input-buttons">
             <button 
-              @click="sendMessage" 
-              :disabled="isLoading || !chatSocket || connectionError"
+              v-for="button in buttons" 
+              :key="button.type"
+              @click="handleButtonClick(button.type)"
+              class="action-button transition-all duration-300 ease-in-out"
+              :class="{
+                'active-button': activeButton === button.type,
+                'inactive-button': activeButton !== button.type,
+                'bg-gray-400': true,
+                'recording': isRecording && button.type === 'microphone',
+                'order-last': activeButton === button.type,
+                'order-first': activeButton !== button.type
+              }"
+              :disabled="isLoading || (button.type !== 'microphone' && !chatSocket)"
             >
-              {{ isLoading ? "Enviando..." : "Enviar" }}
-            </button>
-            <button
-              @click="toggleRecording"
-              :class="{ recording: isRecording }"
-              :disabled="isLoading || !chatSocket || connectionError"
-              type="button"
-            >
-              <i class="fas fa-microphone"></i>
-              {{ isRecording ? "Detener" : "Grabar" }}
+              <Icon 
+                :name="button.name" 
+                :size="activeButton === button.type ? button.size : '20'" 
+                :class="button.class"
+              />
             </button>
           </div>
         </div>
@@ -176,7 +182,7 @@
 </template>
 
 <script>
-// Importar la configuración de URLs
+import { ref } from 'vue';
 import { axiosDashboard } from "@/services/axios.config";
 
 export default {
@@ -198,106 +204,50 @@ export default {
       audioChunks: [],
       chatStarted: false,
       canEndConversation: false,
-      roomCode: null,  // Código único de la sala
-      isConnecting: false,  // Estado de conexión
-      connectionError: null,  // Error de conexión
+      activeButton: 'text', // Valor por defecto: botón de texto
+      buttons: [
+        {
+          name: "material-symbols:highlight-text-cursor",
+          size: "32",
+          class: "text-white",
+          type: "text"
+        },
+        {
+          name: "mdi:microphone",
+          size: "32",
+          class: "text-blue-500",
+          type: "microphone"
+        }
+      ]
     };
   },
   methods: {
-    startChat() {
-      this.chatStarted = true;
-      this.isConnecting = true;
-      this.connectionError = null;
-      
-      // Primero conectar al lobby para obtener un código de sala
-      this.connectToLobby();
+    // Método para manejar clicks en botones
+    handleButtonClick(type) {
+      if (type === 'microphone') {
+        this.toggleRecording();
+        this.setActiveButton('microphone');
+      } else if (type === 'text') {
+        if (this.isRecording) {
+          // Si estamos grabando, detener la grabación
+          this.toggleRecording();
+        }
+        this.setActiveButton('text');
+      }
     },
     
-    connectToLobby() {
-      // Usar el ID del escenario del prop, o 1 por defecto si no está disponible
-      const scenarioId = this.scenario?.id || 1;
-      
-      console.log(`Usando escenario ID: ${scenarioId}`);
-      
-      // Obtener la base URL correcta
-      const baseUrl =
-        process.env.NODE_ENV === "development"
-          ? "localhost:8000" // URL de desarrollo de Django
-          : "dploy-production.up.railway.app"; // URL de producción
-
-      const wsScheme =
-        window.location.protocol === "https:" ? "wss://" : "ws://";
-      
-      // Construir la URL del WebSocket para el lobby
-      const lobbyUrl = `${wsScheme}${baseUrl}/ws/chat/lobby/${scenarioId}/`;
-      
-      console.log("Conectando al lobby:", lobbyUrl);
-      
-      const lobbySocket = new WebSocket(lobbyUrl);
-      
-      lobbySocket.onopen = () => {
-        console.log("Conexión al lobby establecida");
-      };
-      
-      lobbySocket.onmessage = (e) => {
-        try {
-          console.log("Mensaje del lobby recibido:", e.data);
-          const data = JSON.parse(e.data);
-          
-          if (data.type === 'room_code') {
-            // Guardar el código de sala
-            this.roomCode = data.room_code;
-            console.log(`Código de sala recibido: ${this.roomCode}`);
-            
-            // Cerrar la conexión al lobby
-            lobbySocket.close();
-            
-            // Conectar a la sala de chat
-            this.connectWebSocket();
-          } else if (data.type === 'error') {
-            console.error("Error del lobby:", data.message);
-            this.connectionError = data.message;
-            this.isConnecting = false;
-          }
-        } catch (error) {
-          console.error("Error al procesar mensaje del lobby:", error);
-          this.connectionError = "Error al procesar mensaje del lobby";
-          this.isConnecting = false;
-        }
-      };
-      
-      lobbySocket.onclose = (e) => {
-        console.log("Conexión al lobby cerrada. Código:", e.code);
-        
-        // Si no tenemos un código de sala y no estamos conectando a la sala de chat,
-        // entonces hubo un error
-        if (!this.roomCode && !this.chatSocket) {
-          this.connectionError = `Error al conectar al lobby (código ${e.code})`;
-          this.isConnecting = false;
-          
-          // Si el código es 1006 (cierre anormal), intentar conectar directamente a la sala
-          if (e.code === 1006) {
-            console.log("Intentando conectar directamente a la sala...");
-            // Generar un código aleatorio para la sala
-            this.roomCode = Math.random().toString(36).substring(2, 10);
-            this.connectWebSocket();
-          }
-        }
-      };
-      
-      lobbySocket.onerror = (e) => {
-        console.error("Error en conexión al lobby:", e);
-        this.connectionError = "Error en conexión al lobby";
-        this.isConnecting = false;
-        
-        // Intentar conectar directamente a la sala
-        console.log("Intentando conectar directamente a la sala después de error...");
-        // Generar un código aleatorio para la sala
-        this.roomCode = Math.random().toString(36).substring(2, 10);
-        this.connectWebSocket();
-      };
+    // Método para establecer el botón activo
+    setActiveButton(type) {
+      this.activeButton = type;
     },
-
+    
+    // Método para obtener el icono del botón activo
+    getActiveButtonIcon() {
+      const button = this.buttons.find(b => b.type === this.activeButton);
+      return button ? button.name : null;
+    },
+    
+    // Los métodos existentes...
     connectWebSocket() {
       // Si ya tenemos una conexión activa, cerrarla
       if (this.chatSocket) {
@@ -464,21 +414,26 @@ export default {
 
       try {
         this.isLoading = true;
+        
+        // Si estamos en modo micrófono, volver al modo texto después de enviar
+        if (this.activeButton === 'microphone') {
+          this.setActiveButton('text');
+        }
 
-        // Agregar mensaje del usuario al historial
-        this.chatHistory.push(this.createMessageObject("user", this.userMessage));
+        // Resto de tu código actual...
+        this.chatHistory.push({
+          role: "user",
+          content: this.userMessage,
+        });
 
-        // Enviar mensaje a través del WebSocket
         this.chatSocket.send(
           JSON.stringify({
             message: this.userMessage,
           })
         );
 
-        // Limpiar el mensaje
         this.userMessage = "";
 
-        // Scroll al último mensaje
         this.$nextTick(() => {
           this.scrollToBottom();
         });
@@ -917,24 +872,14 @@ textarea {
   resize: none;
 }
 
-button {
-  padding: 10px 20px;
-  background-color: #1976d2;
-  color: white;
-  border: none;
-  border-radius: 4px;
-  cursor: pointer;
-}
+
 
 button:disabled {
   background-color: #ccc;
   cursor: not-allowed;
 }
 
-.input-buttons {
-  display: flex;
-  gap: 10px;
-}
+
 
 button.recording {
   background-color: #f44336;
@@ -1055,210 +1000,102 @@ button.recording {
   cursor: not-allowed;
 }
 
-/* Nuevos estilos */
-.connecting-overlay {
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background-color: rgba(0, 0, 0, 0.5);
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
-  z-index: 10;
-  color: white;
-}
-
-.connecting-spinner {
-  border: 4px solid rgba(255, 255, 255, 0.3);
+/* Añadir estilos para los botones interactivos */
+.action-button {
   border-radius: 50%;
-  border-top: 4px solid white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.3s ease;
   width: 40px;
   height: 40px;
-  animation: spin 1s linear infinite;
-  margin-bottom: 10px;
 }
 
-@keyframes spin {
-  0% { transform: rotate(0deg); }
-  100% { transform: rotate(360deg); }
+.active-button {
+  transform: translateX(10px) scale(1.2);
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  z-index: 2;
 }
 
-.error-message {
-  position: absolute;
-  top: 20px;
-  left: 50%;
-  transform: translateX(-50%);
-  background-color: #f44336;
-  color: white;
-  padding: 15px 20px;
-  border-radius: 4px;
+.inactive-button {
+  transform: translateX(-10px) scale(0.8);
+  opacity: 0.7;
+  z-index: 1;
+}
+
+.input-expanded {
+  width: 80%;
+  transition: all 0.3s ease;
+}
+
+.input-collapsed {
+  width: 60%;
+  transition: all 0.3s ease;
+}
+
+.input-buttons {
   display: flex;
-  flex-direction: column;
+  gap: 5px;
   align-items: center;
+}
+
+button.recording {
+  background-color: #f44336 !important;
+  animation: pulse 1.5s infinite;
+}
+
+@keyframes pulse {
+  0% {
+    opacity: 1;
+    transform: translateX(10px) scale(1.2);
+  }
+  50% {
+    opacity: 0.7;
+    transform: translateX(10px) scale(1.3);
+  }
+  100% {
+    opacity: 1;
+    transform: translateX(10px) scale(1.2);
+  }
+}
+
+/* Estilos modificados para los botones interactivos */
+.input-buttons {
+  display: flex;
+  justify-content: space-between;
+  width: 100px; 
+  position: relative;
+}
+
+.active-button {
+  transform: scale(1.2);
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
   z-index: 10;
 }
 
-.error-retry-button {
-  background-color: white;
-  color: #f44336;
-  margin-top: 10px;
-  padding: 5px 15px;
-  font-size: 0.9rem;
-}
-
-.room-code-display {
-  position: absolute;
-  top: 20px;
-  right: 20px;
-  background-color: rgba(255, 255, 255, 0.8);
-  padding: 8px 12px;
-  border-radius: 4px;
-  font-size: 0.9rem;
+.inactive-button {
+  transform: scale(0.8);
+  opacity: 0.7;
   z-index: 5;
 }
 
-.room-code {
-  font-weight: bold;
-  font-family: monospace;
-  background-color: #f0f0f0;
-  padding: 2px 5px;
-  border-radius: 3px;
+button.recording {
+  background-color: #f44336 !important;
+  animation: pulse 1.5s infinite;
 }
 
-.message-actions {
-  display: flex;
-  flex-direction: column;
-  gap: 0.5rem;
-  margin-top: 0.5rem;
-  align-items: center;
-}
-
-.action-buttons {
-  display: flex;
-  gap: 0.5rem;
-  flex-wrap: wrap;
-  justify-content: center;
-}
-
-.action-button {
-  background-color: rgba(255, 255, 255, 0.2);
-  backdrop-filter: blur(4px);
-  border: 1px solid rgba(255, 255, 255, 0.4);
-  color: #333;
-  padding: 0.25rem 0.75rem;
-  border-radius: 9999px;
-  font-size: 0.875rem;
-  transition: all 0.2s;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.action-button:hover {
-  background-color: rgba(255, 255, 255, 0.3);
-  border-color: rgba(255, 255, 255, 0.6);
-}
-
-.action-button:disabled {
-  opacity: 0.5;
-  cursor: not-allowed;
-}
-
-.play-button {
-  background-color: rgba(76, 175, 80, 0.2);
-  border-color: rgba(76, 175, 80, 0.4);
-}
-
-.play-button:hover {
-  background-color: rgba(76, 175, 80, 0.3);
-  border-color: rgba(76, 175, 80, 0.6);
-}
-
-.stop-button {
-  background-color: rgba(244, 67, 54, 0.2);
-  border-color: rgba(244, 67, 54, 0.4);
-}
-
-.stop-button:hover {
-  background-color: rgba(244, 67, 54, 0.3);
-  border-color: rgba(244, 67, 54, 0.6);
-}
-
-.audio-loading {
-  color: #666;
-  font-size: 0.875rem;
-  display: flex;
-  align-items: center;
-  gap: 0.25rem;
-}
-
-.translate-button {
-  background-color: rgba(25, 118, 210, 0.2);
-  border-color: rgba(25, 118, 210, 0.4);
-}
-
-.translate-button:hover {
-  background-color: rgba(25, 118, 210, 0.3);
-  border-color: rgba(25, 118, 210, 0.6);
-}
-
-.translate-button:disabled {
-  opacity: 0.5;
-  cursor: not-allowed;
-}
-
-.translation-loading {
-  color: #666;
-  font-size: 0.875rem;
-}
-
-.translation-container {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  margin-top: 0.75rem;
-  padding: 0.75rem;
-  background-color: rgba(0, 0, 0, 0.05);
-  border-radius: 0.5rem;
-  border-left: 3px solid #4a90e2;
-}
-
-.translation-text {
-  margin-bottom: 0.5rem;
-  font-style: italic;
-  color: #555;
-  font-size: 0.95em;
-  line-height: 1.4;
-  position: relative;
-  padding-left: 1.5rem;
-}
-
-.translation-text::before {
-  content: "🇪🇸";
-  position: absolute;
-  left: 0;
-  top: 0;
-}
-
-.hide-translation-button {
-  background-color: rgba(255, 255, 255, 0.2);
-  backdrop-filter: blur(4px);
-  border: 1px solid rgba(255, 255, 255, 0.4);
-  color: #333;
-  padding: 0.25rem 0.75rem;
-  border-radius: 9999px;
-  font-size: 0.875rem;
-  transition: all 0.2s;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.hide-translation-button:hover {
-  background-color: rgba(255, 255, 255, 0.3);
-  border-color: rgba(255, 255, 255, 0.6);
+@keyframes pulse {
+  0% {
+    opacity: 1;
+    transform: scale(1.2);
+  }
+  50% {
+    opacity: 0.7;
+    transform: scale(1.3);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1.2);
+  }
 }
 </style>
