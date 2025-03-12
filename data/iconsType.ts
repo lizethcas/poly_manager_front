@@ -47,5 +47,9 @@ export const IconType = {
   block: "material-symbols:block",
   content: "mdi:contact",
   delete:"material-symbols-light:delete",
+  microphone: "mdi:microphone",
+  text:"material-symbols:highlight-text-cursor",
+  crop:"material-symbols:crop",
+  upload:"material-symbols:upload",
 };
 

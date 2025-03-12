@@ -1,121 +1,265 @@
 <template>
-    <div class="calendar">
-      <div class="header">
-        <button @click="prevWeek">Anterior</button>
-        <h2>{{ weekRange }}</h2>
-        <button @click="nextWeek">Siguiente</button>
+  <div class="calendar-container bg-white rounded-lg shadow-sm border border-gray-200 max-w-6xl mx-auto">
+    <!-- Filtros de eventos con nuevo estilo -->
+    <div class="flex items-center justify-between p-4 border-b border-gray-200">
+      <div class="flex items-center space-x-3">
+        <label for="eventFilter" class="text-sm font-medium text-gray-600">Ver eventos:</label>
+        <div class="flex gap-2">
+          <button 
+            class="py-1 px-3 rounded-md text-sm focus:outline-none"
+            :class="activeFilter === 'all' ? 'bg-blue-500 text-white' : 'bg-gray-100 text-gray-700 hover:bg-gray-200'"
+            @click="setFilter('all')"
+          >
+            Todos los eventos
+          </button>
+          <button 
+            class="py-1 px-3 rounded-md text-sm focus:outline-none"
+            :class="activeFilter === 'registered' ? 'bg-blue-500 text-white' : 'bg-gray-100 text-gray-700 hover:bg-gray-200'"
+            @click="setFilter('registered')"
+          >
+            Mis eventos
+          </button>
+          <button 
+            class="py-1 px-3 rounded-md text-sm focus:outline-none"
+            :class="activeFilter === 'available' ? 'bg-blue-500 text-white' : 'bg-gray-100 text-gray-700 hover:bg-gray-200'"
+            @click="setFilter('available')"
+          >
+            Disponibles
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Header con navegación de semana -->
+    <div class="flex justify-between items-center p-4 border-b border-gray-200">
+      <div class="flex items-center space-x-3">
+        <button
+          @click="prevWeek"
+          class="p-2 rounded-full hover:bg-gray-100 transition-colors"
+        >
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            class="h-5 w-5 text-gray-500"
+            fill="none"
+            viewBox="0 0 24 24"
+            stroke="currentColor"
+          >
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              d="M15 19l-7-7 7-7"
+            />
+          </svg>
+        </button>
+        <h2 class="text-base font-medium text-gray-700">{{ weekRange }}</h2>
+        <button
+          @click="nextWeek"
+          class="p-2 rounded-full hover:bg-gray-100 transition-colors"
+        >
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            class="h-5 w-5 text-gray-500"
+            fill="none"
+            viewBox="0 0 24 24"
+            stroke="currentColor"
+          >
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              d="M9 5l7 7-7 7"
+            />
+          </svg>
+        </button>
+      </div>
+      <div class="text-xs text-gray-500 bg-gray-50 px-3 py-1 rounded">
+        GMT-05
+      </div>
+    </div>
+
+    <!-- Calendario principal -->
+    <div class="calendar-grid">
+      <!-- Columna de horas -->
+      <div class="time-labels bg-gray-50 border-r border-gray-200">
+        <div class="timezone h-12 flex items-center justify-center border-b border-gray-200 text-xs text-gray-500">
+          Zona horaria
+        </div>
+        <div 
+          v-for="hour in filteredHours" 
+          :key="hour"
+          class="time-slot h-16 flex items-start justify-end pr-2 text-xs text-gray-500 border-b border-gray-200"
+        >
+          <span class="mt-1">{{ hour }}:00</span>
+        </div>
       </div>
       
-      <!-- Filtros de eventos -->
-      <div class="event-filters">
-        <button 
-          class="filter-button" 
-          :class="{ active: activeFilter === 'all' }"
-          @click="setFilter('all')"
-        >
-          Todos los eventos
-        </button>
-        <button 
-          class="filter-button" 
-          :class="{ active: activeFilter === 'registered' }"
-          @click="setFilter('registered')"
-        >
-          Mis eventos
-        </button>
-        <button 
-          class="filter-button" 
-          :class="{ active: activeFilter === 'available' }"
-          @click="setFilter('available')"
-        >
-          Disponibles
-        </button>
-      </div>
-      
-      <div class="calendar-grid">
-        <!-- Columna de horas -->
-        <div class="time-labels">
-          <div class="timezone">GMT-05</div>
-          <div class="time-slot" v-for="hour in filteredHours" :key="hour">
-            {{ hour }}:00
+      <!-- Grid principal -->
+      <div class="main-grid w-full overflow-x-auto relative">
+        <!-- Encabezados de días -->
+        <div class="day-headers grid grid-cols-7 h-12 border-b border-gray-200">
+          <div 
+            v-for="(date, index) in weekDates" 
+            :key="index"
+            class="day-header flex flex-col items-center justify-center border-r border-gray-200 last:border-r-0"
+            :class="{ 'bg-blue-50': isToday(date) }"
+          >
+            <div class="day-name text-xs text-gray-500">{{ days[date.getDay()] }}</div>
+            <div class="day-number text-sm font-semibold text-gray-700">{{ date.getDate() }}</div>
           </div>
         </div>
         
-        <!-- Grid principal -->
-        <div class="main-grid">
-          <!-- Encabezados de días -->
-          <div class="day-headers">
-            <div class="day-header" v-for="(date, index) in weekDates" :key="index">
-              <div class="day-name">{{ days[date.getDay()] }}</div>
-              <div class="day-number">{{ date.getDate() }}</div>
-            </div>
-          </div>
-          
-          <!-- Celdas de horarios -->
-          <div class="time-grid">
-            <div class="time-row" v-for="hour in filteredHours" :key="hour">
+        <!-- Celdas de horarios -->
+        <div class="time-grid">
+          <div 
+            v-for="hour in filteredHours" 
+            :key="hour"
+            class="time-row grid grid-cols-7 h-16"
+          >
+            <div 
+              v-for="(date, index) in weekDates" 
+              :key="`${date}-${hour}`"
+              class="time-cell relative border-b border-r border-gray-200 last:border-r-0"
+              :class="{ 
+                'bg-blue-50/30': isToday(date), 
+                'bg-gray-50/70': hour >= 14 && hour <= 18,
+                'current-time-indicator': isCurrentTimeSlot(date, hour)
+              }"
+            >
+              <!-- Eventos en esta celda -->
               <div 
-                class="time-cell" 
-                v-for="(date, index) in weekDates" 
-                :key="`${date}-${hour}`"
-                :class="{ 'current-time': isCurrentTimeSlot(date, hour), 'current-day': isToday(date) }"
+                v-for="event in getEventsForTimeSlot(date, hour)" 
+                :key="event.id"
+                class="event absolute z-10 rounded-md shadow-sm p-1.5 overflow-hidden"
+                :style="calculateEventStyle(event)"
+                :class="{ 'available': event.available, 'registered': event.is_registered }"
+                @click="showEventDetails(event)"
               >
-                <!-- Eventos en esta celda -->
-                <div 
-                  v-for="event in getEventsForTimeSlot(date, hour)" 
-                  :key="event.id"
-                  class="event"
-                  :style="calculateEventStyle(event)"
-                  :class="{ 'available': event.available, 'registered': event.is_registered }"
-                  @click="showEventDetails(event)"
-                >
-                  <div class="event-title">{{ event.title }}</div>
-                  <div class="event-time">{{ formatTime(event.time) }} - {{ calculateEndTime(event) }}</div>
-                  <div v-if="event.is_registered" class="registered-badge">Inscrito</div>
+                <div class="event-title text-xs font-medium truncate">{{ event.title }}</div>
+                <div class="event-time text-[10px] text-white/90 truncate">{{ formatTime(event.time) }} - {{ calculateEndTime(event) }}</div>
+                <div class="event-spots text-[10px] truncate">
+                  {{ event.spots_available }}/{{ event.max_participants || event.capacity }} cupos
+                </div>
+                
+                <!-- Insignia de inscrito -->
+                <div v-if="event.is_registered" class="absolute top-1 right-1 bg-yellow-500 text-[9px] text-black font-medium px-1 rounded">
+                  Inscrito
                 </div>
               </div>
             </div>
           </div>
         </div>
       </div>
+    </div>
 
-      <!-- Modal de detalles del evento -->
-      <div v-if="selectedEvent" class="event-modal-overlay" @click="closeEventDetails">
-        <div class="event-modal" @click.stop>
-          <button class="close-button" @click="closeEventDetails">&times;</button>
-          <h3>{{ selectedEvent.title }}</h3>
-          <div v-if="selectedEvent.is_registered" class="registered-tag">Inscrito</div>
-          <div class="event-details">
-            <p><strong>Fecha:</strong> {{ formatDate(selectedEvent.date) }}</p>
-            <p><strong>Horario:</strong> {{ formatTime(selectedEvent.time) }} - {{ calculateEndTime(selectedEvent) }}</p>
-            <p><strong>Duración:</strong> {{ selectedEvent.duration }} minutos</p>
-            <p><strong>Categoría:</strong> {{ getCategoryName(selectedEvent.category) }}</p>
-            <p><strong>Estado:</strong> {{ selectedEvent.available ? 'Disponible' : 'No disponible' }}</p>
-            <p><strong>Cupos disponibles:</strong> {{ selectedEvent.spots_available }}</p>
-            <p v-if="selectedEvent.description"><strong>Descripción:</strong> {{ selectedEvent.description }}</p>
-            
-            <!-- Botón de inscripción -->
-            <button 
-              v-if="!selectedEvent.is_registered"
-              class="register-button"
-              @click="registerForEvent(selectedEvent)"
-              :disabled="!selectedEvent.available || selectedEvent.spots_available <= 0"
-            >
-              {{ selectedEvent.spots_available <= 0 ? 'Sin cupos disponibles' : 'Inscribirse' }}
-            </button>
-            
-            <!-- Botón para cancelar inscripción -->
-            <button 
-              v-if="selectedEvent.is_registered"
-              class="cancel-button"
-              @click="cancelRegistration(selectedEvent)"
-            >
-              Cancelar inscripción
-            </button>
+    <!-- Modal de detalles del evento -->
+    <div v-if="selectedEvent" class="event-modal-backdrop" @click="closeEventDetails">
+      <div class="bg-white rounded-lg shadow-xl max-w-md w-full max-h-[90vh] overflow-y-auto" @click.stop>
+        <!-- Header del modal -->
+        <div class="p-4 border-b flex justify-between items-center">
+          <h3 class="text-lg font-medium text-gray-900">Detalles del evento</h3>
+          <button @click="closeEventDetails" class="text-gray-400 hover:text-gray-500">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+              <path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd" />
+            </svg>
+          </button>
+        </div>
+        
+        <!-- Contenido del modal -->
+        <div class="p-4 space-y-4">
+          <!-- Título y categoría -->
+          <div>
+            <h2 class="text-xl font-bold text-gray-800">{{ selectedEvent.title }}</h2>
+            <div class="mt-1 inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium" 
+              :style="{ backgroundColor: getCategoryLight(selectedEvent.category), color: getCategoryText(selectedEvent.category) }">
+              {{ getCategoryName(selectedEvent.category) }}
+            </div>
+            <div v-if="selectedEvent.is_registered" class="mt-1 ml-2 inline-flex items-center px-2.5 py-0.5 rounded-full bg-purple-100 text-purple-800 text-xs font-medium">
+              Inscrito
+            </div>
           </div>
+          
+          <!-- Fecha y hora -->
+          <div class="flex items-start space-x-3">
+            <svg class="h-5 w-5 text-gray-400 mt-0.5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+              <path fill-rule="evenodd" d="M6 2a1 1 0 00-1 1v1H4a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V6a2 2 0 00-2-2h-1V3a1 1 0 10-2 0v1H7V3a1 1 0 00-1-1zm0 5a1 1 0 000 2h8a1 1 0 100-2H6z" clip-rule="evenodd" />
+            </svg>
+            <div>
+              <p class="text-sm font-medium text-gray-900">
+                {{ formatDate(selectedEvent.date) }}
+              </p>
+              <p class="text-sm text-gray-500">
+                {{ formatTime(selectedEvent.time) }} - {{ calculateEndTime(selectedEvent) }} 
+                ({{ selectedEvent.duration }} minutos)
+              </p>
+            </div>
+          </div>
+          
+          <!-- Cupos -->
+          <div class="flex items-start space-x-3">
+            <svg class="h-5 w-5 text-gray-400 mt-0.5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+              <path d="M13 6a3 3 0 11-6 0 3 3 0 016 0zM18 8a2 2 0 11-4 0 2 2 0 014 0zM14 15a4 4 0 00-8 0v3h8v-3zM6 8a2 2 0 11-4 0 2 2 0 014 0zM16 18v-3a5.972 5.972 0 00-.75-2.906A3.005 3.005 0 0119 15v3h-3zM4.75 12.094A5.973 5.973 0 004 15v3H1v-3a3 3 0 013.75-2.906z" />
+            </svg>
+            <div>
+              <p class="text-sm font-medium text-gray-900">
+                {{ selectedEvent.spots_available }}/{{ selectedEvent.max_participants || selectedEvent.capacity }} cupos disponibles
+              </p>
+              <div class="w-full bg-gray-200 rounded-full h-2 mt-1">
+                <div class="bg-blue-500 h-2 rounded-full" 
+                  :style="{width: `${(1 - (selectedEvent.spots_available / (selectedEvent.max_participants || selectedEvent.capacity))) * 100}%`}"></div>
+              </div>
+            </div>
+          </div>
+          
+          <!-- Descripción -->
+          <div class="flex items-start space-x-3">
+            <svg class="h-5 w-5 text-gray-400 mt-0.5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+              <path fill-rule="evenodd" d="M4 4a2 2 0 012-2h4.586A2 2 0 0112 2.586L15.414 6A2 2 0 0116 7.414V16a2 2 0 01-2 2H6a2 2 0 01-2-2V4zm2 6a1 1 0 011-1h6a1 1 0 110 2H7a1 1 0 01-1-1zm1 3a1 1 0 100 2h6a1 1 0 100-2H7z" clip-rule="evenodd" />
+            </svg>
+            <div>
+              <p class="text-sm font-medium text-gray-900">Descripción</p>
+              <p class="text-sm text-gray-600 mt-1">{{ selectedEvent.description || 'Sin descripción' }}</p>
+            </div>
+          </div>
+          
+          <!-- Status -->
+          <div class="flex items-start space-x-3">
+            <svg class="h-5 w-5 text-gray-400 mt-0.5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+              <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clip-rule="evenodd" />
+            </svg>
+            <div>
+              <p class="text-sm font-medium text-gray-900">Estado</p>
+              <div class="mt-1 inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium" 
+                :class="selectedEvent.available ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'">
+                {{ selectedEvent.available ? 'Disponible' : 'No disponible' }}
+              </div>
+            </div>
+          </div>
+        </div>
+        
+        <!-- Footer del modal -->
+        <div class="p-4 border-t flex justify-end space-x-2">
+          <button @click="closeEventDetails" 
+            class="px-4 py-2 border border-gray-300 rounded-md text-sm font-medium text-gray-700 hover:bg-gray-50">
+            Cerrar
+          </button>
+          <button 
+            v-if="!selectedEvent.is_registered && selectedEvent.available && selectedEvent.spots_available > 0"
+            @click="registerForEvent(selectedEvent)"
+            class="px-4 py-2 bg-blue-500 rounded-md text-sm font-medium text-white hover:bg-blue-600">
+            Inscribirme
+          </button>
+          <button 
+            v-if="selectedEvent.is_registered"
+            @click="cancelRegistration(selectedEvent)"
+            class="px-4 py-2 bg-red-500 rounded-md text-sm font-medium text-white hover:bg-red-600">
+            Cancelar inscripción
+          </button>
         </div>
       </div>
     </div>
-  </template>
+  </div>
+</template>
   
   <script setup lang="ts">
   import { ref, computed, onMounted } from 'vue';
@@ -643,345 +787,123 @@
       showAlert('Error', `Error al cancelar inscripción: ${error.message || 'Error desconocido'}`, 'error');
     }
   };
+
+  // Funciones auxiliares para estilos
+const getCategoryText = (category) => {
+  const colors = {
+    tutoring: '#2e7d32', // Verde oscuro
+    meeting: '#1565c0', // Azul oscuro
+    workshop: '#e65100', // Naranja oscuro
+    webinar: '#6a1b9a', // Púrpura oscuro
+    other: '#455a64', // Gris oscuro
+  };
+  return colors[category] || '#455a64';
+};
+
+const getCategoryLight = (category) => {
+  const colors = {
+    tutoring: '#e8f5e9', // Verde claro
+    meeting: '#e3f2fd', // Azul claro
+    workshop: '#fff3e0', // Naranja claro
+    webinar: '#f3e5f5', // Púrpura claro
+    other: '#eceff1', // Gris claro
+  };
+  return colors[category] || '#eceff1';
+};
   
   // Cargar eventos al montar el componente
   onMounted(() => {
     loadEvents();
   });
   </script>
-  
-  <style scoped>
-  .calendar {
-    display: flex;
-    flex-direction: column;
-    gap: 1rem;
-    padding: 1rem;
-    background: #fff;
-    color: #000;
-  }
-  
-  .header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 0.5rem;
-  }
-  
-  .header button {
-    padding: 0.5rem 1rem;
-    background: #333;
-    color: white;
-    border: none;
-    border-radius: 4px;
-    cursor: pointer;
-  }
-  
+
+<style scoped>
+
+.event-modal-backdrop {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+}
+.calendar-container {
+  background: white;
+  color: #000;
+}
+
+.calendar-grid {
+  display: grid;
+  grid-template-columns: 80px 1fr;
+  gap: 0;
+  background-color: white;
+}
+
+.time-labels {
+  background: #f9fafb;
+}
+
+.main-grid {
+  overflow-x: auto;
+  overflow-y: hidden;
+}
+
+.time-grid {
+  min-width: 100%;
+}
+
+.time-cell {
+  position: relative;
+}
+
+/* Línea para la hora actual */
+.current-time-indicator::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 2px;
+  background-color: #ef4444;
+  z-index: 5;
+}
+
+/* Estilos para los eventos */
+.event {
+  width: calc(100% - 6px);
+  left: 3px;
+  color: white;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.event:hover {
+  transform: scale(1.02);
+  box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+  z-index: 20;
+}
+
+.event.available {
+  opacity: 1;
+}
+
+.event:not(.available) {
+  opacity: 0.7;
+}
+
+.event.registered {
+  box-shadow: 0 0 0 2px #fde047;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
   .calendar-grid {
-    display: grid;
-    grid-template-columns: 80px 1fr;
-    gap: 1px;
-    border: 1px solid #333;
+    grid-template-columns: 60px 1fr;
   }
-  
-  .time-labels {
-    background: #f0f0f0;
-  }
-  
-  .timezone {
-    height: 50px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    border-bottom: 1px solid #333;
-    font-size: 0.8rem;
-  }
-  
-  .time-slot {
-    height: 60px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    border-bottom: 1px solid #333;
-    font-size: 0.9rem;
-  }
-  
-  .main-grid {
-    display: flex;
-    flex-direction: column;
-  }
-  
-  .day-headers {
-    display: grid;
-    grid-template-columns: repeat(7, 1fr);
-    height: 50px;
-    border-bottom: 1px solid #333;
-  }
-  
-  .day-header {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    border-left: 1px solid #333;
-    padding: 0.5rem;
-  }
-  
-  .day-name {
-    font-size: 0.8rem;
-    color: #888;
-  }
-  
-  .day-number {
-    font-size: 1.2rem;
-    font-weight: bold;
-  }
-  
-  .time-grid {
-    display: flex;
-    flex-direction: column;
-  }
-  
-  .time-row {
-    display: grid;
-    grid-template-columns: repeat(7, 1fr);
-    height: 60px;
-  }
-  
-  .time-cell {
-    border: 1px solid #333;
-    position: relative;
-  }
-  
-  .current-time {
-    background-color: rgba(76, 175, 80, 0.1);
-  }
-  
-  .current-day {
-    background-color: rgba(173, 216, 230, 0.5);
-  }
-  
-  /* Estilos para los eventos */
-  .event {
-    position: absolute;
-    width: 95%;
-    color: white;
-    border-radius: 4px;
-    padding: 4px;
-    overflow: hidden;
-    z-index: 10;
-    cursor: pointer;
-    font-size: 0.8rem;
-  }
-  
-  .event.available {
-    opacity: 1;
-  }
-  
-  .event:not(.available) {
-    opacity: 0.7;
-  }
-  
-  .event-title {
-    font-weight: bold;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-  }
-  
-  .event-time {
-    font-size: 0.7rem;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-  }
-  
-  /* Responsive */
-  @media (max-width: 768px) {
-    .calendar-grid {
-      grid-template-columns: 60px 1fr;
-    }
-    
-    .time-slot {
-      font-size: 0.8rem;
-    }
-    
-    .day-name {
-      font-size: 0.7rem;
-    }
-    
-    .day-number {
-      font-size: 1rem;
-    }
-    
-    .event {
-      font-size: 0.7rem;
-    }
-    
-    .event-time {
-      font-size: 0.6rem;
-    }
-  }
-
-  /* Estilos para el modal */
-  .event-modal-overlay {
-    position: fixed;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    background-color: rgba(0, 0, 0, 0.5);
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    z-index: 1000;
-  }
-
-  .event-modal {
-    background: white;
-    padding: 2rem;
-    border-radius: 8px;
-    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-    max-width: 500px;
-    width: 90%;
-    position: relative;
-  }
-
-  .close-button {
-    position: absolute;
-    top: 10px;
-    right: 10px;
-    background: none;
-    border: none;
-    font-size: 24px;
-    cursor: pointer;
-    color: #666;
-  }
-
-  .close-button:hover {
-    color: #333;
-  }
-
-  .event-details {
-    margin-top: 1rem;
-  }
-
-  .event-details p {
-    margin: 0.5rem 0;
-  }
-
-  .event {
-    cursor: pointer;
-    transition: transform 0.2s, box-shadow 0.2s;
-  }
-
-  .event:hover {
-    transform: scale(1.02);
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
-  }
-
-  /* Estilos para el botón de inscripción */
-  .register-button {
-    margin-top: 1rem;
-    padding: 0.8rem 1.5rem;
-    background-color: #4CAF50;
-    color: white;
-    border: none;
-    border-radius: 4px;
-    cursor: pointer;
-    font-size: 1rem;
-    width: 100%;
-    transition: background-color 0.2s;
-  }
-
-  .register-button:hover:not(:disabled) {
-    background-color: #45a049;
-  }
-
-  .register-button:disabled {
-    background-color: #cccccc;
-    cursor: not-allowed;
-  }
-
-  /* Estilos para el tag de inscripción registrado */
-  .registered-tag {
-    background-color: #4CAF50;
-    color: white;
-    padding: 4px 8px;
-    border-radius: 4px;
-    margin-bottom: 1rem;
-  }
-
-  /* Estilos para el botón de cancelación */
-  .cancel-button {
-    margin-top: 1rem;
-    padding: 0.8rem 1.5rem;
-    background-color: #f44336;
-    color: white;
-    border: none;
-    border-radius: 4px;
-    cursor: pointer;
-    font-size: 1rem;
-    width: 100%;
-    transition: background-color 0.2s;
-  }
-
-  .cancel-button:hover {
-    background-color: #d32f2f;
-  }
-
-  /* Estilos para eventos registrados */
-  .event.registered {
-    position: relative;
-    box-shadow: 0 0 8px rgba(255, 193, 7, 0.8);
-  }
-
-  .registered-badge {
-    position: absolute;
-    top: 2px;
-    right: 2px;
-    background-color: #FFC107;
-    color: #000;
-    font-size: 0.6rem;
-    padding: 1px 4px;
-    border-radius: 3px;
-    font-weight: bold;
-  }
-
-  .registered-tag {
-    display: inline-block;
-    background-color: #8E24AA;
-    color: white;
-    padding: 4px 8px;
-    border-radius: 4px;
-    font-size: 0.8rem;
-    margin-top: -10px;
-    margin-bottom: 10px;
-  }
-
-  /* Filtros para eventos */
-  .event-filters {
-    display: flex;
-    gap: 10px;
-    margin-bottom: 10px;
-    flex-wrap: wrap;
-  }
-
-  .filter-button {
-    padding: 5px 10px;
-    border: 1px solid #ccc;
-    border-radius: 4px;
-    background-color: #f5f5f5;
-    cursor: pointer;
-    font-size: 0.9rem;
-  }
-
-  .filter-button.active {
-    background-color: #4CAF50;
-    color: white;
-    border-color: #4CAF50;
-  }
-
-  .filter-button:hover:not(.active) {
-    background-color: #e0e0e0;
-  }
-  </style>
+}
+</style>

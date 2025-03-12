@@ -88,19 +88,29 @@
             placeholder="Message..."
             rows="3"
             class="bg-white opacity-50 focus:outline-none rounded-lg"
+            :class="{'input-expanded': activeButton === 'text', 'input-collapsed': activeButton === 'microphone'}"
           ></textarea>
           <div class="input-buttons">
-            <button @click="sendMessage" :disabled="isLoading || !chatSocket">
-              {{ isLoading ? "Enviando..." : "Enviar" }}
-            </button>
-            <button
-              @click="toggleRecording"
-              :class="{ recording: isRecording }"
-              :disabled="isLoading"
-              type="button"
+            <button 
+              v-for="button in buttons" 
+              :key="button.type"
+              @click="handleButtonClick(button.type)"
+              class="action-button transition-all duration-300 ease-in-out"
+              :class="{
+                'active-button': activeButton === button.type,
+                'inactive-button': activeButton !== button.type,
+                'bg-gray-400': true,
+                'recording': isRecording && button.type === 'microphone',
+                'order-last': activeButton === button.type,
+                'order-first': activeButton !== button.type
+              }"
+              :disabled="isLoading || (button.type !== 'microphone' && !chatSocket)"
             >
-              <i class="fas fa-microphone"></i>
-              {{ isRecording ? "Detener" : "Grabar" }}
+              <Icon 
+                :name="button.name" 
+                :size="activeButton === button.type ? button.size : '20'" 
+                :class="button.class"
+              />
             </button>
           </div>
         </div>
@@ -110,7 +120,7 @@
 </template>
 
 <script>
-// Importar la configuración de URLs
+import { ref } from 'vue';
 import { axiosDashboard } from "@/services/axios.config";
 
 export default {
@@ -132,9 +142,50 @@ export default {
       audioChunks: [],
       chatStarted: false,
       canEndConversation: false,
+      activeButton: 'text', // Valor por defecto: botón de texto
+      buttons: [
+        {
+          name: "material-symbols:highlight-text-cursor",
+          size: "32",
+          class: "text-white",
+          type: "text"
+        },
+        {
+          name: "mdi:microphone",
+          size: "32",
+          class: "text-blue-500",
+          type: "microphone"
+        }
+      ]
     };
   },
   methods: {
+    // Método para manejar clicks en botones
+    handleButtonClick(type) {
+      if (type === 'microphone') {
+        this.toggleRecording();
+        this.setActiveButton('microphone');
+      } else if (type === 'text') {
+        if (this.isRecording) {
+          // Si estamos grabando, detener la grabación
+          this.toggleRecording();
+        }
+        this.setActiveButton('text');
+      }
+    },
+    
+    // Método para establecer el botón activo
+    setActiveButton(type) {
+      this.activeButton = type;
+    },
+    
+    // Método para obtener el icono del botón activo
+    getActiveButtonIcon() {
+      const button = this.buttons.find(b => b.type === this.activeButton);
+      return button ? button.name : null;
+    },
+    
+    // Los métodos existentes...
     connectWebSocket() {
       const roomName = "lobby";
       const scenarioId = this.scenario.id;
@@ -192,24 +243,26 @@ export default {
 
       try {
         this.isLoading = true;
+        
+        // Si estamos en modo micrófono, volver al modo texto después de enviar
+        if (this.activeButton === 'microphone') {
+          this.setActiveButton('text');
+        }
 
-        // Agregar mensaje del usuario al historial
+        // Resto de tu código actual...
         this.chatHistory.push({
           role: "user",
           content: this.userMessage,
         });
 
-        // Enviar mensaje a través del WebSocket
         this.chatSocket.send(
           JSON.stringify({
             message: this.userMessage,
           })
         );
 
-        // Limpiar el mensaje
         this.userMessage = "";
 
-        // Scroll al último mensaje
         this.$nextTick(() => {
           this.scrollToBottom();
         });
@@ -418,23 +471,13 @@ textarea {
   resize: none;
 }
 
-button {
-  padding: 10px 20px;
-  background-color: #1976d2;
-  color: white;
-  border: none;
-  border-radius: 4px;
-  cursor: pointer;
-}
+
 
 button:disabled {
   background-color: #ccc;
 }
 
-.input-buttons {
-  display: flex;
-  gap: 10px;
-}
+
 
 button.recording {
   background-color: #f44336;
@@ -553,5 +596,104 @@ button.recording {
 .message-control-button:disabled {
   opacity: 0.5;
   cursor: not-allowed;
+}
+
+/* Añadir estilos para los botones interactivos */
+.action-button {
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.3s ease;
+  width: 40px;
+  height: 40px;
+}
+
+.active-button {
+  transform: translateX(10px) scale(1.2);
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  z-index: 2;
+}
+
+.inactive-button {
+  transform: translateX(-10px) scale(0.8);
+  opacity: 0.7;
+  z-index: 1;
+}
+
+.input-expanded {
+  width: 80%;
+  transition: all 0.3s ease;
+}
+
+.input-collapsed {
+  width: 60%;
+  transition: all 0.3s ease;
+}
+
+.input-buttons {
+  display: flex;
+  gap: 5px;
+  align-items: center;
+}
+
+button.recording {
+  background-color: #f44336 !important;
+  animation: pulse 1.5s infinite;
+}
+
+@keyframes pulse {
+  0% {
+    opacity: 1;
+    transform: translateX(10px) scale(1.2);
+  }
+  50% {
+    opacity: 0.7;
+    transform: translateX(10px) scale(1.3);
+  }
+  100% {
+    opacity: 1;
+    transform: translateX(10px) scale(1.2);
+  }
+}
+
+/* Estilos modificados para los botones interactivos */
+.input-buttons {
+  display: flex;
+  justify-content: space-between;
+  width: 100px; 
+  position: relative;
+}
+
+.active-button {
+  transform: scale(1.2);
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  z-index: 10;
+}
+
+.inactive-button {
+  transform: scale(0.8);
+  opacity: 0.7;
+  z-index: 5;
+}
+
+button.recording {
+  background-color: #f44336 !important;
+  animation: pulse 1.5s infinite;
+}
+
+@keyframes pulse {
+  0% {
+    opacity: 1;
+    transform: scale(1.2);
+  }
+  50% {
+    opacity: 0.7;
+    transform: scale(1.3);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1.2);
+  }
 }
 </style>

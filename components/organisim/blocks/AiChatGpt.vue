@@ -33,12 +33,18 @@
         alt="Preview Image"
         class="w-full h-96 object-cover cursor-pointer"
       />
-      <!-- Capa de superposición con opacidad reducida -->
-      <div class="absolute inset-0 bg-opacity-0 group-hover:bg-opacity-30 transition-opacity duration-300"></div>
+      <!-- Capa de superposición con opacidad más sutil -->
+      <div class="absolute inset-0 bg-gray-600 bg-opacity-0 group-hover:bg-opacity-15 transition-opacity duration-300"></div>
       <div class="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-        <button @click.stop="openCropper" class="bg-white text-black px-4 py-2 rounded-md mx-2 hover:bg-gray-100">Crop</button>
-        <button @click.stop="clearPreview" class="bg-white text-black px-4 py-2 rounded-md mx-2 hover:bg-gray-100">Eliminar</button>
-        <button @click.stop="triggerFileInput" class="bg-white text-black px-4 py-2 rounded-md mx-2 hover:bg-gray-100">Cargar Nueva</button>
+        <button @click.stop="openCropper" class="bg-black text-black px-4 py-2 rounded-md mx-2 hover:bg-gray-100 shadow-md">
+          <Icon :name="IconType.crop"  :size="18" class="mr-2 text-white" />
+        </button>
+        <button @click.stop="clearPreview" class="bg-black text-black px-4 py-2 rounded-md mx-2 hover:bg-gray-100 shadow-md">
+          <Icon :name="IconType.delete"  :size="22" class="mr-2 text-white text-md" />
+        </button>
+        <button @click.stop="triggerFileInput" class="bg-black text-black px-4 py-2 rounded-md mx-2 hover:bg-gray-100 shadow-md"> 
+          <Icon :name="IconType.upload"  :size="18" class="mr-2 text-white" />
+        </button>
         <input type="file" ref="fileInput" class="hidden" @change="handleFileChange" />
       </div>
     </div>
