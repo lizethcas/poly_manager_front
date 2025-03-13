@@ -71,7 +71,7 @@
             </svg>
             <span class="text-gray-600">completed</span>
           </div>
-          <button @click="showClassDescription(classItem, index)">
+          <button @click="showClassDescription(classItem, index, classItem.course_id)">
             start lesson
           </button>
         </div>
@@ -88,16 +88,16 @@
   </div>
   <ClassDescription
     v-if="isDescriptionVisible"
-    :class-item="selectedClass"
-    :is-open="isDescriptionVisible"
-    @close="isDescriptionVisible = false"
     :name="selectedClass.name"
     :description="selectedClass.description"
-    :bullet-points="selectedClass.bullet_points"
+    :bulletPoints="selectedClass.bullet_points"
+    :unit="selectedClass.unit"
     :cover="selectedClass.cover"
-    :course-id="selectedClass.course_id"
-    :id="selectedClass.id"
-    text-button="Start lesson"
+    :courseId="Number(selectedClass.course_id)"
+    :id="Number(selectedClass.id || selectedClass.class_id)"
+    :isOpen="isDescriptionVisible"
+    :textButton="'Start lesson'"
+    @close="isDescriptionVisible = false"
     @handleClick="handleClick"
   />
 </template>
@@ -107,22 +107,32 @@
 import { useRoute } from "#imports";
 import ClassDescription from "./ClassDescription.vue";
 import { useClassesQuery } from "~/composables/useClassesQuery";
-import { computed } from "vue";
+import { ref } from "vue";
+
+interface ClassItem {
+  name: string;
+  description: string;
+  bullet_points: string[];
+  cover: string;
+  course_id: number;
+  id: number;
+  class_id: number;
+  unit?: number;
+}
+
 const route = useRoute();
 const courseId = route.params.courseid;
-const selectedClass = ref({});
+const selectedClass = ref<ClassItem>({} as ClassItem);
 const { data: classes, isPending, error } = useClassesQuery(courseId as string);
-
-
-
+console.log(selectedClass);
 const isDescriptionVisible = ref(false);
 
-const handleClick = (classId: string, id: string) => {
-  navigateTo(`/student-${route.params.studentId}/course-${courseId}/class-${classId}`);
-  console.log(classId, id);
+const handleClick = (courseId: number, id: number) => {
+  navigateTo(`/student-${route.params.studentId}/course-${courseId}/class-${id}`);
+  console.log(courseId, id);
 };
 
-const showClassDescription = (classItem: any, index: number) => {
+const showClassDescription = (classItem: any, index: number, courseId: number) => {
   selectedClass.value = {
     ...classItem,
     unit: index,

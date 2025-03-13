@@ -69,7 +69,6 @@
             class="bg-[#78CBB6] text-white text-center px-6 py-3 rounded-lg flex-1"
             role="button"
             aria-label="Start the lesson"
-
           >
             {{ textButton }}
           </button>
@@ -88,13 +87,11 @@
   </div>
 </template>
 <script setup lang="ts">
-import { routes } from "~/data/routes";
-
 interface ClassDescriptionProps {
   name: string;
   description: string;
   bulletPoints: string[];
-  unit?: string;
+  unit?: number;
   cover: string;
   courseId: number;
   id: number;
