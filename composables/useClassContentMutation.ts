@@ -67,9 +67,11 @@ export function useClassContentMutation() {
       return { previousContents };
     },
     onError: (error, variables, context) => {
+      console.error('Error creating content:', error);
       queryClient.setQueryData(['class-contents', route.params.classId], context?.previousContents);
     },
     onSettled: () => {
+     
       queryClient.invalidateQueries(['class-contents', route.params.classId]);
     },
     onSuccess: (data) => {
