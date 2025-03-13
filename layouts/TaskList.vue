@@ -35,6 +35,7 @@
             class="cursor-pointer rounded-lg"
           >
             <IconMolecule
+              v-if="!isStudent"
               :name="IconType.menuTasks"
               :size="18"
               :color="'text-tarawera-700'"
@@ -153,6 +154,7 @@ const {
   error,
 } = useClassContents(route.params.classId as string);
 const { delete: deleteContentMutation } = useClassContentMutation();
+const isStudent = route.path.includes('/student');
 
 const { capitalizeFirstLetter } = useCapitalizerLetter();
 const getTaskNumber = (currentIndex: number) => {
