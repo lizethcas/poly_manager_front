@@ -131,6 +131,7 @@ const classContentMutation = useMutation({
 });
 
 const isLoading = computed(() => classContentMutation.isPending.value);
+
 const handleSave = async () => {
   const formData = new FormData();
 
@@ -142,18 +143,24 @@ const handleSave = async () => {
   formData.append("video_transcription", form.video_transcription);
   formData.append("audio_transcription", form.audio_transcription);
 
-
+  // Verificar y adjuntar archivos correctamente
   if (taskTitle.value === "Video") {
-    formData.append("image", form.image as Blob);
-    formData.append("video", form.video as Blob);
+    // Verificar que form.image y form.video existen y contienen un archivo
+    if (form.image?.file) {
+      formData.append("image", form.image.file);
+    }
+    if (form.video?.file) {
+      formData.append("video", form.video.file);
+    }
   }
-  if (taskTitle.value === "Audio") {
-    formData.append("audio", form.audio as Blob);
+  
+  if (taskTitle.value === "Audio" && form.audio?.file) {
+    formData.append("audio", form.audio.file);
   }
 
   try {
     const response = await classContentMutation.mutateAsync(formData);
-    console.log(response);
+    
     // Invalidate and refetch the class contents query
     await queryClient.invalidateQueries({
       queryKey: ["class-contents", route.params.classId],
