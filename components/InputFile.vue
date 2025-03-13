@@ -8,6 +8,7 @@
           >{{ title }}</label
         >
         <button
+          type="button"
           @click="triggerFileUpload"
           class="hover:text-fuscous-gray-600 p-2 bg-fuscous-gray-100 min-w-20 max-w-8 w-full text-center rounded-lg cursor-pointer hover:scale-105 transition-all duration-300 group"
         >
@@ -19,7 +20,6 @@
 
           Upload
         </button>
-    
       </div>
 
       <!-- Label and preview -->
@@ -28,10 +28,7 @@
       >
       <div
         v-if="showPreview"
-        :class="[
-          'rounded overflow-hidden',
-          fileTypeClasses
-        ]"
+        :class="['rounded overflow-hidden', fileTypeClasses]"
       >
         <!-- Image preview -->
         <ImgAtom
@@ -39,7 +36,6 @@
           :image="previewUrl || props.previewUrl"
           alt="Preview"
           class="w-full h-full object-cover"
-          
         />
         <!-- Video preview -->
         <video
@@ -65,21 +61,24 @@
       </div>
 
       <!-- Upload button -->
-       
+
       <div v-if="!icon" class="flex flex-col gap-2">
         <UButton
+          type="button"
           class="flex justify-center text-white hover:scale-105 hover:bg-primary-color transition-all duration-300 bg-primary-color"
           @click="triggerFileUpload"
         >
           Upload
         </UButton>
         <UButton
+          type="button"
           class="block text-white hover:scale-105 hover:bg-primary-color transition-all duration-300 bg-primary-color"
           @click="$emit('crop')"
         >
           Crop
         </UButton>
         <UButton
+          type="button"
           class="block text-white hover:scale-105 hover:bg-primary-color transition-all duration-300 bg-primary-color"
           @click="deleteFile"
         >
@@ -114,7 +113,7 @@ import {
 import { useTaskStore } from "~/stores/task.store";
 
 // Tipo más específico para fileType
-type FileType = 'image' | 'video' | 'audio' | 'other';
+type FileType = "image" | "video" | "audio" | "other";
 
 interface FileInputProps {
   accept?: string;
@@ -140,7 +139,7 @@ const emit = defineEmits<{
   "update:modelValue": [File | null];
   "file-selected": [{ file: File; preview: string }];
   "file-error": [string];
-  "crop": boolean
+  crop: boolean;
 }>();
 
 const taskStore = useTaskStore();
@@ -151,7 +150,7 @@ const fileName = ref<string | null>(null);
 
 const FILE_SIZE_LIMIT = props.maxSize;
 const MAX_IMAGE_DIMENSION = 5000;
-const VALID_CATEGORIES = ['image', 'video', 'audio'];
+const VALID_CATEGORIES = ["image", "video", "audio"];
 
 // Update onMounted to handle initial preview
 onMounted(() => {
@@ -164,8 +163,8 @@ onMounted(() => {
 // Add helper function to determine file type from URL
 const getFileTypeFromUrl = (url: string): string => {
   // Detectar URLs de blob que suelen ser imágenes en este contexto
-  if (url.startsWith('blob:')) return "image";
-  
+  if (url.startsWith("blob:")) return "image";
+
   const extension = url.split(".").pop()?.toLowerCase();
   if (["jpg", "jpeg", "png", "gif", "webp"].includes(extension)) return "image";
   if (["mp4", "webm", "ogg"].includes(extension)) return "video";
@@ -286,8 +285,8 @@ const deleteFile = () => {
 };
 
 const fileTypeClasses = computed(() => {
-  if (fileType.value === 'video') return 'w-64 h-36';
-  if (fileType.value === 'audio') return '';
-  return 'w-16 h-16';
+  if (fileType.value === "video") return "w-64 h-36";
+  if (fileType.value === "audio") return "";
+  return "w-16 h-16";
 });
 </script>
