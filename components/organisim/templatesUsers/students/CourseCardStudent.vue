@@ -131,16 +131,12 @@ import { useRoute } from "vue-router";
 import type { Course } from "~/interfaces/course.interface";
 import { useGetCover } from "~/composables/useGetcover";
 import { useGetColor } from "~/composables/useGetColor";
-import { computed, watchEffect } from "vue";
+import { computed  } from "vue";
 import ClassDescription from "~/components/organisim/templatesUsers/students/ClassDescription.vue"; // Adjust the path according to your project structure
 import { useEnrollMutation } from "~/composables/useEnrollMutation";
 import { useToast } from "vue-toastification";
-import Courses from "~/pages/courses.vue";
 
 const route = useRoute();
-
-
-
 
 const { getCoverUrl } = useGetCover();
 const { getLevelColor } = useGetColor();
@@ -149,16 +145,33 @@ const isDescriptionVisible = ref(false);
 const toast = useToast();
 
 const props = defineProps<{
-  courses: Course[];
+  courses: any; // Cambia el tipo para aceptar cualquier valor
 }>();
-console.log(props.courses);
-// Move filteredCourses definition before the watchEffect
+
+// Extrae el array de cursos de la estructura anidada
+const extractCoursesArray = (coursesData: any): Course[] => {
+  if (!coursesData) return [];
+  
+  // Si ya es un array, devuélvelo directamente
+  if (Array.isArray(coursesData)) return coursesData;
+  
+  // Si tiene la estructura anidada que vimos en la consola
+  if (coursesData.data?.data && Array.isArray(coursesData.data.data)) {
+    return coursesData.data.data;
+  }
+  
+  // Si tiene una estructura más simple
+  if (coursesData.data && Array.isArray(coursesData.data)) {
+    return coursesData.data;
+  }
+  
+  return [];
+};
+
 const filteredCourses = computed(() => {
-  if (!props.courses) return [];
+  if (!props.courses || !Array.isArray(props.courses)) return [];
   return props.courses.filter((course) => course?.publish === true);
 });
-
-
 
 const MAX_DESCRIPTION_LENGTH = 100;
 

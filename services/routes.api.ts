@@ -37,6 +37,8 @@ export const apiRoutes = {
     delete: (courseId: string | string[]) => `courses/${courseId}/`,
     getStudents: (courseId: string | string[]) =>
       `/courses/${courseId}/students/`,
+    getClassesByCourseId: (courseId: string | string[]) =>
+      `/courses/${courseId}/classes/`,
   },
   classes: {
     update: (classId: number) => `classes/${classId}/`,

@@ -76,6 +76,7 @@ export const useClassesByStudentIdQuery = (studentId: string) => {
       if (!response) {
         throw new Error("No classes found for student");
       }
+      console.log(response.data);
       return response.data;
     } catch (error: any) {
       console.error("Error fetching student classes:", error);

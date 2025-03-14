@@ -8,7 +8,7 @@
     />
     <CourseCardStudent :courses="courses" />
   </div>
-  <ClassCardStudent />
+  <ClassCardStudent :classes="classes" />
 
 </template>
 
@@ -20,26 +20,18 @@ definePageMeta({
 import { useCoursesQuery } from "~/composables/useCourseQuery";
 import ClassCardStudent from "~/components/organisim/templatesUsers/students/ClassCardStudent.vue";
 import CourseCardStudent from "~/components/organisim/templatesUsers/students/CourseCardStudent.vue";
+import { useClassesByCourseIdQuery } from "~/composables/useCourseQuery";
 import { useRoute } from "vue-router";
-import { computed } from "vue";
-import type { Course } from "~/interfaces/course.interface";
 
 const route = useRoute();
-const courseId = route.params.courseId;
-console.log(courseId);
+const courseId = route.params.courseid;
+console.log(route.params);
 
 const { data: courses, isLoading, error } = useCoursesQuery(courseId as string);
-console.log(courses.value);
+const { data: classes, isLoading: isLoadingClasses, error: errorClasses } = useClassesByCourseIdQuery(courseId as string);
 
-
-// Get only the current course based on courseId
-/* const currentCourse = computed(() => {
-  if (!courses.value) return [];
-  return courses.value.filter(
-    (course: Course) => course.id === Number(courseStudent)
-  );
-});
-console.log(currentCourse); */
+console.log(classes);
+console.log(courses);
 
 const handleBackNavigation = () => {
   navigateTo(`/student-${route.params.studentId}/my-courses`);

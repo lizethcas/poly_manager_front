@@ -1,11 +1,11 @@
 <template>
 
   <div class="mt-4 flex flex-col pl-20">
-    <div v-if="isPending">Loading...</div>
-    <div v-else-if="error">Error: {{ error.message }}</div>
+    <div v-if="loading">Loading...</div>
+    <div v-else-if="error">Error: {{ error }}</div>
 
     <div
-      v-for="(classItem, index) in classes"
+      v-for="(classItem, index) in Array.isArray(classes) ? classes : classes?.data"
       :key="classItem.id"
       class="bg-white border rounded-lg shadow-sm hover:shadow-md transition-all duration-300 mb-4 flex w-full"
     >
@@ -106,7 +106,6 @@
 <script setup lang="ts">
 import { useRoute } from "#imports";
 import ClassDescription from "./ClassDescription.vue";
-import { useClassesQuery } from "~/composables/useClassesQuery";
 import { ref } from "vue";
 
 interface ClassItem {
@@ -120,11 +119,15 @@ interface ClassItem {
   unit?: number;
 }
 
+interface Props {
+  classes: ClassItem[];
+  loading?: boolean;
+  error?: string;
+}
+
+const props = defineProps<Props>();
 const route = useRoute();
-const courseId = route.params.courseid;
 const selectedClass = ref<ClassItem>({} as ClassItem);
-const { data: classes, isPending, error } = useClassesQuery(courseId as string);
-console.log(selectedClass);
 const isDescriptionVisible = ref(false);
 
 const handleClick = (courseId: number, id: number) => {
@@ -139,7 +142,6 @@ const showClassDescription = (classItem: any, index: number, courseId: number) =
     course_id: courseId,
   };
   isDescriptionVisible.value = true;
-
 };
 
 const MAX_DESCRIPTION_LENGTH = 100;

@@ -1,7 +1,7 @@
 import { useQuery } from "@tanstack/vue-query";
 import { apiRoutes, get } from "@/services/routes.api";
 
-export const useCoursesQuery = (studentId?: string, courseId?: number) => {
+export const useCoursesQuery = (studentId?: string) => {
   const fetchCourses = async () => {
     try {
       // If studentId is provided, use student-specific endpoint
@@ -25,6 +25,25 @@ export const useCoursesQuery = (studentId?: string, courseId?: number) => {
   return useQuery({
     queryKey: ["courses", studentId],
     queryFn: fetchCourses,
+    refetchOnMount: "always",
+    refetchOnWindowFocus: true,
+    staleTime: 0,
+  });
+};
+
+export const useClassesByCourseIdQuery = (courseId: string) => {
+  const fetchClassesByCourseId = async () => {
+    if (!courseId) {
+      throw new Error("Course ID is required");
+    }
+    const response = await get(apiRoutes.course.getClassesByCourseId(courseId));
+    console.log(response);
+    return response;
+  };
+
+  return useQuery({
+    queryKey: ["classes", courseId],
+    queryFn: fetchClassesByCourseId,
     refetchOnMount: "always",
     refetchOnWindowFocus: true,
     staleTime: 0,
