@@ -1,10 +1,32 @@
 <template>
-  <!--   <ListScenarios /> -->
-  <div v-if="classTasks" class="bg-white rounded-xl pb-4" v-bind="$attrs">
-    <div v-for="(task, index) in classTasks.data">
-      <div class="mt-4 relative px-4">
+  <div v-if="classTasks" class="bg-white rounded-xl p-3 md:p-8" v-bind="$attrs">
+
+    
+    <div v-for="(task, index) in classTasks.data" :key="index"
+    >
+
+    <template v-if="task.content_type === 'video'">
+      <div class="mt-4 relative px-2 sm:px-4 w-full">
+        <div class="flex flex-wrap items-center gap-2 w-full mb-2">
+          <p class="bg-tarawera-100 text-primary-color px-2 py-1 rounded-md text-sm">
+            {{ getTaskNumber(index) }}
+          </p>
+          <!-- <h3 class="text-md sm:text-lg font-semibold break-words">
+            {{ capitalizeFirstLetter(task.tittle) }}
+          </h3> -->
+        </div>
+        
+        <!-- Contenedor responsivo para videos -->
+        <!-- <div class="video-container w-full relative">
+          <div class="w-full h-full">
+            <slot :task="task" :index="index" />
+          </div>
+        </div> -->
+      </div>
+    </template>
+      <div class="mt-4 relative px-2 sm:px-4">
         <div
-          class="pr-4"
+          class="pr-2 sm:pr-4"
           v-if="
             task.tittle !== '' &&
             task.content_type !== 'video' &&
@@ -13,23 +35,30 @@
           "
         >
           <div>
-            <div class="flex justify-start gap-2 w-full">
+            <!-- Header más responsive -->
+            <div class="flex flex-wrap items-center gap-2 w-full">
               <p
-                class="bg-tarawera-100 text-primary-color px-2 py-1 rounded-md"
+                class="bg-tarawera-100 text-primary-color px-2 py-1 rounded-md text-sm"
               >
                 {{ getTaskNumber(index) }}
               </p>
-              <h3 class="text-lg font-semibold">
+              <h3 class="text-md sm:text-lg font-semibold break-words">
                 {{ capitalizeFirstLetter(task.tittle) }}
               </h3>
             </div>
-            <p class="text-md my-4 font-medium">
+            <p class="text-sm sm:text-md my-2 sm:my-4 font-medium">
               {{ task.instructions }}
             </p>
           </div>
         </div>
-        <div class="flex items-center gap-2">
+
+        <!-- Barra de acciones responsiva -->
+        <!-- Barra de acciones responsiva -->
+        <div
+          class="flex items-center justify-between w-full mt-2 sm:justify-start sm:gap-2"
+        >
           <UDropdown
+            v-if="route.path.includes('/admin')"
             :items="items(task)"
             :popper="{ placement: 'bottom-start' }"
             class="cursor-pointer rounded-lg"
@@ -41,20 +70,28 @@
               :color="'text-tarawera-700'"
             />
           </UDropdown>
-          <slot :task="task" :index="index" />
+          <div class="flex-grow">
+            <slot :task="task" :index="index" />
+          </div>
         </div>
       </div>
+
+      <!-- Separador visual para móviles -->
+      <div class="border-b border-gray-100 my-4 mx-2 sm:hidden"></div>
     </div>
 
     <ListScenarios v-if="route.path.includes('/admin')" />
     <ScenarioListStudent v-if="route.path.includes('/student')" />
   </div>
-  <div v-else>
-    <pre>Aun no hay contenido para esta clase</pre>
+
+  <div v-else class="p-4 text-center text-gray-500">
+    <p>Aun no hay contenido para esta clase</p>
   </div>
+
+  <!-- Alerta de confirmación responsiva -->
   <UAlert
     v-if="showDeleteAlert"
-    class="w-full max-w-xl mx-auto fixed top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2"
+    class="w-full max-w-sm sm:max-w-xl mx-auto fixed top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 z-50"
     :actions="[
       {
         variant: 'solid',
@@ -73,6 +110,7 @@
     description="Are you sure you want to delete this task? This action cannot be undone."
   />
 
+  <!-- Modal responsiva -->
   <BaseTaskModal
     v-if="isModalOpen"
     :is-open="isModalOpen"
@@ -81,8 +119,10 @@
     :edit-data="taskStore.getTask('editData')"
     @close="closeModal"
     :menuItems="getDataMenu(modalTitle)"
+    class="max-h-[90vh] overflow-y-auto"
   />
 </template>
+
 <script setup lang="ts">
 /**
  * @component TaskList
@@ -96,10 +136,10 @@
  * - Integrates with scenario lists for both students and admins
  * - Includes a dropdown menu for task actions
  * - Shows confirmation alerts for deletions
- * 
+ *
  * Props:
  * @prop {number} currentTaskIndex - Optional. Used in student view to control which tasks are visible
- * 
+ *
  * Components Used:
  * - ListScenarios: Admin view for scenario management
  * - ScenarioListStudent: Student view for scenarios
@@ -120,7 +160,7 @@
  * - isModalOpen: Controls edit modal visibility
  * - modalTitle: Sets the title for the edit modal
  * - modalIcon: Sets the icon for the edit modal
- * 
+ *
  * Content Types Supported:
  * - info_box
  * - video
@@ -145,7 +185,6 @@ import { useClassContentMutation } from "~/composables/useClassContentMutation";
 import BaseTaskModal from "~/components/organisim/BaseTaskModal.vue";
 import { useDataMenu } from "~/composables/useDataMenu";
 import { useTaskStore } from "~/stores/task.store";
-
 
 const route = useRoute();
 const {
@@ -185,7 +224,7 @@ const getTaskNumber = (currentIndex: number) => {
 const handleEditTask = (task: any) => {
   console.log(task);
   isModalOpen.value = true;
-  
+
   // First check specific content types
   switch (task.content_type) {
     case "info_box":
@@ -211,13 +250,13 @@ const handleEditTask = (task: any) => {
           audio: task.audio,
           image: task.image,
           modelValue: task.image || null,
-          icon: true  // Changed from "true" to true
+          icon: true, // Changed from "true" to true
         });
       } else {
         modalTitle.value = "Knowledge check";
       }
   }
-  
+
   modalIcon.value = "i-heroicons-pencil-square-20-solid";
   taskStore.addTask("editData", task);
 };
@@ -229,7 +268,6 @@ const handleDeleteTask = (task: any) => {
   showDeleteAlert.value = true;
   taskToDelete.value = task;
 };
-
 
 const confirmDelete = () => {
   if (taskToDelete.value) {
@@ -278,3 +316,55 @@ const closeModal = () => {
   isModalOpen.value = false;
 };
 </script>
+
+
+<style scoped>
+/* Estilos adicionales para responsividad */
+@media (max-width: 640px) {
+  /* Mejora del comportamiento touch en móviles */
+  .cursor-pointer {
+    cursor: default;
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  /* Aumentar área de toque para elementos interactivos */
+  button,
+  [role="button"],
+  .cursor-pointer {
+    min-height: 44px;
+    min-width: 44px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  
+  /* Estilos para videos en móvil */
+  .video-container {
+    aspect-ratio: 16/9;
+    margin-bottom: 1rem;
+  }
+  
+  /* Asegurar que los videos ocupan toda la anchura disponible */
+  .video-container :deep(video),
+  .video-container :deep(iframe),
+  .video-container :deep(.video-js) {
+    width: 100% !important;
+    height: 100% !important;
+    max-height: none !important;
+  }
+}
+
+/* Estilos para videos en todas las pantallas */
+.video-container {
+  width: 100%;
+  overflow: hidden;
+  position: relative;
+}
+
+.video-container :deep(video),
+.video-container :deep(iframe),
+.video-container :deep(.video-js) {
+  width: 100%;
+  border-radius: 0.5rem;
+}
+</style>

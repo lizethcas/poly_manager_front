@@ -51,14 +51,17 @@
             />
           </div>
           <div>
-            <label for="end_time" class="block text-sm font-medium text-gray-700">Hora fin</label>
-            <input 
-              type="time" 
-              id="end_time" 
-              v-model="form.end_time" 
+            <label for="duration" class="block text-sm font-medium text-gray-700">Duración</label>
+            <select 
+              id="duration" 
+              v-model="form.duration" 
               class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm"
               required
-            />
+            >
+              <option value="15">15 minutos</option>
+              <option value="30">30 minutos</option>
+              <option value="60">60 minutos</option>
+            </select>
           </div>
         </div>
         
@@ -164,7 +167,7 @@ const form = ref({
   title: '',
   date: '',
   start_time: '',
-  end_time: '',
+  duration: '30',
   available: true,
   description: '',
   admin: 1,
@@ -178,19 +181,6 @@ const minDate = computed(() => {
   return today.toISOString().split('T')[0];
 });
 
-const calculateDuration = () => {
-  const startTime = form.value.start_time;
-  const endTime = form.value.end_time;
-
-  if (startTime && endTime) {
-    const start = new Date(`1970-01-01T${startTime}:00`);
-    const end = new Date(`1970-01-01T${endTime}:00`);
-    const duration = (end.getTime() - start.getTime()) / (1000 * 60); // Duración en minutos
-    return duration > 0 ? duration : 0;
-  }
-  return null;
-};
-
 const closeModal = () => {
   resetForm();
   emit('close');
@@ -201,7 +191,7 @@ const resetForm = () => {
     title: '',
     date: '',
     start_time: '',
-    end_time: '',
+    duration: '30',
     available: true,
     description: '',
     admin: 1,
@@ -221,15 +211,11 @@ const submitForm = async () => {
     // Crear una copia del formulario para modificarla antes de enviar
     const formData = { ...form.value };
     
-    // Calcula la duración y asigna al formulario
-    const duration = calculateDuration();
-    if (duration === null) {
-      throw new Error('Por favor, selecciona horas válidas');
-    }
-    // formData.duration = duration;
+    // Asignar start_time al campo time que espera el backend
+    formData.time = formData.start_time;
     
-    // // Asignar start_time al campo time que espera el backend
-    // formData.time = formData.start_time;
+    // Asegurarse de que duration sea un número
+    formData.duration = parseInt(formData.duration);
     
     console.log('Enviando datos:', formData);
     
