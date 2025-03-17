@@ -4,12 +4,11 @@
   <template v-else>
 
     <div v-if="!courses">No courses data available</div>
-    <CourseCardStudent 
+    <!-- <CourseCardStudent 
       :courses="courses.data" 
      
-    />
+    /> -->
     <InfoCourses
-      v-if="!courses?.data?.length"
       v-for="course in infoCourses"
       :key="course.title"
       :title="course.title"
