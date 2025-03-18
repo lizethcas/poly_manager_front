@@ -26,12 +26,8 @@ import { useRoute } from "vue-router";
 const route = useRoute();
 const courseId = route.params.courseid;
 
-
 const { data: courses, isLoading, error } = useCoursesQuery(courseId as string);
 const { data: classes, isLoading: isLoadingClasses, error: errorClasses } = useClassesByCourseIdQuery(courseId as string);
-
-console.log(classes);
-console.log(courses.data);
 
 const handleBackNavigation = () => {
   navigateTo(`/student-${route.params.studentId}/my-courses`);
