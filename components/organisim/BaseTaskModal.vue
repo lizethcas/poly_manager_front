@@ -1,6 +1,6 @@
 <template>
   <div
-    class="fixed inset-0 bg-gray-500 bg-opacity-50 z-50 flex items-center justify-center p-4"
+    class="fixed inset-0 bg-gray-500 bg-opacity-50 z-50 flex items-center justify-center p-4 "
     v-if="isOpen"
   >
     <div
@@ -78,7 +78,7 @@
               <MoleculeInput
                 :title="'Title'"
                 type="text"
-                label="false"
+                :label="false"
                 :placeholder="'Enter the heading'"
                 class="text-md"
                 v-model="formData.title"
@@ -90,7 +90,7 @@
                 class="text-md"
                 v-model="formData.instructions"
                 :placeholder="'Enter the task description'"
-                label="false"
+                :label="false"
               />
             </div>
 

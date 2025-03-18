@@ -71,12 +71,10 @@
             :qIndex="qIndex"
             :oIndex="oIndex"
             :isCorrect="option.isCorrect"
-            :type="getType(typeTask)"
+            :type="getType(data.content_type || typeTask)"
             :answer="option.text"
             :removeOption="(qIndex, oIndex) => removeOption(qIndex, oIndex)"
-            @update:isCorrect="
-              (val) => updateOptionIsCorrect(qIndex, oIndex, val)
-            "
+            @update:isCorrect="(val) => updateOptionIsCorrect(qIndex, oIndex, val)"
             @update:answer="(val) => updateOptionAnswer(qIndex, oIndex, val)"
             placeholder="Enter your answer"
           />
@@ -127,22 +125,20 @@
     </button>
   </UTooltip>
 
-  <div class="flex items-center gap-2 py-4 text-sm ">
+  <div class="flex items-center gap-2 py-4 text-sm">
     <p>Include the stats</p>
     <AtomosToggle v-model="data.stats" />
   </div>
-    <MoleculeActionButtons
+  <MoleculeActionButtons
     @handleSave="handleSave()"
     @handleCancel="handleCancel"
     :isActive="infoResponseApi.isActive"
     :deleteAction="false"
   />
-
-  
 </template>
 
 <script setup lang="ts">
-import { ref, watch, computed } from "vue";
+import { ref, watch, computed, onMounted, nextTick } from "vue";
 /* Components */
 import InputTask from "../molecule/InputTask.vue";
 import TextAreaTask from "../molecule/TextAreaTask.vue";
@@ -153,6 +149,7 @@ import { useTaskStore } from "~/stores/task.store";
 import { useClassContentMutation } from "~/composables/useClassContentMutation";
 import { useGetTypeTask } from "~/composables/useGetTypeTask";
 import { useNotify } from '~/composables/useNotify'
+import { useTaskInitializer } from '~/composables/useTaskInitializer'
 /* Interfaces */
 import type {
   Question,
@@ -174,6 +171,9 @@ const isActive = ref(false);
 const newWordBank = ref("");
 const { getType } = useGetTypeTask();
 const { success, error } = useNotify()
+const { editData, isEditMode, initializeMultipleChoice } = useTaskInitializer();
+
+console.log(editData.value);
 
 
 const { create: mutation } = useClassContentMutation();
@@ -358,9 +358,9 @@ watch(
       'category': 'category',
       'fill_gaps': 'fill_gaps',
       'word_bank': 'word_bank',
-      
+
     };
-    
+
     data.value.content_type = contentTypeMap[newValue] || 'multiple_choice';
     console.log("typeTask changed:", newValue);
   },
@@ -436,7 +436,7 @@ const handleUpdateValue = (newValue: string) => {
       if (matches) {
         matches.forEach((match, matchIndex) => {
           const options = match.slice(1, -1).split("/");
-          
+
           // Check for hint (text before *)
           const firstOption = options[0];
           if (firstOption.includes("*")) {
@@ -531,7 +531,7 @@ const hasQuestionsWithAnswers = () => {
 const handleSave = async () => {
   try {
     const formData = new FormData();
-    
+
     // Always include media files and transcription
     if (data.value.image) {
       formData.append("image", data.value.image);
@@ -544,19 +544,19 @@ const handleSave = async () => {
     // Prepare content_details based on content type
     let contentDetails;
     if (data.value.content_type === "fill_gaps") {
-      contentDetails = { 
+      contentDetails = {
         passages: data.value.content_details.passages,
         questions: [] // Add empty questions array
       };
     } else if (data.value.content_type === "word_bank") {
-      contentDetails = { 
+      contentDetails = {
         word_bank: data.value.content_details.word_bank,
         questions: [] // Add empty questions array
       };
     } else {
       contentDetails = { questions: data.value.content_details.questions };
     }
-  
+
     // Append all data
     formData.append("class_id", String(data.value.class_id));
     formData.append("content_type", data.value.content_type);
@@ -569,7 +569,7 @@ const handleSave = async () => {
 
 
     await mutation.mutate(formData);
-    
+
     success("Task saved successfully");
     taskStore.addTask("modal", { modal: false });
   } catch (err) {
@@ -581,6 +581,26 @@ const handleSave = async () => {
 
 const handleCancel = () => {
   taskStore.addTask("modal", { modal: false });
-  
+
 };
+
+onMounted(() => {
+  if (isEditMode.value) {
+    // Inicializar typeTaskRef basado en editData
+    data.value.content_type = editData.value.content_type;
+    
+    // Inicializar datos basados en editData
+    initializeMultipleChoice(questions, editData.value.content_details.questions);
+    
+    // Asegurarse de que isActive se actualice correctamente
+    nextTick(() => {
+      if (['fill_gaps', 'word_bank', 'text_area'].includes(data.value.content_type)) {
+        isActive.value = value.value.trim() !== "";
+      } else {
+        isActive.value = hasQuestionsWithAnswers();
+      }
+      infoResponseApi.value.isActive = isActive.value;
+    });
+  }
+});
 </script>

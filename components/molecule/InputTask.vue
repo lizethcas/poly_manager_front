@@ -36,6 +36,14 @@ const emit = defineEmits(['update:answer', 'update:isCorrect']);
 
 const localIsCorrect = ref<boolean | string>(isCorrect ?? false);
 
+watch(
+  () => isCorrect,
+  (newValue) => {
+    localIsCorrect.value = newValue ?? false;
+  },
+  { immediate: true }
+);
+
 watch(localIsCorrect, (newValue) => {
     emit('update:isCorrect', newValue);
 
