@@ -3,7 +3,9 @@
   <div v-else-if="error">{{ error.message || 'Error loading courses' }}</div>
   <template v-else>
 
+    
     <div v-if="!enrolledCourses">No courses data available</div>
+
     <CourseCardStudent 
       :courses="enrolledCourses.data" 
     />

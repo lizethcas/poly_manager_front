@@ -1,5 +1,29 @@
 <template>
+
+  <div class="flex flex-wrap items-center gap-2 p-2">
+    <button 
+      class="flex items-center justify-center w-10 h-10 bg-gray-100 rounded-full"
+      aria-label="Filter options"
+    >
+      <Icon name="lucide:filter" class="w-5 h-5 text-gray-700" />
+    </button>
+    
+    <button
+      v-for="filter in filters"
+      :key="filter.id"
+      @click="activeFilter = filter.id"
+      :class="[
+        'px-4 py-2 rounded-full text-sm font-medium bg-gray-100 text-gray-800 hover:bg-gray-200 transition-colors',
+        activeFilter === filter.id ? 'bg-gray-200' : ''
+      ]"
+    >
+      {{ filter.label }}
+    </button>
+  </div>
+
   <p v-if="!filteredCourses" class="text-title-color">no hay cursos</p>
+
+
 
   <div
     v-if="filteredCourses"
@@ -143,6 +167,17 @@ const { getLevelColor } = useGetColor();
 const selectedCourse = ref({});
 const isDescriptionVisible = ref(false);
 const toast = useToast();
+
+
+const activeFilter = ref('all')
+
+const filters = [
+  { id: 'all', label: 'Todos los Cursos' },
+  { id: 'general', label: 'General English' },
+  { id: 'business', label: 'Business English' },
+  { id: 'specialized', label: 'Specialized Courses' }
+]
+
 
 const props = defineProps<{
   courses: any; // Cambia el tipo para aceptar cualquier valor
