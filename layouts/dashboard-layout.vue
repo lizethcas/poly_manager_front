@@ -8,7 +8,7 @@
     >
       <!-- Navigation Links -->
       <nav class="overflow-y-auto h-[calc(100vh-64px)] mt-6">
-        <div class=" space-y-4">
+        <div class="space-y-4">
           <div v-for="(section, index) in navigationRoutes" :key="index">
             <!-- Section Header -->
             <h3
@@ -26,20 +26,20 @@
                 :class="{ 'text-[#478ADF]': $route.path === route.path }"
                 @click="isSidebarOpen = false"
               >
-    
-                <Icon 
-                  :name="route.icon" 
-                  size="20" 
+                <Icon
+                  :name="route.icon"
+                  size="20"
                   class="mr-2"
-                  :class="{ 'text-[#478ADF]': $route.path === route.path }" 
+                  :class="{ 'text-[#478ADF]': $route.path === route.path }"
                 />
-                <span class="text-base" :class="{ 'text-[#478ADF] ': $route.path === route.path }">
+                <span
+                  class="text-base"
+                  :class="{ 'text-[#478ADF] ': $route.path === route.path }"
+                >
                   {{ route.name }}
                 </span>
               </NuxtLink>
-
             </div>
-
           </div>
           <!-- Logout Link -->
           <NuxtLink
@@ -78,14 +78,15 @@
 
           <div>
             <NuxtLink to="/" class="flex items-center">
-              <span class="text-primary-color font-bold text-[20px]">PolyAcademy</span>
+              <span class="text-primary-color font-bold text-[20px]"
+                >PolyAcademy</span
+              >
             </NuxtLink>
           </div>
           <!-- Search bar -->
           <div class="flex-1 max-w-2xl px-4 hidden sm:block">
             <SearchInput class="w-full" />
             <!-- <SearchMaqueta class="w-full" /> -->
-        
           </div>
 
           <!-- User Profile -->
@@ -127,7 +128,7 @@
       </div>
       <!-- Main Content with Right Sidebar Layout -->
       <div
-        class="flex flex-col  mt-2 m-auto relative lg:m-5"
+        class="flex flex-col mt-2 m-auto relative lg:m-5"
         :class="mainContentWidth"
       >
         <!-- Main Content -->
@@ -138,24 +139,237 @@
         <!-- Notification Sidebar Deskptop -->
         <div
           v-if="!isClassRoute"
-          class="w-60 mr-5 hidden lg:block lg:fixed lg:right-0 lg:top-16 lg:bottom-0 bg-white shadow-sm border-l border-gray-200 overflow-y-auto"
+          class="w-60 mr-5 p-5 hidden lg:block lg:fixed lg:right-0 lg:top-16 lg:bottom-0 bg-white shadow-sm border-l border-gray-200 overflow-y-auto rounded-xl"
         >
-          <div class="p-4">
-            <div v-for="notification in notifications" :key="notification.id" class="mb-4 p-3 bg-gray-50 rounded-lg shadow-sm" :class="notificationClass(notification.status)">
-              <div class="flex items-center gap-2">
-                <img :src="notification.userImage" alt="User Image" class="w-10 h-10 rounded-full" />
+          <div class="flex items-start mb-4">
+            <div
+              class="w-10 h-10 bg-yellow-300 rounded-full flex items-center justify-center mr-3"
+            >
+              <span class="text-xl">🤖</span>
+            </div>
+            <div>
+              <p class="text-sm font-medium">
+                Hello, <span class="text-blue-600">{{ userData.name }}</span
+                >! Nice to see you again! Here's your latest achievements:
+              </p>
+            </div>
+          </div>
+          <!-- Progress section -->
+          <div class="mb-4">
+            <h3 class="font-semibold text-gray-700 mb-2">Your Progress:</h3>
+
+            <div class="space-y-3">
+              <!-- Lessons -->
+              <div class="flex items-center">
+                <div
+                  class="w-8 h-8 bg-blue-100 rounded-lg flex items-center justify-center mr-3"
+                >
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    width="18"
+                    height="18"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="2"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    class="text-blue-500"
+                  >
+                    <path
+                      d="M4 19.5v-15A2.5 2.5 0 0 1 6.5 2H20v20H6.5a2.5 2.5 0 0 1 0-5H20"
+                    ></path>
+                  </svg>
+                </div>
                 <div>
-                  <p class="font-semibold">{{ notification.userName }}</p>
-                  <p class="text-sm text-gray-500">{{ notification.status }}</p>
+                  <p class="font-medium text-sm">Lessons</p>
+                  <p class="text-xs text-gray-500">
+                    Chapter {{ userData.progress.lessons.chapter }}
+                  </p>
                 </div>
               </div>
+
+              <!-- Speaking practice -->
+              <div class="flex items-center">
+                <div
+                  class="w-8 h-8 bg-indigo-100 rounded-lg flex items-center justify-center mr-3"
+                >
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    width="18"
+                    height="18"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="2"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    class="text-indigo-500"
+                  >
+                    <path
+                      d="M12 2a3 3 0 0 0-3 3v7a3 3 0 0 0 6 0V5a3 3 0 0 0-3-3Z"
+                    ></path>
+                    <path d="M19 10v2a7 7 0 0 1-14 0v-2"></path>
+                    <line x1="12" x2="12" y1="19" y2="22"></line>
+                  </svg>
+                </div>
+                <div>
+                  <p class="font-medium text-sm">Speaking practice</p>
+                  <p class="text-xs text-gray-500">
+                    {{ userData.progress.speaking.hours }} hours
+                  </p>
+                </div>
+              </div>
+
+              <!-- Hours -->
+              <div class="flex items-center">
+                <div
+                  class="w-8 h-8 bg-cyan-100 rounded-lg flex items-center justify-center mr-3"
+                >
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    width="18"
+                    height="18"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="2"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    class="text-cyan-500"
+                  >
+                    <circle cx="12" cy="12" r="10"></circle>
+                    <polyline points="12 6 12 12 16 14"></polyline>
+                  </svg>
+                </div>
+                <div>
+                  <p class="font-medium text-sm">Hours</p>
+                  <p class="text-xs text-gray-500">
+                    Total: {{ userData.progress.totalHours }} hours
+                    {{ userData.progress.totalMinutes }} minutes
+                  </p>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="mb-4">
+            <h3 class="font-semibold text-gray-700 mb-2">Information:</h3>
+
+            <div class="space-y-3">
+              <!-- Average score -->
+              <div class="flex items-center">
+                <div
+                  class="w-8 h-8 bg-green-100 rounded-lg flex items-center justify-center mr-3"
+                >
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    width="18"
+                    height="18"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="2"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    class="text-green-500"
+                  >
+                    <path d="M22 12h-4l-3 9L9 3l-3 9H2"></path>
+                  </svg>
+                </div>
+                <div>
+                  <p class="font-medium text-sm">Your average score</p>
+                </div>
+              </div>
+
+              <!-- Learnt words -->
+              <div class="flex items-center">
+                <div
+                  class="w-8 h-8 bg-teal-100 rounded-lg flex items-center justify-center mr-3"
+                >
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    width="18"
+                    height="18"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="2"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    class="text-teal-500"
+                  >
+                    <path
+                      d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"
+                    ></path>
+                  </svg>
+                </div>
+                <div>
+                  <p class="font-medium text-sm">Learnt words</p>
+                  <p class="text-xs text-gray-500">
+                    {{ userData.information.learnedWords }} new words
+                  </p>
+                </div>
+              </div>
+            </div>
+
+            <div class="text-right mt-1">
+              <a href="#" class="text-xs text-blue-500">View details</a>
+            </div>
+          </div>
+
+          <!-- <div class="mb-6">
+            <h3 class="font-semibold text-gray-700 mb-2">
+              Your recent Achievements
+            </h3>
+            <div class="flex">
+              <div class="flex-1"></div>
+              <div class="w-16 h-20">
+                <img
+                  src="https://via
+                  .placeholder.com/150"
+                  alt="Trophy"
+                  class="w-full h-full object-contain"
+                />
+              </div>
+            </div>
+          </div> -->
+
+          <!-- Message input -->
+          <div class="mt-auto bg-white rounded-xl p-3 shadow-sm">
+            <p class="text-sm text-gray-600 mb-1">
+              Do you need something else?
+            </p>
+            <div class="flex items-center justify-between">
+              <p class="text-xs text-gray-400">Message Pollie</p>
+              <button
+                class="w-8 h-8 bg-gray-100 rounded-full flex items-center justify-center"
+              >
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  width="16"
+                  height="16"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="2"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  class="text-gray-500"
+                >
+                  <path
+                    d="M12 2a3 3 0 0 0-3 3v7a3 3 0 0 0 6 0V5a3 3 0 0 0-3-3Z"
+                  ></path>
+                  <path d="M19 10v2a7 7 0 0 1-14 0v-2"></path>
+                  <line x1="12" x2="12" y1="19" y2="22"></line>
+                </svg>
+              </button>
             </div>
           </div>
         </div>
 
         <!-- Notification Sidebar Mobile  -->
 
-        <div
+        <!-- <div
           :class="[
             isNotificationSidebarOpen ? 'translate-x-0' : 'translate-x-full',
             'fixed inset-y-0 block md:hidden right-0 max-w-xs w-full bg-white shadow-xl transform transition ease-in-out duration-300 lg:translate-x-0 lg:static lg:inset-auto lg:max-w-sm lg:w-60 lg:transform-none'
@@ -213,7 +427,7 @@
               </ul>
             </div>
           </div>
-        </div>
+        </div> -->
       </div>
     </div>
   </div>
@@ -239,7 +453,6 @@ const isProgressRoute = computed(() => {
   return route.path.startsWith("/student/progress");
 });
 
-
 const isClassRoute = computed(() => {
   return (
     /^\/course\/[^/]+\/class\/[^/]+$/.test(route.path) || isProgressRoute.value
@@ -260,34 +473,64 @@ const user = {
   role: "Student",
 };
 
+const userData = {
+  name: "Mark",
+  progress: {
+    lessons: {
+      chapter: 1,
+    },
+    speaking: {
+      hours: 0,
+    },
+    totalHours: 4,
+    totalMinutes: 5,
+  },
+  information: {
+    averageScore: 85,
+    learnedWords: 0,
+  },
+  achievements: [
+    {
+      id: 1,
+      title: "First Lesson Completed",
+      icon: "trophy",
+    },
+  ],
+};
+
 const notifications = ref([
   {
     id: 1,
-    userImage: "https://plus.unsplash.com/premium_photo-1689551670902-19b441a6afde?q=80&w=1974&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
+    userImage:
+      "https://plus.unsplash.com/premium_photo-1689551670902-19b441a6afde?q=80&w=1974&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
     userName: "John Doe",
     status: "New message received",
   },
   {
     id: 2,
-    userImage: "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?q=80&w=1974&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
+    userImage:
+      "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?q=80&w=1974&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
     userName: "Jane Smith",
     status: "Assignment graded",
   },
   {
     id: 3,
-    userImage: "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?q=80&w=1974&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
+    userImage:
+      "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?q=80&w=1974&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
     userName: "Alice Johnson",
     status: "New course available",
   },
   {
     id: 4,
-    userImage: "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?q=80&w=1974&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
+    userImage:
+      "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?q=80&w=1974&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
     userName: "Bob Brown",
     status: "Payment received",
   },
   {
     id: 5,
-    userImage: "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?q=80&w=1974&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
+    userImage:
+      "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?q=80&w=1974&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
     userName: "Emily White",
     status: "Course completed",
   },
@@ -338,10 +581,10 @@ const adminRoutes = [
         icon: "material-symbols:person-outline",
       },
       {
-        path:"admin/agenda",
-        name:"Agenda",
+        path: "admin/agenda",
+        name: "Agenda",
         icon: "material-symbols:person-outline",
-      }
+      },
     ],
   },
 ];
@@ -351,17 +594,23 @@ const studentRoutes = [
   {
     items: [
       {
-        path: studentId.value ? `/student-${studentId.value}/classes` : '/student/classes',
+        path: studentId.value
+          ? `/student-${studentId.value}/classes`
+          : "/student/classes",
         name: "My Classes",
         icon: IconType.home,
       },
       {
-        path: studentId.value ? `/student-${studentId.value}/my-courses` : '/student/courses',
+        path: studentId.value
+          ? `/student-${studentId.value}/my-courses`
+          : "/student/courses",
         name: "My Courses",
         icon: IconType.book,
       },
       {
-        path: studentId.value ? `/student-${studentId.value}/progress` : '/student/progress',
+        path: studentId.value
+          ? `/student-${studentId.value}/progress`
+          : "/student/progress",
         name: "My Progress",
         icon: IconType.trendingUp,
       },
@@ -372,28 +621,36 @@ const studentRoutes = [
     header: "My Progress",
     items: [
       {
-        path: studentId.value ? `/student-${studentId.value}/speaking_practice` : '/student/speaking_practice',
+        path: studentId.value
+          ? `/student-${studentId.value}/speaking_practice`
+          : "/student/speaking_practice",
         name: "Speaking Practice",
         icon: IconType.wechat,
       },
       {
-        path: studentId.value ? `/student-${studentId.value}/my_notes` : '/student/my_notes',
+        path: studentId.value
+          ? `/student-${studentId.value}/my_notes`
+          : "/student/my_notes",
         name: "My Notes",
         icon: IconType.note,
       },
       {
-        path: studentId.value ? `/student-${studentId.value}/my_words` : '/student/my_words',
+        path: studentId.value
+          ? `/student-${studentId.value}/my_words`
+          : "/student/my_words",
         name: "My Words",
         icon: IconType.translate,
       },
       {
-        path: studentId.value ? `/student-${studentId.value}/my_profile` : '/student/my_profile',
+        path: studentId.value
+          ? `/student-${studentId.value}/my_profile`
+          : "/student/my_profile",
         name: "My Profile",
         icon: IconType.person,
       },
     ],
   },
- /*  {
+  /*  {
     header: "Others",
 
     items: [
@@ -433,10 +690,10 @@ const mainContentWidth = computed(() => {
 const handleLogout = async () => {
   try {
     const refreshToken = localStorage.getItem("refreshToken");
-    
+
     // First clear auth state
     authStore.clearAuth(); // Add this method to your auth store
-    
+
     // Clear localStorage
     localStorage.removeItem("token");
     localStorage.removeItem("refreshToken");
