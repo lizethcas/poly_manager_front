@@ -10,10 +10,6 @@
     
     <!-- Si no hay clases, mostrar CourseManagement -->
     <div v-else>
-      <div class="text-center mb-6">
-        <p class="text-gray-600 text-lg">Aún no tienes clases registradas</p>
-        <p class="text-gray-500 text-sm mt-1">Puedes inscribirte a un curso para comenzar tu aprendizaje</p>
-      </div>
       <CourseManagement />
     </div>
   </div>

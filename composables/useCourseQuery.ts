@@ -11,7 +11,7 @@ export const useCoursesQuery = (studentId?: string) => {
         : apiRoutes.courses;
 
       const response = await get(endpoint);
-      console.log(response);
+    
       if (!response) {
         throw new Error("No courses found");
       }

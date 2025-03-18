@@ -3,47 +3,53 @@
   <div v-else-if="error">{{ error.message || 'Error loading courses' }}</div>
   <template v-else>
 
-    <div v-if="!courses">No courses data available</div>
-    <!-- <CourseCardStudent 
-      :courses="courses.data" 
-     
-    /> -->
+    <div v-if="!enrolledCourses">No courses data available</div>
+    <CourseCardStudent 
+      :courses="enrolledCourses.data" 
+    />
+
+    <ModalCoursesAvailable :courses="availableCourses" />
     <InfoCourses
-      v-for="course in infoCourses"
-      :key="course.title"
-      :title="course.title"
-      :description="course.description"
-      :image="course.image"
+      v-for="coursePromo in promotionalCourses"
+      :key="coursePromo.title"
+      :title="coursePromo.title"
+      :description="coursePromo.description"
+      :image="coursePromo.image"
     />
   </template>
 </template>
+
 <script setup lang="ts">
 definePageMeta({
   layout: "dashboard-layout",
   middleware: ["auth"],
 });
+
 import InfoCourses from "~/components/organisim/InfoCourses.vue";
-import { infoCourses } from "~/data/infoCourses";
+import { infoCourses as promotionalCourses } from "~/data/infoCourses";
 import CourseCardStudent from "~/components/organisim/templatesUsers/students/CourseCardStudent.vue";
 import { useCoursesQuery } from "~/composables/useCourseQuery";
 import { useRoute } from "vue-router";
-import { watchEffect } from "vue";
 
 const route = useRoute();
 const studentId = route.params.studentId;
 
+const availableCourses = ref([]);
 
 const {
-  data: courses,
+  data: enrolledCourses,
   isLoading,
   error,
 } = useCoursesQuery(studentId as string);
-console.log(courses.value);
 
-watchEffect(() => {
-  console.log('Current studentId:', studentId);
-  console.log('Courses loading state:', isLoading.value);
-  console.log('Courses error:', error.value);
-  console.log('Courses data structure:', courses.value);
-});
+
+onMounted(async () => {
+  try {
+    const response = await fetch(`${import.meta.env.VITE_API_URL || 'http://localhost:8000'}/dashboard/api/students/${studentId}/available-courses`);
+    const responseJson = await response.json();
+    availableCourses.value = responseJson.data;
+  } catch (error) {
+    console.error('Error al cargar los cursos disponibles:', error);
+  }
+})
 </script>
