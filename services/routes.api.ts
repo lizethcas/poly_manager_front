@@ -14,7 +14,7 @@ export const apiRoutes = {
   },
   students: {
     getCourseByStudent: (id: string) => `students/${id}/courses/`,
-    enrollCourse: (courseId: string) => `students/${courseId}/courses/enroll/`,
+    enrollCourse: (studentId: string) => `students/${studentId}/courses/enroll/`,
     getClassesByStudent: (studentId: string) =>
       `students/${studentId}/classes`,
   },
