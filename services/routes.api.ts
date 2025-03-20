@@ -17,6 +17,8 @@ export const apiRoutes = {
     enrollCourse: (studentId: string) => `students/${studentId}/courses/enroll/`,
     getClassesByStudent: (studentId: string) =>
       `students/${studentId}/classes`,
+    getById: (studentId: string) => `students/${studentId}/`,
+    update: (studentId: string) => `students/${studentId}/`,  
   },
   scenarios: {
     getAll: "scenarios/",
@@ -66,7 +68,7 @@ export const post = async (route: string, data: any) => {
   return response.data;
 };
 
-export const patch = async (route: string, data: any) => {
-  const response = await axiosDashboard.patch(route, data);
+export const patch = async (route: string, data: any, config = {}) => {
+  const response = await axiosDashboard.patch(route, data, config);
   return response.data;
 };
