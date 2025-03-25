@@ -40,7 +40,7 @@ definePageMeta({
   layout: "dashboard-layout",
   middleware: ["auth"],
 });
-import { useModal } from "~/composables/useModal";
+import { useCustomModal } from "~/composables/useModal";
 import { createCourse } from "~/data/cardModal";
 import homeData from "~/data/home.data";
 import AddCourseModal from "~/components/organisim/AddCourseModal.vue";
@@ -52,7 +52,7 @@ import { useCourseMutation } from "~/composables/useCourseMutation";
 import { useNotify } from "~/composables/useNotify";
 
 
-const { isOpen, openModal, closeModal } = useModal();
+const { isOpen, openModal, closeModal } = useCustomModal();
 
 // Use the courseQuery composable
 const { data: courses, isLoading, error, refetch } = useCoursesQuery();

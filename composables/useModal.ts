@@ -1,10 +1,10 @@
 import { ref } from 'vue'
 
-export const useModal = () => {
+export const useCustomModal = () => {
     const isOpen = ref(false)
-    const selectedItem = ref(null)
+    const selectedItem = ref<any>(null)
 
-    const openModal = (item = null) => {
+    const openModal = (item: any = null) => {
         isOpen.value = true
         selectedItem.value = item
     }

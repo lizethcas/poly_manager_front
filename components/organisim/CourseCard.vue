@@ -178,7 +178,7 @@ import { useGetCover } from "~/composables/useGetcover";
 import { useTaskStore } from "~/stores/task.store";
 import { IconType } from "~/data/iconsType";
 import { routes } from "~/data/routes";
-import { useModal } from "~/composables/useModal";
+import { useCustomModal } from "~/composables/useModal";
 import { useCourseMutation } from "~/composables/useCourseMutation";
 import { useStudentClasses } from "~/composables/useStudentClasses";
 
@@ -197,7 +197,7 @@ interface Props {
   coursesData?: Course[];
 }
 const props = defineProps<Props>();
-const { isOpen, openModal, closeModal } = useModal();
+const { isOpen, openModal, closeModal } = useCustomModal();
 const { getLevelColor } = useGetColor();
 const { getCoverUrl } = useGetCover();
 const taskStore = useTaskStore();

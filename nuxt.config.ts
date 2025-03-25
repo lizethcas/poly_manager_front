@@ -20,7 +20,6 @@ export default defineNuxtConfig({
     "@nuxt/ui",
     "@nuxtjs/tailwindcss",
     "@pinia/nuxt",
-    "@pinia-plugin-persistedstate/nuxt",
     "nuxt-vue3-google-signin",
     "@nuxt/test-utils/module",
   ],

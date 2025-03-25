@@ -195,7 +195,7 @@
 
 <script setup lang="ts">
 import { ref, watch, onMounted, onUnmounted } from "vue";
-import { useModal } from "~/composables/useModal";
+import { useCustomModal } from "~/composables/useModal";
 import EditClassNavigation from "~/components/organisim/EditClassNavigation.vue";
 import BaseTaskModal from "~/components/organisim/BaseTaskModal.vue";
 import AudioTask from "~/components/organisim/templatesUsers/students/taskStudents/Audio.vue";
@@ -228,7 +228,7 @@ import TextBlockStudent from '~/components/organisim/templatesUsers/students/tas
 const taskStore = useTaskStore();
 const route = useRoute();
 const { capitalizeFirstLetter } = useCapitalizerLetter();
-const { isOpen, closeModal, openModal } = useModal();
+const { isOpen, closeModal, openModal } = useCustomModal();
 const { beforeEnter, enter, leave } = useAnimation();
 const currentModal = ref({ label: "", name: "" });
 const formData = ref({ title: "", instructions: "" });

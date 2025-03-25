@@ -48,7 +48,7 @@ definePageMeta({
 });
 import AddCourseModal from "~/components/organisim/AddCourseModal.vue";
 import ClassCard from "~/components/organisim/ClassCard.vue";
-import { useModal } from "~/composables/useModal";
+import { useCustomModal } from "~/composables/useModal";
 import { createClass } from "~/data/cardModal";
 import { useClassesQuery } from "~/composables/useClassesQuery";
 import { useClassMutation } from "~/composables/useClassMutation";
@@ -74,7 +74,7 @@ const filteredData = computed(() => {
   return data.value?.filter((item: any) => item.course_id == courseId) || [];
 });
 console.log(filteredData.value);
-const { isOpen, openModal, closeModal } = useModal();
+const { isOpen, openModal, closeModal } = useCustomModal();
 
 const handleAdd = () => {
   openModal();

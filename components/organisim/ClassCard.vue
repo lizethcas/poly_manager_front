@@ -164,12 +164,12 @@ import AddCourseModal from "./AddCourseModal.vue";
 import { IconType } from "~/data/iconsType";
 import { createClass } from "~/data/cardModal";
 import { routes } from "~/data/routes";
-import { useModal } from "~/composables/useModal";
+import { useCustomModal } from "~/composables/useModal";
 import { useRoute } from "nuxt/app";
 import { useClassMutation } from "~/composables/useClassMutation";
 import IconButton from "~/components/molecule/IconButton.vue";
 
-const { isOpen, openModal, closeModal } = useModal();
+const { isOpen, openModal, closeModal } = useCustomModal();
 const route = useRoute();
 const courseId = route.params.courseId as string;
 
