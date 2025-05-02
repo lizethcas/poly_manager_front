@@ -8,7 +8,7 @@ export const useLogin = () => {
   const authStore = useAuthStore();
   const toast = useToast();
   const error = ref("");
-  
+
   const loginMutation = useMutation({
     mutationFn: async (credentials: { email?: string; password?: string; token?: string }) => {
       const endpoint = credentials.token ? apiRoutes.loginGoogle : apiRoutes.login;
@@ -20,7 +20,7 @@ export const useLogin = () => {
       return data;
     },
     onSuccess: async (data) => {
-     
+
       await authStore.setAuth({
         token: data.token,
         user: data.user_data,
@@ -56,4 +56,4 @@ export const useLogin = () => {
     loginMutation,
     error,
   };
-}; 
+};

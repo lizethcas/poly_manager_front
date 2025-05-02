@@ -26,7 +26,7 @@ export default defineNuxtConfig({
   ],
   googleSignIn: {
     clientId:
-      "812601186913-sp0e8hfnarjmbvqi51bpgfsj6tmeq0sf.apps.googleusercontent.com",
+      "195812559091-8c722bpk25h4phufb8caogvavsr1j866.apps.googleusercontent.com",
   },
   pinia: {
     storesDirs: ["./stores/**", "./custom-folder/stores/**"],
@@ -47,7 +47,7 @@ export default defineNuxtConfig({
         },
       ],
     },
-    baseURL: "/poly_manager_front/",
+    baseURL: "/",
   },
   css: ["~/assets/css/main.css", "vue-toastification/dist/index.css"],
   vite: {
@@ -71,4 +71,5 @@ export default defineNuxtConfig({
     dirs: ["composables/**", "components/**"],
   },
   ssr: false,
+  spaLoadingTemplate: true
 });
