@@ -100,8 +100,4 @@ poly_manager_front/
 
 
 
-## Licencia
-Este proyecto está licenciado bajo [especificar licencia].
 
-## Contacto
-[Información de contacto del equipo o responsable del proyecto]
