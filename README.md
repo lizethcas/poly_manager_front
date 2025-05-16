@@ -98,12 +98,7 @@ poly_manager_front/
 └── utils/          # Utilidades y funciones helpers
 ```
 
-## Contribución
-1. Crea un fork del repositorio
-2. Crea una rama para tu característica (`git checkout -b feature/amazing-feature`)
-3. Realiza tus cambios y haz commit (`git commit -m 'Add some amazing feature'`)
-4. Sube los cambios a tu fork (`git push origin feature/amazing-feature`)
-5. Abre un Pull Request
+
 
 ## Licencia
 Este proyecto está licenciado bajo [especificar licencia].
